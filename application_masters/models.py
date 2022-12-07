@@ -1,0 +1,129 @@
+from django.db import models
+from django.contrib.contenttypes.models import ContentType
+from django.contrib.auth.models import User, Group
+from django.contrib.contenttypes.fields import GenericForeignKey
+from django.contrib.auth.models import Permission
+from django.core.exceptions import ValidationError
+from django.contrib.gis.db import models
+import uuid
+import datetime
+from django.core.validators import RegexValidator
+
+from import_export.admin import ImportExportModelAdmin, ImportExportMixin
+from import_export.formats import base_formats
+from import_export import resources, fields
+from import_export.fields import Field
+
+class ImportExportFormat(ImportExportMixin):
+    def get_export_formats(self):
+        formats = (base_formats.CSV, base_formats.XLSX, base_formats.XLS,)
+        return [f for f in formats if f().can_export()]
+
+    def get_import_formats(self):
+        formats = (base_formats.CSV, base_formats.XLSX, base_formats.XLS,)
+        return [f for f in formats if f().can_import()]
+
+class MasterLookup(models.Model):
+    name = models.CharField(max_length=150, blank=False,
+                            null=False, unique=True)
+    parent = models.ForeignKey(
+        "self", on_delete=models.DO_NOTHING, blank=True, null=True)
+    order = models.PositiveIntegerField(default=0)
+
+    def __str__(self):
+        return self.name
+
+
+class BaseContent(models.Model):
+    ACTIVE_CHOICES = ((0, 'Inactive'), (1, 'active'),)
+    uuid = models.CharField(editable=False, unique=True,
+                            null=True, blank=True, max_length=200)
+    status = models.PositiveIntegerField(
+        choices=ACTIVE_CHOICES, default=1, db_index=True)
+    server_created_on = models.DateTimeField(auto_now_add=True)
+    server_modified_on = models.DateTimeField(auto_now=True)
+    created_by = models.ForeignKey(
+        User, on_delete=models.DO_NOTHING, related_name='created%(app_label)s_%(class)s_related', null=True, blank=True,)
+    modified_by = models.ForeignKey(
+        User, on_delete=models.DO_NOTHING, related_name='modified%(app_label)s_%(class)s_related', null=True, blank=True,)
+
+    class Meta:
+        abstract = True
+
+
+class AppContent(BaseContent):
+    app_created_on = models.DateField(blank=True, null=True)
+
+
+class State(BaseContent):
+    name = models.CharField(max_length=150, unique=True)
+
+    class Meta:
+        verbose_name_plural = "State"
+
+    def __str__(self):
+        return self.name
+
+
+class District(BaseContent):
+    name = models.CharField(max_length=150)
+    state = models.ForeignKey(
+        State, on_delete=models.DO_NOTHING)
+
+    class Meta:
+        unique_together = [['name', 'state']]
+        verbose_name_plural = "District"
+
+    def __str__(self):
+        return self.name
+
+
+class Taluk(BaseContent):
+    name = models.CharField(max_length=150)
+    district = models.ForeignKey(
+        District, on_delete=models.DO_NOTHING)
+
+    class Meta:
+        unique_together = [['name', 'district']]
+        verbose_name_plural = "Taluk"
+
+    def __str__(self):
+        return self.name
+
+
+class PHC(BaseContent):
+    name = models.CharField(max_length=150)
+    phc_code = models.CharField(max_length=50, blank=True, null=True)
+    taluk = models.ForeignKey(
+        Taluk, on_delete=models.DO_NOTHING)
+    
+    class Meta:
+        unique_together = [['name', 'taluk']]
+        verbose_name_plural = "PHC"
+
+    def __str__(self):
+        return self.name
+
+class Village(BaseContent):
+    name = models.CharField(max_length=150)
+    code = models.CharField(max_length=50, blank=True, null=True)
+    phc = models.ForeignKey(
+        PHC, on_delete=models.DO_NOTHING)
+    
+    class Meta:
+        unique_together = [['name', 'phc']]
+        verbose_name_plural = "Village"
+
+    def __str__(self):
+        return self.name
+
+
+
+
+
+
+
+
+    
+
+    
