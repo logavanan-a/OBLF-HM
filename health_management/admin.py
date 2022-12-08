@@ -69,6 +69,15 @@ class Scanned_ReportAdmin(admin.ModelAdmin):
     search_fields = ['title']
     list_per_page = 15
 
+@admin.register(UserProfile)
+class UserProfileAdmin(admin.ModelAdmin):
+    list_display = ['uuid', 'name', 'user', 'village',
+    'user_type', 'status']
+    fields = ['uuid', 'name', 'user', 'village',
+    'user_type', 'status']
+    search_fields = ['name', 'user__username', 'village__name']
+    list_per_page = 15
+
 
 
 

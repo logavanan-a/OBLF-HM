@@ -35,11 +35,11 @@ class MasterLookup(models.Model):
 
 
 class BaseContent(models.Model):
-    ACTIVE_CHOICES = ((0, 'Inactive'), (1, 'active'),)
+    ACTIVE_CHOICES = ((1, 'Inactive'), (2, 'active'),)
     uuid = models.CharField(editable=False, unique=True,
                             null=True, blank=True, max_length=200)
     status = models.PositiveIntegerField(
-        choices=ACTIVE_CHOICES, default=1, db_index=True)
+        choices=ACTIVE_CHOICES, default=2, db_index=True)
     server_created_on = models.DateTimeField(auto_now_add=True)
     server_modified_on = models.DateTimeField(auto_now=True)
     created_by = models.ForeignKey(

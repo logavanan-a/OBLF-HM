@@ -35,6 +35,7 @@ INSTALLED_APPS = [
     'application_masters',
     'health_management',
     'import_export',
+    'rest_framework',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',

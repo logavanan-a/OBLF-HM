@@ -154,6 +154,19 @@ class Scanned_Report(BaseContent):
         verbose_name_plural = "Scanned Report"
 
 
+class UserProfile(BaseContent):
+    USER_TYPE_CHOICES = ((1, 'Health worker'), (2, 'Doctor'))
+    uuid = models.CharField(max_length=200,unique =True,default=uuid.uuid4,null=True)
+    name = models.CharField(blank=True,null=True,max_length=450)
+    user = models.ForeignKey(
+        User, on_delete=models.DO_NOTHING)
+    village = models.ForeignKey(
+        Village, on_delete=models.DO_NOTHING)
+    user_type= models.PositiveIntegerField(choices=USER_TYPE_CHOICES,default=0, db_index=True)
+    def __str__(self):
+        return self.user.username
+
+
 
 
 

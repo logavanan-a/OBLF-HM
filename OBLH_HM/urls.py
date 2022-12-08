@@ -28,6 +28,6 @@ urlpatterns = [
 
     path('admin/', admin.site.urls),
 
-    path('', include('application_masters.urls', namespace='application_masters')),
+    path('', include('health_management.urls', namespace='health_management')),
         
 ]
