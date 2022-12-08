@@ -158,6 +158,7 @@ class UserProfile(BaseContent):
     USER_TYPE_CHOICES = ((1, 'Health worker'), (2, 'Doctor'))
     uuid = models.CharField(max_length=200,unique =True,default=uuid.uuid4,null=True)
     name = models.CharField(blank=True,null=True,max_length=450)
+    email = models.CharField(blank=True,null=True,max_length=50)
     user = models.ForeignKey(
         User, on_delete=models.DO_NOTHING)
     village = models.ForeignKey(
