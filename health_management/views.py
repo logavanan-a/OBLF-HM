@@ -358,7 +358,7 @@ def prescription_details(self):
 
             defaults = {
                     "treatment_uuid" : data.get('treatment_uuid'),
-                    "medicines_id" : data.get('medicine_id'),
+                    # "medicines_id" : data.get('medicine_id'),
                     "dosage" : data.get('dosage'),
                     "no_of_days" : data.get('no_of_days'),
                     "medicine_type" : data.get('medicine_type'),

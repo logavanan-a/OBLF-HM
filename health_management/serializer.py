@@ -17,6 +17,8 @@ class MasterLookupSerializers(serializers.ModelSerializer):
     class Meta:
         model = MasterLookup
         fields = '__all__'
+        # fields = ['id', 'status', 'server_created_on', 'server_modified_on', 'name']
+        
 
 class VillageSerializers(serializers.ModelSerializer):
     class Meta:
