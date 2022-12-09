@@ -16,14 +16,16 @@ class StateSerializers(serializers.ModelSerializer):
 class MasterLookupSerializers(serializers.ModelSerializer):
     class Meta:
         model = MasterLookup
-        fields = '__all__'
-        # fields = ['id', 'status', 'server_created_on', 'server_modified_on', 'name']
+        exclude = ['parent', 'order']
         
 
 class VillageSerializers(serializers.ModelSerializer):
+    phc_id = serializers.CharField(source='phc.id')
     class Meta:
         model = Village
-        fields = '__all__'
+        exclude = ['phc']
+        
+
 
 class MedicineSerializers(serializers.ModelSerializer):
     class Meta:
@@ -33,12 +35,14 @@ class MedicineSerializers(serializers.ModelSerializer):
 class ComorbidSerializers(serializers.ModelSerializer):
     class Meta:
         model = Comorbid
-        fields = '__all__'
+        exclude = ['patients']
 
 class PatientSerializers(serializers.ModelSerializer):
+    village_id = serializers.CharField(source='village.id')
+    phc_id = serializers.CharField(source='village.phc.id')
     class Meta:
         model = Patients
-        fields = '__all__'
+        exclude = ['village']
 
 class TreatmentSerializers(serializers.ModelSerializer):
     class Meta:
@@ -46,14 +50,16 @@ class TreatmentSerializers(serializers.ModelSerializer):
         fields = '__all__'
 
 class PrescriptionSerializers(serializers.ModelSerializer):
+    medicine_id = serializers.CharField(source='medicines.id')
     class Meta:
         model = Prescription
-        fields = '__all__'
+        exclude = ['medicines']
 
 class DiagnosisSerializers(serializers.ModelSerializer):
+    ndc_id = serializers.CharField(source='ndc.id')
     class Meta:
         model = Diagnosis
-        fields = '__all__'
+        exclude = ['ndc']
 
 class ScannedReportSerializers(serializers.ModelSerializer):
     class Meta:
@@ -64,4 +70,4 @@ class UserProfileSerializers(serializers.ModelSerializer):
     username = serializers.CharField(source='user.username')
     class Meta:
         model = UserProfile
-        fields = '__all__'
+        exclude = ['user', 'email', 'name', 'village']
