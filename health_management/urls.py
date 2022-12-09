@@ -12,4 +12,7 @@ urlpatterns = [
     path('home_view/', home_view, name="/home_view/"),
     path('app-login/', LoginAPIView.as_view()),
     path('phc/pull/<pk>/', Phc_pull.as_view()),
+    path('phc/push/<pk>/', Phc_push.as_view()),
+	# path('mhu/push/<pk>/', Mhu_push.as_view()),
+
 ]

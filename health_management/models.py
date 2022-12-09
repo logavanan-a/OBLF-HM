@@ -16,7 +16,7 @@ class Patients(BaseContent):
         (3, 'Other')
         )
     uuid = models.CharField(max_length=150, blank=True, null=True)
-    patient_uuid = models.CharField(max_length=150, blank=True, null=True)
+    patient_id = models.CharField(max_length=150, blank=True, null=True)
     name = models.CharField(max_length=150)
     dob = models.DateField(blank=True, null=True)
     age = models.PositiveIntegerField(blank=True, null=True)
@@ -133,6 +133,7 @@ class Diagnosis(BaseContent):
     ndc = models.ForeignKey(
         MasterLookup, on_delete=models.DO_NOTHING)
     source_treatment = models.IntegerField(null=True, blank=True)
+    detected_by = models.IntegerField(null=True, blank=True)
     years = models.IntegerField(null=True, blank=True)
     sync_status = models.IntegerField(default=2)
 

@@ -6,10 +6,10 @@ from .models import *
 
 @admin.register(Patients)
 class PatientsAdmin(admin.ModelAdmin):
-    list_display = ['name', 'village', 'uuid', 'patient_uuid', 'dob', 'age', 'gender', 'phone_number', 'image',
+    list_display = ['name', 'village', 'uuid', 'patient_id', 'dob', 'age', 'gender', 'phone_number', 'image',
      'height', 'weight', 'door_no', 'patient_visit_type', 'fee_status', 
      'fee_paid', 'fee_date', 'registered_date', 'last_visit_date', 'status']
-    fields = ['name', 'village', 'uuid', 'patient_uuid', 'dob', 'age', 'gender', 'phone_number', 'image',
+    fields = ['name', 'village', 'uuid', 'patient_id', 'dob', 'age', 'gender', 'phone_number', 'image',
      'height', 'weight', 'door_no', 'patient_visit_type', 'fee_status',
      'fee_paid', 'fee_date', 'registered_date', 'last_visit_date', 'status']
     search_fields = ['name', 'village__name']
@@ -53,9 +53,9 @@ class PrescriptionAdmin(admin.ModelAdmin):
 
 @admin.register(Diagnosis)
 class DiagnosisAdmin(admin.ModelAdmin):
-    list_display = ['ndc', 'uuid', 'treatment_uuid', 'source_treatment',
+    list_display = ['ndc', 'uuid', 'treatment_uuid', 'detected_by', 'source_treatment',
     'years', 'status']
-    fields = ['ndc', 'uuid', 'treatment_uuid', 'source_treatment',
+    fields = ['ndc', 'uuid', 'treatment_uuid', 'detected_by', 'source_treatment',
     'years', 'status']
     search_fields = ['ndc__name']
     list_per_page = 15

@@ -8,6 +8,16 @@ from rest_framework.validators import UniqueValidator
 from django.core.exceptions import ValidationError
 from rest_framework.response import Response
 
+class StateSerializers(serializers.ModelSerializer):
+    class Meta:
+        model = State
+        fields = '__all__'
+
+class MasterLookupSerializers(serializers.ModelSerializer):
+    class Meta:
+        model = MasterLookup
+        fields = '__all__'
+
 class VillageSerializers(serializers.ModelSerializer):
     class Meta:
         model = Village
@@ -36,6 +46,11 @@ class TreatmentSerializers(serializers.ModelSerializer):
 class PrescriptionSerializers(serializers.ModelSerializer):
     class Meta:
         model = Prescription
+        fields = '__all__'
+
+class DiagnosisSerializers(serializers.ModelSerializer):
+    class Meta:
+        model = Diagnosis
         fields = '__all__'
 
 class ScannedReportSerializers(serializers.ModelSerializer):

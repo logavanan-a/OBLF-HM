@@ -23,19 +23,11 @@ class ImportExportFormat(ImportExportMixin):
         formats = (base_formats.CSV, base_formats.XLSX, base_formats.XLS,)
         return [f for f in formats if f().can_import()]
 
-class MasterLookup(models.Model):
-    name = models.CharField(max_length=150, blank=False,
-                            null=False, unique=True)
-    parent = models.ForeignKey(
-        "self", on_delete=models.DO_NOTHING, blank=True, null=True)
-    order = models.PositiveIntegerField(default=0)
 
-    def __str__(self):
-        return self.name
 
 
 class BaseContent(models.Model):
-    ACTIVE_CHOICES = ((1, 'Inactive'), (2, 'active'),)
+    ACTIVE_CHOICES = ((1, 'Inactive'), (2, 'Active'),)
     uuid = models.CharField(editable=False, unique=True,
                             null=True, blank=True, max_length=200)
     status = models.PositiveIntegerField(
@@ -49,6 +41,18 @@ class BaseContent(models.Model):
 
     class Meta:
         abstract = True
+
+
+class MasterLookup(BaseContent):
+    name = models.CharField(max_length=150, blank=False,
+                            null=False, unique=True)
+    parent = models.ForeignKey(
+        "self", on_delete=models.DO_NOTHING, blank=True, null=True)
+    order = models.PositiveIntegerField(default=0)
+
+    def __str__(self):
+        return self.name
+    
 
 
 class AppContent(BaseContent):

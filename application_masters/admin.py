@@ -9,8 +9,8 @@ from .models import *
 
 @admin.register(MasterLookup)
 class MasterLookupAdmin(admin.ModelAdmin):
-    list_display = ['name', 'order']
-    fields = ['name', 'parent', 'order']
+    list_display = ['name', 'parent', 'order', 'status']
+    fields = ['name', 'parent', 'order', 'status']
     search_fields = ['name']
     list_per_page = 15
 
