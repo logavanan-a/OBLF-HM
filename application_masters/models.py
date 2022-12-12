@@ -38,6 +38,7 @@ class BaseContent(models.Model):
         User, on_delete=models.DO_NOTHING, related_name='created%(app_label)s_%(class)s_related', null=True, blank=True,)
     modified_by = models.ForeignKey(
         User, on_delete=models.DO_NOTHING, related_name='modified%(app_label)s_%(class)s_related', null=True, blank=True,)
+    sync_status = models.PositiveIntegerField(default=2)
 
     class Meta:
         abstract = True
@@ -61,6 +62,7 @@ class AppContent(BaseContent):
 
 class State(BaseContent):
     name = models.CharField(max_length=150, unique=True)
+    parent_id=models.PositiveIntegerField(default=0)
 
     class Meta:
         verbose_name_plural = "State"

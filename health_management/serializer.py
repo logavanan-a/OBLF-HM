@@ -68,6 +68,8 @@ class ScannedReportSerializers(serializers.ModelSerializer):
 
 class UserProfileSerializers(serializers.ModelSerializer):
     username = serializers.CharField(source='user.username')
+    village_id = serializers.CharField(source='village.id')
+    phc_id = serializers.CharField(source='village.phc.id')
     class Meta:
         model = UserProfile
         exclude = ['user', 'email', 'name', 'village']

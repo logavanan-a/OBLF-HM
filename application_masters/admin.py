@@ -1,8 +1,21 @@
 from import_export import resources
 from django.contrib import admin
 from .models import *
+from import_export.admin import ImportExportModelAdmin, ImportExportMixin
+from import_export.formats import base_formats
+from import_export import resources, fields
+from import_export.fields import Field
 
 
+
+class ImportExportFormat(ImportExportMixin):
+    def get_export_formats(self):
+        formats = (base_formats.CSV, base_formats.XLSX, base_formats.XLS,)
+        return [f for f in formats if f().can_export()]
+
+    def get_import_formats(self):
+        formats = (base_formats.CSV, base_formats.XLSX, base_formats.XLS,)
+        return [f for f in formats if f().can_import()]
 
 # # Register your models here.
 
@@ -16,15 +29,15 @@ class MasterLookupAdmin(admin.ModelAdmin):
 
 
 @admin.register(State)
-class StateAdmin(admin.ModelAdmin):
-    list_display = ['name', 'status']
-    fields = ['name', 'status']
+class StateAdmin(ImportExportModelAdmin, ImportExportFormat):
+    list_display = ['name', 'parent_id', 'status']
+    fields = ['name', 'parent_id', 'status']
     search_fields = ['name']
     list_per_page = 15
 
 
 @admin.register(District)
-class DistrictAdmin(admin.ModelAdmin):
+class DistrictAdmin(ImportExportModelAdmin, ImportExportFormat):
     list_display = ['name', 'state', 'status']
     fields = ['name', 'state', 'status']
     search_fields = ['name', 'state__name']
@@ -32,7 +45,7 @@ class DistrictAdmin(admin.ModelAdmin):
 
 
 @admin.register(Taluk)
-class TalukAdmin(admin.ModelAdmin):
+class TalukAdmin(ImportExportModelAdmin, ImportExportFormat):
     list_display = ['name', 'district', 'status']
     fields = ['name', 'district', 'status']
     search_fields = ['name', 'district__name']
@@ -40,14 +53,14 @@ class TalukAdmin(admin.ModelAdmin):
 
 
 @admin.register(PHC)
-class PHCAdmin(admin.ModelAdmin):
+class PHCAdmin(ImportExportModelAdmin, ImportExportFormat):
     list_display = ['name', 'taluk', 'phc_code', 'status']
     fields = ['name', 'taluk', 'phc_code', 'status']
     search_fields = ['name', 'taluk__name', 'code']
     list_per_page = 15
 
 @admin.register(Village)
-class VillageAdmin(admin.ModelAdmin):
+class VillageAdmin(ImportExportModelAdmin, ImportExportFormat):
     list_display = ['name', 'phc', 'code', 'status']
     fields = ['name', 'phc', 'code', 'status']
     search_fields = ['name', 'phc__name', 'code']
