@@ -93,6 +93,10 @@ class Phc_pull(APIView):
 
             #State
             stateserializer=StateSerializers(valid_user.village.phc.taluk.district.state)
+            #district
+            districtserializers=DistrictSerializers(valid_user.village.phc.taluk.district)
+            #taluk
+            talukserializers=TalukSerializers(valid_user.village.phc.taluk)
             #phc
             phcserializers=PHCSerializers(valid_user.village.phc)
             #ndcs
@@ -148,6 +152,8 @@ class Phc_pull(APIView):
             } 
             jsonresponse_full['villages'] = [villagesites_serializer.data]
             jsonresponse_full['state'] = [stateserializer.data]
+            jsonresponse_full['district'] = [districtserializers.data]
+            jsonresponse_full['taluk'] = [talukserializers.data]
             jsonresponse_full['phc'] = [phcserializers.data]
             jsonresponse_full['medicines'] = medicineserializer.data
             jsonresponse_full['ndcs'] = ndcserializers.data

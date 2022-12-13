@@ -13,6 +13,17 @@ class StateSerializers(serializers.ModelSerializer):
         model = State
         fields = '__all__'
 
+class DistrictSerializers(serializers.ModelSerializer):
+    class Meta:
+        model = District
+        fields = '__all__'
+
+class TalukSerializers(serializers.ModelSerializer):
+    class Meta:
+        model = Taluk
+        fields = '__all__'
+
+
 class PHCSerializers(serializers.ModelSerializer):
     class Meta:
         model = PHC
