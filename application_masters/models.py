@@ -123,6 +123,15 @@ class Village(BaseContent):
     def __str__(self):
         return self.name
 
+class Comorbid(BaseContent):
+    name = models.CharField(max_length=150)
+    patient_id = models.CharField(max_length=150, blank=True, null=True)
+
+    class Meta:
+        verbose_name_plural = "Comorbid"
+
+    def __str__(self):
+        return self.name
 
 
 

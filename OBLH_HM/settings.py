@@ -81,7 +81,7 @@ WSGI_APPLICATION = 'OBLH_HM.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        'NAME': 'oblf_hm_sep26',    
+        'NAME': 'oblf_hm_dec12',    
         'USER': 'postgres',
         'PASSWORD': 'loga5899',
         'HOST': 'localhost',

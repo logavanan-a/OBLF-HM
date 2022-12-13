@@ -27,12 +27,7 @@ class TreatmentsAdmin(admin.ModelAdmin):
      'is_alcoholic', 'is_tobacco', 'is_smoker', 'status']
     list_per_page = 15
 
-@admin.register(Comorbid)
-class ComorbidAdmin(admin.ModelAdmin):
-    list_display = ['name', 'patients', 'status']
-    fields = ['name', 'patients', 'status']
-    search_fields = ['name', 'patients__name']
-    list_per_page = 15
+
 
 
 @admin.register(Medicines)

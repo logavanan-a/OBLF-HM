@@ -80,20 +80,6 @@ class Treatments(BaseContent):
         verbose_name_plural = "Treatments"
 
 
-class Comorbid(BaseContent):
-    name = models.CharField(max_length=150)
-    patients = models.ForeignKey(
-        Patients, on_delete=models.DO_NOTHING)
-
-    class Meta:
-        verbose_name_plural = "Comorbid"
-
-    def __str__(self):
-        return self.name
-
-    
-
-
 
 class Medicines(BaseContent):
     name = models.CharField(max_length=150)

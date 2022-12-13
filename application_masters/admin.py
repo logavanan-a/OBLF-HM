@@ -65,3 +65,11 @@ class VillageAdmin(ImportExportModelAdmin, ImportExportFormat):
     fields = ['name', 'phc', 'code', 'status']
     search_fields = ['name', 'phc__name', 'code']
     list_per_page = 15
+
+
+@admin.register(Comorbid)
+class ComorbidAdmin(ImportExportModelAdmin, ImportExportFormat):
+    list_display = ['name', 'patient_id', 'status']
+    fields = ['name', 'patient_id', 'status']
+    search_fields = ['name', 'patient_id']
+    list_per_page = 15
