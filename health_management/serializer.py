@@ -13,6 +13,11 @@ class StateSerializers(serializers.ModelSerializer):
         model = State
         fields = '__all__'
 
+class PHCSerializers(serializers.ModelSerializer):
+    class Meta:
+        model = PHC
+        fields = '__all__'
+
 class MasterLookupSerializers(serializers.ModelSerializer):
     class Meta:
         model = MasterLookup
