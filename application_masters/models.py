@@ -134,6 +134,19 @@ class Comorbid(BaseContent):
         return self.name
 
 
+class Medicines(BaseContent):
+    name = models.CharField(max_length=150)
+    code = models.CharField(max_length=50, blank=True, null=True)
+    type = models.CharField(max_length=50, blank=True, null=True)
+    category_id = models.IntegerField(null=True, blank=True)
+
+    class Meta:
+        verbose_name_plural = "Medicines"
+
+    def __str__(self):
+        return self.name
+
+
 
 
 

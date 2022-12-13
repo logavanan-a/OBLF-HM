@@ -29,14 +29,6 @@ class TreatmentsAdmin(admin.ModelAdmin):
 
 
 
-
-@admin.register(Medicines)
-class MedicinesAdmin(admin.ModelAdmin):
-    list_display = ['name', 'code', 'types', 'category_id', 'status']
-    fields = ['name', 'code', 'types', 'category_id', 'status']
-    search_fields = ['name']
-    list_per_page = 15
-
 @admin.register(Prescription)
 class PrescriptionAdmin(admin.ModelAdmin):
     list_display = ['medicines', 'uuid', 'patient_uuid', 'treatment_uuid',

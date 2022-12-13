@@ -85,6 +85,7 @@ class Phc_pull(APIView):
             valid_user = UserProfile.objects.get(uuid = pk)
         except:
             return Response({"message":"Invalid UUID"})
+
         if valid_user:
             #Village
             villages=valid_user.village
@@ -174,6 +175,8 @@ class Phc_push(APIView):
         try:
             data = request.build_absolute_uri()
             data = request.data
+            # import ipdb
+            # ipdb.set_trace()
             patient_response = {'data':[]}
             diagnosis_response = {'data':[]}
             prescription_response = {'data':[]}
@@ -261,9 +264,6 @@ class Phc_push(APIView):
             })
 
         except Exception as e:
-            exc_type, exc_obj, exc_tb = sys.exc_info()
-            fname = os.path.split(exc_tb.tb_frame.f_code.co_filename)[1]
-            print(exc_type, fname, exc_tb.tb_lineno)
             return Response({
                 "status":0,
                 "message":str(e),
