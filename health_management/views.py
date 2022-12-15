@@ -102,12 +102,19 @@ class Phc_pull(APIView):
             #ndcs
             ndcs=MasterLookup.objects.filter(parent__id=4)
             ndcserializers=MasterLookupSerializers(ndcs,many=True)
+
             #Medicines
             medicines=Medicines.objects.filter(status=2)
             medicineserializer=MedicineSerializers(medicines,many=True)
 
+            #comorbids
             comorbids = Comorbid.objects.filter(status=2)
             comorbidserializers=ComorbidSerializers(comorbids,many=True)
+
+            #dosage
+            dosage=Dosage.objects.filter(status=2)
+            dosageserializer=DosageSerializers(dosage,many=True)
+
             #userdata
             userprofileserializer=UserProfileSerializers(valid_user)
 
@@ -156,6 +163,7 @@ class Phc_pull(APIView):
             jsonresponse_full['taluk'] = [talukserializers.data]
             jsonresponse_full['phc'] = [phcserializers.data]
             jsonresponse_full['medicines'] = medicineserializer.data
+            jsonresponse_full['dosage'] = dosageserializer.data
             jsonresponse_full['ndcs'] = ndcserializers.data
             jsonresponse_full['comorbids'] = comorbidserializers.data
             jsonresponse_full['user_data'] = userprofileserializer.data

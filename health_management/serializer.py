@@ -53,6 +53,11 @@ class ComorbidSerializers(serializers.ModelSerializer):
         model = Comorbid
         exclude = ['patient_id']
 
+class DosageSerializers(serializers.ModelSerializer):
+    class Meta:
+        model = Dosage
+        fields = '__all__'
+
 class PatientSerializers(serializers.ModelSerializer):
     village_id = serializers.CharField(source='village.id')
     phc_id = serializers.CharField(source='village.phc.id')
