@@ -90,7 +90,7 @@ class Prescription(BaseContent):
     treatment_uuid = models.CharField(max_length=150, null=True, blank=True)
     medicines = models.ForeignKey(
         Medicines, on_delete=models.DO_NOTHING)
-    dosage = models.CharField(max_length=150, null=True, blank=True)
+    dosage = models.ForeignKey(Dosage, on_delete=models.DO_NOTHING,blank =True,null =True)
     no_of_days = models.IntegerField(null=True, blank=True)
     medicine_type = models.CharField(max_length=150, null=True, blank=True)
     qty = models.IntegerField(null=True, blank=True)

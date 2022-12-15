@@ -81,3 +81,11 @@ class MedicinesAdmin(ImportExportModelAdmin, ImportExportFormat):
     fields = ['name', 'code', 'type', 'category_id', 'status']
     search_fields = ['name']
     list_per_page = 15
+
+@admin.register(Dosage)
+class DosageAdmin(ImportExportModelAdmin, ImportExportFormat):
+    list_display = ['name', 'value', 'status']
+    fields = ['name', 'value', 'status']
+    search_fields = ['name']
+    list_per_page = 15
+

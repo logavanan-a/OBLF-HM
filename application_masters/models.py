@@ -146,6 +146,10 @@ class Medicines(BaseContent):
     def __str__(self):
         return self.name
 
+class Dosage(BaseContent):
+	name =models.CharField(max_length=200)
+	value = models.FloatField(blank=True,null=True)
+
 
 
 
