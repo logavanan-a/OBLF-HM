@@ -30,24 +30,24 @@ class MasterLookupAdmin(admin.ModelAdmin):
 
 @admin.register(State)
 class StateAdmin(ImportExportModelAdmin, ImportExportFormat):
-    list_display = ['name', 'parent_id', 'status']
-    fields = ['name', 'parent_id', 'status']
+    list_display = ['name', 'code',  'parent_id', 'status']
+    fields = ['name', 'parent_id', 'code', 'status']
     search_fields = ['name']
     list_per_page = 15
 
 
 @admin.register(District)
 class DistrictAdmin(ImportExportModelAdmin, ImportExportFormat):
-    list_display = ['name', 'state', 'status']
-    fields = ['name', 'state', 'status']
+    list_display = ['name', 'code', 'state', 'status']
+    fields = ['name', 'code', 'state', 'status']
     search_fields = ['name', 'state__name']
     list_per_page = 15
 
 
 @admin.register(Taluk)
 class TalukAdmin(ImportExportModelAdmin, ImportExportFormat):
-    list_display = ['name', 'district', 'status']
-    fields = ['name', 'district', 'status']
+    list_display = ['name', 'code', 'district', 'status']
+    fields = ['name', 'code', 'district', 'status']
     search_fields = ['name', 'district__name']
     list_per_page = 15
 

@@ -62,6 +62,7 @@ class AppContent(BaseContent):
 
 class State(BaseContent):
     name = models.CharField(max_length=150, unique=True)
+    code = models.CharField(max_length=2, blank=True, null=True)
     parent_id=models.PositiveIntegerField(default=0)
 
     class Meta:
@@ -73,6 +74,7 @@ class State(BaseContent):
 
 class District(BaseContent):
     name = models.CharField(max_length=150)
+    code = models.CharField(max_length=2, blank=True, null=True)
     state = models.ForeignKey(
         State, on_delete=models.DO_NOTHING)
 
@@ -86,6 +88,7 @@ class District(BaseContent):
 
 class Taluk(BaseContent):
     name = models.CharField(max_length=150)
+    code = models.CharField(max_length=2, blank=True, null=True)
     district = models.ForeignKey(
         District, on_delete=models.DO_NOTHING)
 
