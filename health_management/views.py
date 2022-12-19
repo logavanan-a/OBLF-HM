@@ -92,13 +92,17 @@ class Phc_pull(APIView):
             villagesites_serializer=VillageSerializers(villages)
 
             #State
-            stateserializer=StateSerializers(valid_user.village.phc.taluk.district.state)
+            stateserializer=StateSerializers(valid_user.village.subcenter.phc.taluk.district.state)
             #district
-            districtserializers=DistrictSerializers(valid_user.village.phc.taluk.district)
+            districtserializers=DistrictSerializers(valid_user.village.subcenter.phc.taluk.district)
             #taluk
-            talukserializers=TalukSerializers(valid_user.village.phc.taluk)
+            talukserializers=TalukSerializers(valid_user.village.subcenter.phc.taluk)
             #phc
-            phcserializers=PHCSerializers(valid_user.village.phc)
+            phcserializers=PHCSerializers(valid_user.village.subcenter.phc)
+
+            #subcenter
+            subcenterserializers=SubcenterSerializers(valid_user.village.subcenter)
+
             #ndcs
             ndcs=MasterLookup.objects.filter(parent__id=4)
             ndcserializers=MasterLookupSerializers(ndcs,many=True)
@@ -162,6 +166,7 @@ class Phc_pull(APIView):
             jsonresponse_full['district'] = [districtserializers.data]
             jsonresponse_full['taluk'] = [talukserializers.data]
             jsonresponse_full['phc'] = [phcserializers.data]
+            jsonresponse_full['subcenter'] = [subcenterserializers.data]
             jsonresponse_full['medicines'] = medicineserializer.data
             jsonresponse_full['dosage'] = dosageserializer.data
             jsonresponse_full['ndcs'] = ndcserializers.data
@@ -313,6 +318,7 @@ def patient_details(self):
                         "height":data.get('height'),
                         "weight":data.get('weight'),
                         "door_no":data.get('door_no'),
+                        "seq_no":data.get('door_no'),
                         "patient_visit_type_id": data.get('patient_visit_type'),                        
                         "fee_status":data.get('fee_status'),
                         "fee_paid":data.get('fee_paid'),
@@ -377,7 +383,7 @@ def prescription_details(self):
             defaults = {
                     "treatment_uuid" : data.get('treatment_uuid'),
                     "medicines_id" : data.get('medicine_id'),
-                    "dosage" : data.get('dosage'),
+                    "dosage_id" : data.get('dosage'),
                     "no_of_days" : data.get('no_of_days'),
                     "medicine_type" : data.get('medicine_type'),
                     "qty" : data.get('qty'),

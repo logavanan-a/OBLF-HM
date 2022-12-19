@@ -54,16 +54,23 @@ class TalukAdmin(ImportExportModelAdmin, ImportExportFormat):
 
 @admin.register(PHC)
 class PHCAdmin(ImportExportModelAdmin, ImportExportFormat):
-    list_display = ['name', 'taluk', 'phc_code', 'status']
-    fields = ['name', 'taluk', 'phc_code', 'status']
+    list_display = ['name', 'taluk', 'code', 'status']
+    fields = ['name', 'taluk', 'code', 'status']
     search_fields = ['name', 'taluk__name', 'code']
+    list_per_page = 15
+
+@admin.register(Subcenter)
+class SubcenterAdmin(ImportExportModelAdmin, ImportExportFormat):
+    list_display = ['name', 'phc', 'code', 'status']
+    fields = ['name', 'phc', 'code', 'status']
+    search_fields = ['name', 'phc__name', 'code']
     list_per_page = 15
 
 @admin.register(Village)
 class VillageAdmin(ImportExportModelAdmin, ImportExportFormat):
-    list_display = ['name', 'phc', 'code', 'status']
-    fields = ['name', 'phc', 'code', 'status']
-    search_fields = ['name', 'phc__name', 'code']
+    list_display = ['name', 'subcenter', 'code', 'status']
+    fields = ['name', 'subcenter', 'code', 'status']
+    search_fields = ['name', 'subcenter__name', 'code']
     list_per_page = 15
 
 

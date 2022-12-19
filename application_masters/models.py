@@ -102,7 +102,7 @@ class Taluk(BaseContent):
 
 class PHC(BaseContent):
     name = models.CharField(max_length=150)
-    phc_code = models.CharField(max_length=50, blank=True, null=True)
+    code = models.CharField(max_length=50, blank=True, null=True)
     taluk = models.ForeignKey(
         Taluk, on_delete=models.DO_NOTHING)
     
@@ -113,21 +113,25 @@ class PHC(BaseContent):
     def __str__(self):
         return self.name
 
-# class Subcenter(BaseContent):
-#     name = models.CharField(max_length=150)
-#     code = models.CharField(max_length=2, blank=True, null=True)
-#     phc = models.ForeignKey(
-#         PHC, on_delete=models.DO_NOTHING)
+class Subcenter(BaseContent):
+    name = models.CharField(max_length=150)
+    code = models.CharField(max_length=2, blank=True, null=True)
+    phc = models.ForeignKey(
+        PHC, on_delete=models.DO_NOTHING)
+
+    
+    def __str__(self):
+        return self.name
 
 
 class Village(BaseContent):
     name = models.CharField(max_length=150)
     code = models.CharField(max_length=50, blank=True, null=True)
-    phc = models.ForeignKey(
-        PHC, on_delete=models.DO_NOTHING)
+    subcenter = models.ForeignKey(
+        Subcenter, on_delete=models.DO_NOTHING, blank=True, null=True)
     
     class Meta:
-        unique_together = [['name', 'phc']]
+        unique_together = [['name', 'subcenter']]
         verbose_name_plural = "Village"
 
     def __str__(self):

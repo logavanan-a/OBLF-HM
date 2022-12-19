@@ -29,6 +29,11 @@ class PHCSerializers(serializers.ModelSerializer):
         model = PHC
         fields = '__all__'
 
+class SubcenterSerializers(serializers.ModelSerializer):
+    class Meta:
+        model = Subcenter
+        fields = '__all__'
+
 class MasterLookupSerializers(serializers.ModelSerializer):
     class Meta:
         model = MasterLookup
@@ -36,10 +41,10 @@ class MasterLookupSerializers(serializers.ModelSerializer):
         
 
 class VillageSerializers(serializers.ModelSerializer):
-    phc_id = serializers.CharField(source='phc.id')
+    subcenter_id = serializers.CharField(source='subcenter.id')
     class Meta:
         model = Village
-        exclude = ['phc']
+        exclude = ['subcenter']
         
 
 
@@ -60,7 +65,8 @@ class DosageSerializers(serializers.ModelSerializer):
 
 class PatientSerializers(serializers.ModelSerializer):
     village_id = serializers.CharField(source='village.id')
-    phc_id = serializers.CharField(source='village.phc.id')
+    subcenter_id = serializers.CharField(source='village.subcenter.id')
+    phc_id = serializers.CharField(source='village.subcenter.phc.id')
     # taluk_id = serializers.CharField(source='village.phc.taluk.id')
     # district_id = serializers.CharField(source='village.phc.taluk.district.id')
     class Meta:
@@ -92,7 +98,8 @@ class ScannedReportSerializers(serializers.ModelSerializer):
 class UserProfileSerializers(serializers.ModelSerializer):
     username = serializers.CharField(source='user.username')
     village_id = serializers.CharField(source='village.id')
-    phc_id = serializers.CharField(source='village.phc.id')
+    subcenter_id = serializers.CharField(source='village.subcenter.id')
+    phc_id = serializers.CharField(source='village.subcenter.phc.id')
     class Meta:
         model = UserProfile
         exclude = ['user', 'email', 'name', 'village']
