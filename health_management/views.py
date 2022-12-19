@@ -327,7 +327,7 @@ def patient_details(self):
                         "last_visit_date":data.get('last_visit_date'),
                         })
         if created:
-            obj.patient_id = data.get('patient_id')+'-'+str('%05d' % obj.id)
+            obj.patient_id = data.get('patient_id')
 
         obj.save()
         
