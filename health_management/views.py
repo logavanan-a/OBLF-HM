@@ -318,7 +318,7 @@ def patient_details(self):
                         "height":data.get('height'),
                         "weight":data.get('weight'),
                         "door_no":data.get('door_no'),
-                        "seq_no":data.get('door_no'),
+                        "seq_no":data.get('seq_no'),
                         "patient_visit_type_id": data.get('patient_visit_type'),                        
                         "fee_status":data.get('fee_status'),
                         "fee_paid":data.get('fee_paid'),
