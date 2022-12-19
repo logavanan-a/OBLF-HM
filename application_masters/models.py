@@ -113,6 +113,13 @@ class PHC(BaseContent):
     def __str__(self):
         return self.name
 
+# class Subcenter(BaseContent):
+#     name = models.CharField(max_length=150)
+#     code = models.CharField(max_length=2, blank=True, null=True)
+#     phc = models.ForeignKey(
+#         PHC, on_delete=models.DO_NOTHING)
+
+
 class Village(BaseContent):
     name = models.CharField(max_length=150)
     code = models.CharField(max_length=50, blank=True, null=True)

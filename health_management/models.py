@@ -30,6 +30,7 @@ class Patients(BaseContent):
     height = models.PositiveIntegerField(blank=True, null=True)
     weight = models.PositiveIntegerField(blank=True, null=True)
     door_no = models.CharField(max_length=150, null=True, blank=True)
+    seq_no = models.CharField(max_length=150, null=True, blank=True)
     patient_visit_type = models.ForeignKey(
         MasterLookup, on_delete=models.DO_NOTHING, null=True, blank=True)
     fee_status = models.PositiveIntegerField(null=True, blank=True)

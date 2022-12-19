@@ -7,13 +7,19 @@ from .models import *
 @admin.register(Patients)
 class PatientsAdmin(admin.ModelAdmin):
     list_display = ['name', 'village', 'uuid', 'patient_id', 'dob', 'age', 'gender', 'phone_number', 'image',
-     'height', 'weight', 'door_no', 'patient_visit_type', 'fee_status', 
+     'height', 'weight', 'door_no', 'seq_no', 'patient_visit_type', 'fee_status', 
      'fee_paid', 'fee_date', 'registered_date', 'last_visit_date', 'status']
     fields = ['name', 'village', 'uuid', 'patient_id', 'dob', 'age', 'gender', 'phone_number', 'image',
-     'height', 'weight', 'door_no', 'patient_visit_type', 'fee_status',
+     'height', 'weight', 'door_no', 'seq_no', 'patient_visit_type', 'fee_status',
      'fee_paid', 'fee_date', 'registered_date', 'last_visit_date', 'status']
     search_fields = ['name', 'village__name']
     list_per_page = 15
+
+    def formfield_for_foreignkey(self, db_field, request, **kwargs):
+        if db_field.name == "patient_visit_type":
+            kwargs["queryset"] = MasterLookup.objects.filter(
+                parent__name='patient_visit_type')
+        return super().formfield_for_foreignkey(db_field, request, **kwargs)
 
 @admin.register(Treatments)
 class TreatmentsAdmin(admin.ModelAdmin):
@@ -46,6 +52,12 @@ class DiagnosisAdmin(admin.ModelAdmin):
     'years', 'status']
     search_fields = ['ndc__name']
     list_per_page = 15
+
+    def formfield_for_foreignkey(self, db_field, request, **kwargs):
+        if db_field.name == "ndc":
+            kwargs["queryset"] = MasterLookup.objects.filter(
+                parent__name='ndcs')
+        return super().formfield_for_foreignkey(db_field, request, **kwargs)
 
 @admin.register(Scanned_Report)
 class Scanned_ReportAdmin(admin.ModelAdmin):
