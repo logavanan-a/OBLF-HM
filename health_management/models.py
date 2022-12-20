@@ -24,7 +24,7 @@ class Patients(BaseContent):
     village = models.ForeignKey(
         Village, on_delete=models.DO_NOTHING)
     phone_number = models.CharField(max_length=10, validators=[
-                                    phone_regex], unique=True)
+                                    phone_regex], unique=False, blank=True, null=True)
     image = models.FileField(
         upload_to='patients_image/%y/%m/%d/', blank=True, null=True)
     height = models.PositiveIntegerField(blank=True, null=True)
@@ -134,7 +134,7 @@ class Scanned_Report(BaseContent):
 
 class UserProfile(BaseContent):
     USER_TYPE_CHOICES = ((1, 'Health worker'), (2, 'Doctor'))
-    uuid = models.CharField(max_length=200,unique =True,default=uuid.uuid4,null=True)
+    uuid = models.CharField(max_length=200,unique =True, default=uuid.uuid4,null=True)
     name = models.CharField(blank=True,null=True,max_length=450)
     email = models.CharField(blank=True,null=True,max_length=50)
     user = models.ForeignKey(
