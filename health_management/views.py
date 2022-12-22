@@ -301,6 +301,7 @@ def patient_details(self):
     # import ipdb
     # ipdb.set_trace()
     for data in json.loads(self.data.get('patients')):
+        # print(type(data.get('village_id')))
         obj, created = Patients.objects.update_or_create(
             uuid = data.get('uuid'),
             defaults= {
@@ -308,7 +309,7 @@ def patient_details(self):
                         "dob" : data.get('dob'),
                         "age":data.get('age'),
                         "gender" : data.get('gender'),
-                        "village_id" : data.get('village_id') if data.get('village_id') != '' else None,
+                        "village_id" : data.get('village_id') if data.get('village_id') != 0 else None,
                         # "village__phc_id" : data.get('phc_id'),
                         # "state_id" : data.get('state_id'),
                         # "district_id" : data.get('district_id'),
