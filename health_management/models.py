@@ -22,13 +22,14 @@ class Patients(BaseContent):
     age = models.PositiveIntegerField(blank=True, null=True)
     gender = models.IntegerField(choices=GENDER_CHOICE, blank=True, null=True)
     village = models.ForeignKey(
-        Village, on_delete=models.DO_NOTHING)
+        Village, on_delete=models.DO_NOTHING, blank=True, null=True)
     phone_number = models.CharField(max_length=10, validators=[
                                     phone_regex], unique=False, blank=True, null=True)
     image = models.FileField(
         upload_to='patients_image/%y/%m/%d/', blank=True, null=True)
     height = models.PositiveIntegerField(blank=True, null=True)
     weight = models.PositiveIntegerField(blank=True, null=True)
+    subcenter_id = models.PositiveIntegerField(blank=True, null=True)
     door_no = models.CharField(max_length=150, null=True, blank=True)
     seq_no = models.CharField(max_length=150, null=True, blank=True)
     patient_visit_type = models.ForeignKey(
