@@ -64,9 +64,9 @@ class DosageSerializers(serializers.ModelSerializer):
         fields = '__all__'
 
 class PatientSerializers(serializers.ModelSerializer):
-    village_id = serializers.CharField(source='village.id')
-    subcenter_id = serializers.CharField(source='village.subcenter.id')
-    phc_id = serializers.CharField(source='village.subcenter.phc.id')
+    village_id = serializers.CharField(source='village.id', required=False,allow_blank=True)
+    subcenter_id = serializers.CharField(source='village.subcenter.id', required=False,allow_blank=True)
+    phc_id = serializers.CharField(source='village.subcenter.phc.id', required=False,allow_blank=True)
     # taluk_id = serializers.CharField(source='village.phc.taluk.id')
     # district_id = serializers.CharField(source='village.phc.taluk.district.id')
     class Meta:
