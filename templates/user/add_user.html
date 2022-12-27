@@ -1,0 +1,76 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block contents %}
+<div class="row align-items-center">
+    <div class="col-xl-12 mx-auto">
+        <div class="card">
+            <div class="card-body">
+                <form method='POST' class="needs-validation" oninput='password2.setCustomValidity(password2.value != password.value ? "Passwords do not match." : "")'>
+                    {% csrf_token %}
+                    <div class='text-danger'>
+                        {{error}}
+                    </div>
+                    <div class="row mb-4">
+                        {% if not user_profile %}
+                        <label for="" class="col-md-2 col-form-label">User Name</label>
+                        <div class="col-md-4">
+                          <input type="text" class="form-control" id="" name='username' required>
+                          <div class='text-danger'>
+                              {{user_exist}}
+                          </div>
+                        </div>
+                        {% endif %}
+                    </div>
+                   
+                    <div class="row mb-4">
+                        <label for="" class="col-md-2 col-form-label">User Email ID</label>
+                        <div class="col-md-4">
+                          <input type="email" class="form-control" id="" name='email' value='{{user_profile.email|default_if_none:''}}'>
+                        </div>
+                        <label for="" class="col-md-2 col-form-label">Password</label>
+                        <div class="col-md-4">
+                          <input type="password" class="form-control" id="" name='password' {% if not user_profile %}required{% endif %}  >
+                        </div>
+                    </div>
+                    <div class="row mb-4">
+                        <label for="" class="col-md-2 col-form-label">Password Confirmation</label>
+                        <div class="col-md-4">
+                          <input type="password" class="form-control" id="" name='password2' {% if not user_profile %}required{% endif %}  >
+                        </div>
+                        <label for="" class="col-md-2 col-form-label">First name</label>
+                        <div class="col-md-4">
+                          <input type="text" class="form-control" id="" name='name' value='{{user_profile.full_name|default_if_none:''}}'>
+                        </div>
+                    </div>
+                    <div class="row mb-4">
+                        <label for="" class="col-md-2 col-form-label">User Role</label>
+                        <div class="col-md-4">
+                            <select id="formrow-inputState" class="form-select" name='user_role' required>
+                                <option selected="" value=''>Choose...</option>
+                                {% for user_type in user_type_chooces %}
+                                    <option value='{{user_type.0}}' {% if user_profile.user_type == user_type.0 %}selected{% endif %}>{{user_type.1}}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                    </div>
+                    <div class="gap-2">
+                        <button type="reset" onclick="location.href='javascript:history.back()'" class="btn btn-secondary waves-effect">
+                            Cancel
+                        </button>
+                        <button type="submit" id="submitting" style="margin-left: 5px;" class="btn btn-primary w-md">Submit</button>
+                    </div>
+                </form>
+            </div>
+            <!-- end card body -->
+        </div>
+        <!-- end card -->
+    </div>
+    <!-- end col -->
+
+
+    <!-- end col -->
+</div>
+
+    
+{% endblock %}

@@ -138,6 +138,7 @@ class UserProfile(BaseContent):
     uuid = models.CharField(max_length=200,unique =True, default=uuid.uuid4,null=True)
     name = models.CharField(blank=True,null=True,max_length=450)
     email = models.CharField(blank=True,null=True,max_length=50)
+    phone_no = models.CharField(max_length=150, unique=True, blank=True, null=True)
     user = models.ForeignKey(
         User, on_delete=models.DO_NOTHING)
     village = models.ForeignKey(

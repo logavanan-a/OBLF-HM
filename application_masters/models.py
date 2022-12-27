@@ -147,6 +147,13 @@ class Comorbid(BaseContent):
     def __str__(self):
         return self.name
 
+        
+class Category(BaseContent):
+    name = models.CharField(max_length=200)
+    parent_id = models.PositiveIntegerField(default=0)
+
+    def __str__(self):
+        return self.name
 
 class Medicines(BaseContent):
     name = models.CharField(max_length=150)

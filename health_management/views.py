@@ -7,13 +7,31 @@ from django.db import transaction
 from django.http import HttpResponseRedirect
 from application_masters.models import *
 from .serializer import *
+from .forms import *
 from django.http import JsonResponse
 from rest_framework.response import Response
+from django.apps import apps
+from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 import json
 import sys, os
 
+
+
 # Create your views here.
 
+
+def pagination_function(request, data):
+    records_per_page = 10
+    # t = tuple(data.items())
+    paginator = Paginator(data, records_per_page)
+    page = request.GET.get('page', 1)
+    try:
+        pagination = paginator.page(page)
+    except PageNotAnInteger:
+        pagination = paginator.page(1)
+    except EmptyPage:
+        pagination = paginator.page(paginator.num_pages)
+    return pagination
 
 def login_view(request):
     heading = "Login"
@@ -30,7 +48,7 @@ def login_view(request):
         user = authenticate(request, username=username, password=password)
         if user is not None:
             login(request, user)
-            return HttpResponseRedirect('/home_view/')
+            return HttpResponseRedirect('/list/userprofile/')
         else:
             logout(request)
             error_message = "Invalid Username and Password"
@@ -43,10 +61,112 @@ def logout_view(request):
     logout(request)
     return HttpResponseRedirect('/login/')
 
-def home_view(request):
-     return render(request, 'learning/sql_listing.html', locals())
+
+def user_add(request):
+    heading='userprofile'
+    if request.method == 'POST':
+        try:
+            username = request.POST.get('username')
+            password = request.POST.get('password')
+            name = request.POST.get('name')
+            email = request.POST.get('email')
+            phonenumber = request.POST.get('phonenumber')
+            user_role = request.POST.get('user_role', '')
+            if User.objects.filter(username=username).exists():
+                user_exist="Username already exists"
+                return render(request, 'user/add_user.html', locals())
+            user=User.objects.create_user(username=username,password=password)
+            user_profile=UserProfile.objects.create(user=user,name=name, email=email,phone_no=phonenumber, user_type=user_role)
+            return redirect('/list/userprofile/')
+        except:
+            user.delete()
+            error="User is not created. Please try again."    
+    user_type_chooces=UserProfile.USER_TYPE_CHOICES
+    return render(request, 'user/add_user.html', locals())
+
+def user_edit(request,id):
+    heading='userprofile'
+    user_profile=UserProfile.objects.get(id=id)
+    if request.method == 'POST':
+        username = request.POST.get('username')
+        password = request.POST.get('password')
+        name = request.POST.get('name')
+        email = request.POST.get('email')
+        phonenumber = request.POST.get('phonenumber')
+        user_role = request.POST.get('user_role', '')
+        user_profile.name=name
+        user_profile.phone_no=phonenumber
+        user_profile.email=email
+        user_profile.user_type=user_role
+        user_profile.user.set_password(password)
+        user_profile.save()
+        return redirect('/list/userprofile/')
 
 
+def master_add_form(request,model):
+    heading=model
+    user_form = eval(model.title()+'Form') 
+    forms=user_form()
+    if request.method == 'POST':
+        fields = user_form(request.POST)
+        if fields.is_valid():
+            fields.save()
+            return redirect('/list/'+str(model))
+    return render(request, 'user/master_edit_form.html', locals())
+
+
+def master_edit_form(request,model,id):
+    heading=model
+    if model != 'userprofile':
+        listing_model = apps.get_model(app_label= 'application_masters', model_name=model)
+    else:
+        listing_model = apps.get_model(app_label= 'health_management', model_name=model)
+    obj=listing_model.objects.get(id=id)
+    user_form = eval(model.title()+'Form') 
+    forms=user_form(request.POST or None,instance=obj)
+    if request.method == 'POST' and forms.is_valid():
+        forms.save()
+        return redirect('/list/'+str(model))
+    return render(request, 'user/master_edit_form.html', locals())
+
+def delete_record(request,model,id):
+    if model != 'userprofile':
+        listing_model = apps.get_model(app_label= 'application_masters', model_name=model)
+    else:
+        listing_model = apps.get_model(app_label= 'health_management', model_name=model)
+    obj=listing_model.objects.get(id=id)#.update(status=1)
+    if obj.status == 2:
+        obj.status=1
+    else:
+        obj.status=2
+    obj.save()
+    return redirect('/list/'+str(model))
+
+# from django.db.models import Q
+def master_list_form(request,model):
+    search = request.GET.get('search', '')
+    headings={
+        "userprofile":"user profile",
+    }
+    heading=headings.get(model,model)
+    orderlist='name' if model != 'userprofile' else 'user__username'
+    if model != 'userprofile':
+        listing_model = apps.get_model(app_label= 'application_masters', model_name=model)
+    else:
+        listing_model = apps.get_model(app_label= 'health_management', model_name=model)
+    objects=listing_model.objects.all().order_by(orderlist)#.values_list('id','name',named=True)
+    if search and model == 'userprofile':
+        objects=objects.filter(user__username__icontains=search)
+    elif search:
+        objects=objects.filter(name__icontains=search)
+
+    data = pagination_function(request, objects)
+    current_page = request.GET.get('page', 1)
+    page_number_start = int(current_page) - 2 if int(current_page) > 2 else 1
+    page_number_end = page_number_start + 5 if page_number_start + \
+        5 < data.paginator.num_pages else data.paginator.num_pages+1
+    display_page_range = range(page_number_start, page_number_end)
+    return render(request, 'user/master_list_form.html', locals())
 
 class LoginAPIView(APIView):
     def post(self, request):

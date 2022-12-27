@@ -12,14 +12,67 @@
       <!-- Left Menu Start -->
       <ul class="metismenu list-unstyled" id="side-menu">
         <li class="menu-title" key="t-menu">Menu</li>
-        <li>
-          <a href="/" class="waves-effect">
-            <i class="bx bx-calendar"></i>
-            <span key="t-chat">Session Calendar</span>
+        {% comment %} <li>
+          <a href="" class="waves-effect">
+            <i class="bx bxs-dashboard"></i>
+            <span key="t-chat">Dashboard</span>
           </a>
+        </li> {% endcomment %}
+        <li class="">
+          <a href="javascript: void(0);" class="has-arrow waves-effect " aria-expanded="true">
+            <i class="bx bx-cog"></i>
+            <span key="t-ui-elements">Configuration</span>
+          </a>
+          <ul class="sub-menu" aria-expanded="false" style="">
+            <li class='{% if heading == "userprofile" %}mm-active{% endif %}' >
+              <a href="/list/userprofile/" class="waves-effect ">
+                <i class=""></i>
+                <span key="t-dashboards ">User Profile</span>
+              </a>
+            </li>
+            <li class='{% if heading == "PHC" %}mm-active{% endif %}'>
+              <a href="/list/phc/" class="waves-effect ">
+                <i class=""></i>
+                <span key="t-dashboards ">PHC</span>
+              </a>
+            </li>
+            <li class='{% if heading == "Sub Center" %}mm-active{% endif %}'>
+              <a href="/list/subcenter/" class="waves-effect ">
+                <i class=""></i>
+                <span key="t-dashboards ">Sub Center</span>
+              </a>
+            </li>
+            <li class='{% if heading == "Village" %}mm-active{% endif %}'>
+              <a href="/list/village/" class="waves-effect ">
+                <i class=""></i>
+                <span key="t-dashboards ">Village</span>
+              </a>
+            </li>
+            <li class='{% if heading == "medicines" %}mm-active{% endif %}'>
+              <a href="/list/medicines/" class="waves-effect ">
+                <i class=""></i>
+                <span key="t-dashboards ">Medicines</span>
+              </a>
+            </li>
+            {% comment %}  <li class='{% if heading == "diagnosis" %}mm-active{% endif %}'>
+              <a href="/list/diagnosis/" class="waves-effect ">
+                <i class=""></i>
+                <span key="t-dashboards ">Diagnosis</span>
+              </a>
+            </li>  {% endcomment %}
+          </ul>
         </li>
+        {% comment %} <li>
+          <a href="javascript: void(0);" class="has-arrow waves-effect">
+              <i class="bx bx-tone"></i>
+              <span key="t-tasks">Reports</span>
+          </a>
+          <ul class="sub-menu mm-collapse" aria-expanded="false">
+              <li class="{% if heading == "diagnosis" %}mm-active{% endif %} "><a href="/report/mhu-site-treatment/" key="t-task-list">MHU SITE WISE TREATMENT</a></li>
+          </ul>
+        </li> {% endcomment %}
        
-      </ul>        
+      </ul>                
     </div>
     <!-- Sidebar -->
   </div>

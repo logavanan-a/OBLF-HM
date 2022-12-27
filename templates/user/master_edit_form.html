@@ -1,0 +1,48 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block contents %}
+<div class="row align-items-center">
+    <div class="col-xl-12 mx-auto">
+        <div class="card">
+            <div class="card-body">
+                <form method='POST' class="needs-validation" oninput='password2.setCustomValidity(password2.value != password.value ? "Passwords do not match." : "")'>
+                    {% csrf_token %}
+                    <div class="row "> 
+                        {% for field in forms %}
+                            <label for="" class="col-sm-1 col-form-label mb-4">{{field.label}}</label>
+                            <div class="col-sm-5">
+                                {{field}}
+                            </div>
+                        {% endfor %}
+                    </div>
+
+                    <div>
+                        <button type="reset" onclick="location.href='javascript:history.back()'" class="btn btn-secondary waves-effect">
+                            Cancel
+                        </button>
+                        <button type="submit" id="submitting" class="btn btn-primary w-md">Submit</button>
+                    </div>
+                </form>
+            </div>
+            <!-- end card body -->
+        </div>
+        <!-- end card -->
+    </div>
+    <!-- end col -->
+
+
+    <!-- end col -->
+</div>
+<script src="{% static 'libs/jquery/dist/jquery.min.js' %}"></script>
+
+<script>
+    $(document).ready(function(){
+        $('select').addClass('form-control')
+        $('input').addClass('form-control')
+
+    });
+
+</script>
+    
+{% endblock %}

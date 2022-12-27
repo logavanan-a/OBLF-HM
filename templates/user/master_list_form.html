@@ -1,0 +1,216 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block extra_css %}
+<link href="{% static 'libs/sweetalert2/dist/sweetalert2.min.css' %}" rel="stylesheet" type="text/css" />
+
+<!-- DataTables -->
+<link href="{% static 'libs/datatables.net-bs4/css/dataTables.bootstrap4.min.css' %}" rel="stylesheet"
+    type="text/css" />
+<link href="{% static 'libs/datatables.net-buttons-bs4/css/buttons.bootstrap4.min.css' %}" rel="stylesheet"
+    type="text/css" />
+
+<!-- Responsive datatable examples -->
+<link href="{% static 'libs/datatables.net-responsive-bs4/css/responsive.bootstrap4.min.css' %}" rel="stylesheet"
+    type="text/css" />
+{% endblock %}
+
+{% block contents %}
+
+<div class="row">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-body">
+                <form action="" method="get" class="mb-3">
+                    <div class="row justify-content-end">
+                        {% comment %} <div class="col-lg-3 mt-3">
+                            <select class="select2 form-select teacher" id='teacher' name='teacher'>
+                                <option value='' selected>Select Teacher</option>
+                                {% for teacher_id in teachers %}
+                                <option value="{{teacher_id.id}}" {% if teacher_id.id == teacher  %}selected{% endif %}>
+                                    {{teacher_id}}</option>
+                                {% endfor %}
+                            </select>
+                        </div>  {% endcomment %}
+                        {% comment %} {% if request.user.is_superuser %}
+                        <div class="col-lg-3 mt-3">
+                            <select class="select2 form-select supervisor" id='supervisor' name='supervisor'>
+                                <option value='' selected>Select Supervisor</option>
+                                {% for select_supervisor in supervisors %}
+                                <option value="{{select_supervisor.id}}" {% if select_supervisor.id == supervisor  %}selected{% endif %}>
+                                    {{select_supervisor.user}}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        {% else %}
+                        <div class="col-lg-3 mt-3">
+                            <select class="select2 form-select school" id='school' name='school'>
+                                <option value='' selected>Select School</option>
+                                {% for school_obj in schools %}
+                                <option value="{{school_obj.id}}" {% if school_obj.id == school  %}selected{% endif %}>
+                                    {{school_obj.name}}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        
+                        {% endif %} {% endcomment %}
+                        {% comment %} <div class="col-lg-3 mt-3">
+                            <select id="formrow-inputState" class="form-select" name='status'>
+                                <option value="1" {% if status == "1" %}selected{% endif %}>Pending</option>
+                                <option value="2" {% if status == "2" %}selected{% endif %}>Accepted</option>
+                                <option value="3" {% if status == "3" %}selected{% endif %}>Rejected</option>
+                            </select>
+                        </div>   {% endcomment %}
+                        <div class="col-lg-3 mt-3">
+                            <input type="search" name="search" class='form-control' value='{{search}}' placeholder='Search...'>
+                        </div>
+                        <div class="col-auto mt-3 ">
+                            <button type="submit" class="form-control btn btn-success waves-effect btn-xs float-right">Search</button>
+                        </div>  
+                        <div class="col-auto mt-3 ">
+                            <button type="button" class="form-control btn btn-primary waves-effect btn-xs float-right" onclick="location.href='/add/{{model}}/'">Add New</button>
+                        </div>  
+                    </div>
+                </form> 
+                <div class="row">
+                    <table id="datatable-buttons" class="table  table-bordered dt-responsive w-100 ">
+                        <thead>
+                            <tr>
+                                <th>Id</th>
+                                {% if model == 'userprofile' %}
+                                    <th>Username</th>
+                                {% else %}
+                                    <th>Name</th>
+                                {% endif %}
+                                <th>Status</th>
+                                <th>Action</th>
+                            </tr>    
+                        </thead>
+                        <tbody>
+                            {% for l in data %}
+                            <tr>
+                                <td>{{l.id}}</td>
+                                {% if model == 'userprofile' %}
+                                    <td><a href="/edit/{{model}}/{{l.id}}/">{{l.user.username}}</a></td>
+                                {% else %}
+                                    <td><a href="/edit/{{model}}/{{l.id}}/">{{l}}</a></td>
+                                {% endif %}
+                                <td>{% if l.status == 2 %}Active {% else %}Inactive{% endif %}</td>
+                                <td>{% if l.status == 2 %}<a class='btn btn-danger' href="/{{model}}/{{l.id}}/delete/">Deactivate</a>{% else %}<a class='btn btn-success' href="/{{model}}/{{l.id}}/delete/">Activate</a>{% endif %}</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                    
+                    <nav aria-label="...">
+                        {% if data.has_other_pages %}
+                        <ul class="pagination justify-content-end ">
+                            {% if data.has_previous %}
+                            <li class="paginate_button page-item"><a class="page-link" href="?page=1&status={{status}}&teacher={{teacher}}&supervisor={{supervisor}}">First</a></li>
+                            {% comment %} <li class="paginate_button page-item"><a class="page-link" href="?page={{ data.previous_page_number }}">Previous</a></li> {% endcomment %}
+                            {% else %}
+                            <li class="paginate_button page-item disabled"><span class="page-link">First</span></li>
+                                {% comment %} <li class="paginate_button page-item disabled"><span class="page-link">Previous</span></li> {% endcomment %}
+                            {% endif %}
+                            {% for i in display_page_range %}
+                                {% if data.number == i %}
+                                <li class="page-item active"><span class="page-link">{{ i }} <span class="sr-only">(current)</span></span></li>
+                                {% else %}
+                                <li class="paginate_button paginate_button page-item"><a class="page-link" href="?page={{ i }}&status={{status}}&teacher={{teacher}}&supervisor={{supervisor}}">{{ i }}</a></li>
+                                {% endif %}
+                            {% endfor %}
+                            {% if data.has_next %}
+                                {% comment %} <li class="paginate_button page-item"><a class="page-link" href="?page={{ data.next_page_number }}">Next</a></li> {% endcomment %}
+                                <li class="paginate_button page-item"><a class="page-link" href="?page={{ data.paginator.num_pages }}&status={{status}}&teacher={{teacher}}&supervisor={{supervisor}}">Last</a></li>
+                            {% else %}
+                                {% comment %} <li class="paginate_button page-item disabled"><span class="page-link">Next</span></li> {% endcomment %}
+                                <li class="paginate_button page-item disabled"><span class="page-link">Last</span></li>
+                            {% endif %}
+                            </ul>
+                        {% endif %}
+                    </nav>
+                </div> 
+            </div>     
+        </div>
+    </div> <!-- end col -->
+</div> <!-- end row -->
+
+<script type="text/javascript" >
+    
+    document.addEventListener('DOMContentLoaded', function() {
+    $('.Accepted').click(function () {
+        var id=this.id
+        Swal.fire({
+            title: "Leave request is approved!",  
+            icon: "success",  
+            button: "Ok!",  
+        }) 
+    });
+
+    $('.Rejected').click(function () {
+        var id=this.id
+        Swal.fire({
+            title: "Please enter reason reject!",
+            input: 'textarea',
+            showCancelButton: !0,
+            confirmButtonColor: "#34c38f",
+            cancelButtonColor: "#f46a6a",
+            confirmButtonText: "Yes, reject it!",
+        }).then(function (t) {
+            if (t.value) {
+                window.location = "/leave_rejects/"+id+"/?reason="+t.value;
+                Swal.fire("Leave request will be rejected.", "success")
+            }
+        })
+    });
+    $('.swap').click(function () {
+        var id=this.id
+        Swal.fire({
+            title: "Are you sure!",
+            text:"You want to swap status?",
+            showCancelButton: !0,
+            confirmButtonColor: "#34c38f",
+            cancelButtonColor: "#f46a6a",
+            confirmButtonText: "Yes, swap it!",
+        }).then(function (t) {
+            if (t.value) {
+                window.location = "/swap/"+id;
+                Swal.fire("Leave request will be rejected.", "success")
+            }
+        })
+    });
+});
+{% comment %} document.querySelector(".Rejected").addEventListener("click", function() {
+    Swal.fire({
+      title: "Please enter reason reject!",
+            input: 'textarea',
+            showCancelButton: !0,
+            confirmButtonColor: "#34c38f",
+            cancelButtonColor: "#f46a6a",
+            confirmButtonText: "Yes, reject it!",
+    });
+  }); {% endcomment %}
+    
+</script>
+
+{% endblock %}
+
+
+{% block extra_javascript %}
+<script src="{% static 'libs/sweetalert2/dist/sweetalert2.min.js' %}"></script>
+
+<!-- Required datatable js -->
+<script src="{% static 'libs/datatables.net/js/jquery.dataTables.min.js' %}"></script>
+<script src="{% static 'libs/datatables.net-bs4/js/dataTables.bootstrap4.min.js' %}"></script>
+<!-- Buttons examples -->
+<script src="{% static 'libs/datatables.net-buttons/js/dataTables.buttons.min.js' %}"></script>
+<script src="{% static 'libs/datatables.net-buttons-bs4/js/buttons.bootstrap4.min.js' %}"></script>
+<script src="{% static 'libs/datatables.net-buttons/js/buttons.colVis.min.js' %}"></script>
+
+<!-- Responsive examples -->
+<script src="{% static 'libs/datatables.net-responsive/js/dataTables.responsive.min.js' %}"></script>
+<script src="{% static 'libs/datatables.net-responsive-bs4/js/responsive.bootstrap4.min.js' %}"></script>
+
+<!-- Datatable init js -->
+<script src="{% static 'js/pages/datatables.init.js' %}"></script>
+{% endblock %}

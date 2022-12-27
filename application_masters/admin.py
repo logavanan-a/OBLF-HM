@@ -81,6 +81,12 @@ class ComorbidAdmin(ImportExportModelAdmin, ImportExportFormat):
     search_fields = ['name', 'patient_id']
     list_per_page = 15
 
+@admin.register(Category)
+class CategoryAdmin(ImportExportModelAdmin, ImportExportFormat):
+    list_display = ['name', 'parent_id', 'status']
+    fields = ['name', 'parent_id', 'status']
+    search_fields = ['name']
+    list_per_page = 15
 
 @admin.register(Medicines)
 class MedicinesAdmin(ImportExportModelAdmin, ImportExportFormat):
