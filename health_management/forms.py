@@ -33,7 +33,7 @@ medicine_type=[
     ('Inhaler','Inhaler')
 ]
 class MedicinesForm(forms.ModelForm):
-    category = forms.CharField(
+    category_id = forms.CharField(
         max_length=3,
         widget=forms.Select(choices=[(cat.id,cat.name) for cat in Category.objects.filter(status=2,parent_id=0)]),
     )
@@ -42,5 +42,5 @@ class MedicinesForm(forms.ModelForm):
     )
     class Meta:
         model=Medicines
-        fields=['name','code','type','category']
+        fields=['name','code','type','category_id']
         
