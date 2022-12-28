@@ -26,21 +26,28 @@
                     <div class="row mb-4">
                         <label for="" class="col-md-2 col-form-label">User Email ID</label>
                         <div class="col-md-4">
-                          <input type="email" class="form-control" id="" name='email' value='{{user_profile.email|default_if_none:''}}'>
+                          <input type="email" class="form-control" id="" name='email' value="{{user_profile.email|default_if_none:''}}">
                         </div>
+                        <label for="" class="col-md-2 col-form-label">User Phone no.</label>
+                        <div class="col-md-4">
+                          <input type="text" class="form-control" id="" name='phonenumber' value='{{user_profile.phone_no|default_if_none:''}}' required>
+                        </div>
+                    </div>
+                    <div class="row mb-4">
                         <label for="" class="col-md-2 col-form-label">Password</label>
                         <div class="col-md-4">
                           <input type="password" class="form-control" id="" name='password' {% if not user_profile %}required{% endif %}  >
                         </div>
-                    </div>
-                    <div class="row mb-4">
                         <label for="" class="col-md-2 col-form-label">Password Confirmation</label>
                         <div class="col-md-4">
                           <input type="password" class="form-control" id="" name='password2' {% if not user_profile %}required{% endif %}  >
                         </div>
+                       
+                    </div>
+                    <div class="row mb-4">
                         <label for="" class="col-md-2 col-form-label">First name</label>
                         <div class="col-md-4">
-                          <input type="text" class="form-control" id="" name='name' value='{{user_profile.full_name|default_if_none:''}}'>
+                          <input type="text" class="form-control" id="" name='name' value="{{user_profile.name|default_if_none:''}}">
                         </div>
                     </div>
                     <div class="row mb-4">

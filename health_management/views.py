@@ -101,6 +101,8 @@ def user_edit(request,id):
         user_profile.user.set_password(password)
         user_profile.save()
         return redirect('/list/userprofile/')
+    user_type_chooces=UserProfile.USER_TYPE_CHOICES
+    return render(request, 'user/add_user.html', locals())
 
 
 def master_add_form(request,model):
