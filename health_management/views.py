@@ -72,15 +72,17 @@ def user_add(request):
             email = request.POST.get('email')
             phonenumber = request.POST.get('phonenumber')
             user_role = request.POST.get('user_role', '')
+            village_name = request.POST.get('village_name', '')
             if User.objects.filter(username=username).exists():
                 user_exist="Username already exists"
                 return render(request, 'user/add_user.html', locals())
             user=User.objects.create_user(username=username,password=password)
-            user_profile=UserProfile.objects.create(user=user,name=name, email=email,phone_no=phonenumber, user_type=user_role)
+            user_profile=UserProfile.objects.create(user=user,name=name, email=email,phone_no=phonenumber, village_id=village_name, user_type=user_role)
             return redirect('/list/userprofile/')
         except:
             user.delete()
-            error="User is not created. Please try again."    
+            error="User is not created. Please try again."  
+    village_names=Village.objects.filter(status=2).order_by('name')  
     user_type_chooces=UserProfile.USER_TYPE_CHOICES
     return render(request, 'user/add_user.html', locals())
 
@@ -93,14 +95,17 @@ def user_edit(request,id):
         name = request.POST.get('name')
         email = request.POST.get('email')
         phonenumber = request.POST.get('phonenumber')
+        village_name = request.POST.get('village_name', '')
         user_role = request.POST.get('user_role', '')
         user_profile.name=name
         user_profile.phone_no=phonenumber
+        user_profile.village_id=village_name
         user_profile.email=email
         user_profile.user_type=user_role
         user_profile.user.set_password(password)
         user_profile.save()
         return redirect('/list/userprofile/')
+    village_names=Village.objects.filter(status=2).order_by('name')  
     user_type_chooces=UserProfile.USER_TYPE_CHOICES
     return render(request, 'user/add_user.html', locals())
 
