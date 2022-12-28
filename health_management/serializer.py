@@ -84,6 +84,12 @@ class PrescriptionSerializers(serializers.ModelSerializer):
         model = Prescription
         exclude = ['medicines']
 
+class HomeVisitSerializers(serializers.ModelSerializer):
+    class Meta:
+        model = HomeVisit
+        fields = '__all__'
+
+
 class DiagnosisSerializers(serializers.ModelSerializer):
     ndc_id = serializers.CharField(source='ndc.id')
     class Meta:

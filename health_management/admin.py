@@ -3,6 +3,7 @@ from .models import *
 
 # Register your models here.
 
+admin.site.site_url = '/list/userprofile/'
 
 @admin.register(Patients)
 class PatientsAdmin(admin.ModelAdmin):
@@ -75,6 +76,14 @@ class UserProfileAdmin(admin.ModelAdmin):
     fields = ['uuid', 'name', 'user', 'email', 'village', 'phone_no',
     'user_type', 'status']
     search_fields = ['name', 'user__username', 'village__name']
+    
+
+@admin.register(HomeVisit)
+class HomeVisitAdmin(admin.ModelAdmin):
+    list_display = ['uuid', 'patient_uuid',
+    'home_vist', 'response_location', 'response_datetime', 'image', 'status']
+    fields = ['uuid', 'patient_uuid',
+    'home_vist', 'response_location', 'response_datetime',  'image', 'status']
     list_per_page = 15
 
 

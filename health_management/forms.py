@@ -17,6 +17,11 @@ class VillageForm(forms.ModelForm):
         model=Village
         fields=['name','code','subcenter']
 
+class MasterlookupForm(forms.ModelForm):
+    class Meta:
+        model=MasterLookup
+        fields=['name']
+
 medicine_type=[
     ('',''),
     ('Tab','Tab'),

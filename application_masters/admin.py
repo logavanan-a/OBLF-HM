@@ -19,7 +19,6 @@ class ImportExportFormat(ImportExportMixin):
 
 # # Register your models here.
 
-
 @admin.register(MasterLookup)
 class MasterLookupAdmin(admin.ModelAdmin):
     list_display = ['name', 'parent', 'order', 'status']

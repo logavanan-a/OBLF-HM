@@ -154,6 +154,7 @@ def master_list_form(request,model):
     search = request.GET.get('search', '')
     headings={
         "userprofile":"user profile",
+        "masterlookup":"diagnosis",
     }
     heading=headings.get(model,model)
     orderlist='name' if model != 'userprofile' else 'user__username'
@@ -162,6 +163,10 @@ def master_list_form(request,model):
     else:
         listing_model = apps.get_model(app_label= 'health_management', model_name=model)
     objects=listing_model.objects.all().order_by(orderlist)#.values_list('id','name',named=True)
+    if model == 'masterlookup':
+        objects=listing_model.objects.filter(parent__id=4).order_by(orderlist)
+
+     
     if search and model == 'userprofile':
         objects=objects.filter(user__username__icontains=search)
     elif search:
@@ -278,11 +283,18 @@ class Phc_pull(APIView):
                 diagnosis_smo_date = diagnosis_smo_date.filter(server_modified_on__gt = data.get('diagnosis_smo_date'))
             diagnosisserializers = DiagnosisSerializers(diagnosis_smo_date,many=True)
 
-            
+            # scanned report
             scanned_report_smo_date = Scanned_Report.objects.filter(status=2).order_by('server_modified_on')
             if data.get('scanned_report_smo_date'):
                 scanned_report_smo_date = scanned_report_smo_date.filter(server_modified_on__gt = data.get('scanned_report_smo_date'))
             scanned_reportserializers = ScannedReportSerializers(scanned_report_smo_date,many=True)
+
+            # home visit
+            home_visit_smo_date = HomeVisit.objects.filter(status=2,patient_uuid__in=patient_uuids).order_by('server_modified_on')
+            home_visit_uuids=home_visit_smo_date.values_list('uuid',flat=True)
+            if data.get('home_visit_smo_date'):
+                home_visit_smo_date= home_visit_smo_date.filter(server_modified_on__gt = data.get('treatment_smo_date'))
+            home_visit_serializers = HomeVisitSerializers(home_visit_smo_date,many=True)
 
             jsonresponse_full = {
                 "status":2,
@@ -305,6 +317,7 @@ class Phc_pull(APIView):
             jsonresponse_full['prescription'] = prescriptionserializers.data
             jsonresponse_full['diagnosis'] = diagnosisserializers.data
             jsonresponse_full['scanned_report'] = scanned_reportserializers.data
+            jsonresponse_full['home_visit'] = home_visit_serializers.data
 
             return Response(jsonresponse_full)
         else:
@@ -321,6 +334,7 @@ class Phc_push(APIView):
         prescription_success =[]
         treatment_success =[]
         scanned_report_success =[]
+        home_visit_success =[]
         try:
             data = request.build_absolute_uri()
             data = request.data
@@ -331,6 +345,7 @@ class Phc_push(APIView):
             prescription_response = {'data':[]}
             treatment_response = {'data':[]}
             scanned_report_response = {'data':[]}
+            home_visit_response = {'data':[]}
 
             try:
                 valid_user = UserProfile.objects.filter(uuid = pk)
@@ -394,6 +409,16 @@ class Phc_push(APIView):
                         scanned_report_info['sync_status'] = obj.sync_status
                         scanned_report_response['data'].append(scanned_report_info)
                         scanned_report_success =  scanned_report_response['data']
+                    
+                    home_visit_data  = home_visit_details(request)
+                    for obj in home_visit_data:
+                        home_visit_info ={}
+                        home_visit_info['uuid']=obj.uuid
+                        home_visit_info['SCO'] = obj.server_created_on
+                        home_visit_info['SMO'] = obj.server_modified_on
+                        home_visit_info['sync_status'] = obj.sync_status
+                        home_visit_response['data'].append(home_visit_info)
+                        home_visit_success =  home_visit_response['data']
     
 
 
@@ -410,6 +435,7 @@ class Phc_push(APIView):
                 "prescription_data" : prescription_success,
                 "treatment_data" : treatment_success,
                 "scanned_report_data" : scanned_report_success,
+                "home_visit_data" : home_visit_success,
             })
 
         except Exception as e:
@@ -421,6 +447,7 @@ class Phc_push(APIView):
                 "prescription_data" : prescription_success,
                 "treatment_data" : treatment_success,
                 "scanned_report_data" : scanned_report_success,
+                "home_visit_data" : home_visit_success,
             })
     
 def patient_details(self):
@@ -552,6 +579,24 @@ def scanned_report_details(self):
                     "title" : data.get('title'),
                     "image_path" : data.get('image_path'),
                     "captured_date" : data.get('captured_date'),
+                    })
+        objlist.append(obj)
+
+    return objlist
+
+
+def home_visit_details(self):
+    objlist = []
+    for data in json.loads(self.data.get('home_visit')):
+        obj,created = HomeVisit.objects.update_or_create(
+            uuid = data.get('uuid'),
+
+            defaults = {
+                    "patient_uuid" : data.get('patient_uuid'),
+                    "image": self.FILES.get(data.get('uuid')),
+                    "home_vist" : data.get('home_vist'),
+                    "response_location" : data.get('response_location'),
+                    "response_datetime" : data.get('response_datetime'),
                     })
         objlist.append(obj)
 

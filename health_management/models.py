@@ -121,6 +121,8 @@ class Diagnosis(BaseContent):
 
 
 
+
+
 class Scanned_Report(BaseContent):
     uuid = models.CharField(max_length=150, null=True, blank=True)
     patient_uuid = models.CharField(max_length=150, null=True, blank=True)
@@ -146,6 +148,18 @@ class UserProfile(BaseContent):
     user_type= models.PositiveIntegerField(choices=USER_TYPE_CHOICES,default=0, db_index=True)
     def __str__(self):
         return self.user.username
+
+class HomeVisit(BaseContent):
+    VISIT_TYPE_CHOICES = ((1, 'Yes'), (2, 'No'))
+    uuid = models.CharField(max_length=150, null=True, blank=True)
+    patient_uuid = models.CharField(max_length=150, null=True, blank=True)
+    home_vist = models.PositiveIntegerField(choices=VISIT_TYPE_CHOICES, default=0)
+    response_location = models.CharField(max_length=150, null=True, blank=True)
+    response_datetime = models.DateTimeField(null=True, blank=True)
+    image = models.FileField(
+        upload_to='home_visit_image/%y/%m/%d/', blank=True, null=True)
+
+
 
 
 
