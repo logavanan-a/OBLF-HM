@@ -21,16 +21,12 @@ medicine_type=[
     ('',''),
     ('Tab','Tab'),
     ('Syrup','Syrup'),
-    ('Tube','Tube'),
-    ('Each','Each'),
     ('Cap','Cap'),
-    ('Suspension','Suspension'),
-    ('Drop','Drop'),
-    ('Emulsion','Emulsion'),
     ('Powder','Powder'),
-    ('Liquid','Liquid'),
+    ('Suspension','Suspension'),
+    ('EyeDrop','EyeDrop'),
     ('Lotion','Lotion'),
-    ('Inhaler','Inhaler')
+    ('Inhaler','Inhaler'),
 ]
 class MedicinesForm(forms.ModelForm):
     category_id = forms.CharField(
