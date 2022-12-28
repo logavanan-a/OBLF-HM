@@ -18,9 +18,20 @@ class VillageForm(forms.ModelForm):
         fields=['name','code','subcenter']
 
 class MasterlookupForm(forms.ModelForm):
+    # parent = forms.ModelChoiceField(queryset = MasterLookup.objects.filter(id=4), initial=4) 
     class Meta:
         model=MasterLookup
         fields=['name']
+    def save(self, commit=True):
+        instance = super(MasterlookupForm, self).save(commit=False)
+        instance.parent_id = 4 
+        if commit:
+            instance.save()
+        return instance
+    
+
+        
+    
 
 medicine_type=[
     ('',''),

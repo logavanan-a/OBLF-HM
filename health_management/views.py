@@ -111,9 +111,16 @@ def user_edit(request,id):
 
 
 def master_add_form(request,model):
-    heading=model
+    if model == 'masterlookup':
+        heading='diagnosis'
+    else:
+        heading=model
+    initial_data = {
+        'parent': MasterLookup.objects.get(id=4)
+    }
     user_form = eval(model.title()+'Form') 
     forms=user_form()
+
     if request.method == 'POST':
         fields = user_form(request.POST)
         if fields.is_valid():
@@ -123,13 +130,17 @@ def master_add_form(request,model):
 
 
 def master_edit_form(request,model,id):
-    heading=model
+    if model == 'masterlookup':
+        heading='diagnosis'
+    else:
+        heading=model
     if model != 'userprofile':
         listing_model = apps.get_model(app_label= 'application_masters', model_name=model)
     else:
         listing_model = apps.get_model(app_label= 'health_management', model_name=model)
     obj=listing_model.objects.get(id=id)
     user_form = eval(model.title()+'Form') 
+    
     forms=user_form(request.POST or None,instance=obj)
     if request.method == 'POST' and forms.is_valid():
         forms.save()
@@ -140,7 +151,7 @@ def delete_record(request,model,id):
     if model != 'userprofile':
         listing_model = apps.get_model(app_label= 'application_masters', model_name=model)
     else:
-        listing_model = apps.get_model(app_label= 'health_management', model_name=model)
+        listing_model = apps.get_model(obj= 'health_management', model_name=model)
     obj=listing_model.objects.get(id=id)#.update(status=1)
     if obj.status == 2:
         obj.status=1
