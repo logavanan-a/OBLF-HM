@@ -47,6 +47,7 @@ medicine_type=[
 class MedicinesForm(forms.ModelForm):
     category_id = forms.CharField(
         max_length=3,
+        label='category',
         widget=forms.Select(choices=[(cat.id,cat.name) for cat in Category.objects.filter(status=2,parent_id=0)]),
     )
     type = forms.CharField(
@@ -55,4 +56,10 @@ class MedicinesForm(forms.ModelForm):
     class Meta:
         model=Medicines
         fields=['name','code','type','category_id']
+
+
+    # def __init__(self, *args, **kwargs):
+    #     super(MedicinesForm, self).__init__(*args, **kwargs)
+    #     self.fields['category_id'].fields.forms.Select = choices[(e.id, e.name) for e in Category.objects.all()]
+
         

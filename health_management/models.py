@@ -150,7 +150,7 @@ class UserProfile(BaseContent):
         return self.user.username
 
 class HomeVisit(BaseContent):
-    VISIT_TYPE_CHOICES = ((1, 'Yes'), (2, 'No'))
+    VISIT_TYPE_CHOICES = ((1, 'No'), (2, 'Yes'))
     uuid = models.CharField(max_length=150, null=True, blank=True)
     patient_uuid = models.CharField(max_length=150, null=True, blank=True)
     home_vist = models.PositiveIntegerField(choices=VISIT_TYPE_CHOICES, default=0)

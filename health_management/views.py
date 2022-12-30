@@ -115,9 +115,6 @@ def master_add_form(request,model):
         heading='diagnosis'
     else:
         heading=model
-    initial_data = {
-        'parent': MasterLookup.objects.get(id=4)
-    }
     user_form = eval(model.title()+'Form') 
     forms=user_form()
 
