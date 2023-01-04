@@ -13,9 +13,9 @@
                     </div>
                     <div class="row mb-4">
                         {% if not user_profile %}
-                        <label for="" class="col-md-2 col-form-label">User Name</label>
+                        <label for="" class="col-md-2 col-form-label">User Name<span class="required-field"></span></label>
                         <div class="col-md-4">
-                          <input type="text" class="form-control" id="" name='username' required>
+                          <input type="text" class="form-control" pattern="[A-Za-z0-9]{0,150}"  id="" name='username' required>
                           <div class='text-danger'>
                               {{user_exist}}
                           </div>
@@ -28,28 +28,28 @@
                         <div class="col-md-4">
                           <input type="email" class="form-control" id="" name='email' value="{{user_profile.email|default_if_none:''}}">
                         </div>
-                        <label for="" class="col-md-2 col-form-label">User Phone no.</label>
+                        <label for="" class="col-md-2 col-form-label">User Phone no.<span class="required-field"></span></label>
                         <div class="col-md-4">
-                          <input type="text" class="form-control" id="" name='phonenumber' value='{{user_profile.phone_no|default_if_none:''}}' required>
+                          <input type="text" class="form-control" name='phonenumber' value="{{user_profile.phone_no|default_if_none:''}}"  pattern="[0-9]{10,10}" maxlength="10" id="phone_no" required>
                         </div>
                     </div>
                     <div class="row mb-4">
-                        <label for="" class="col-md-2 col-form-label">Password</label>
+                        <label for="" class="col-md-2 col-form-label">Password<span class="required-field"></span></label>
                         <div class="col-md-4">
                           <input type="password" class="form-control" id="" name='password' {% if not user_profile %}required{% endif %}  >
                         </div>
-                        <label for="" class="col-md-2 col-form-label">Password Confirmation</label>
+                        <label for="" class="col-md-2 col-form-label">Password Confirmation<span class="required-field"></span></label>
                         <div class="col-md-4">
                           <input type="password" class="form-control" id="" name='password2' {% if not user_profile %}required{% endif %}  >
                         </div>
                        
                     </div>
                     <div class="row mb-4">
-                        <label for="" class="col-md-2 col-form-label">First name</label>
+                        <label for="" class="col-md-2 col-form-label">First name<span class="required-field"></span></label>
                         <div class="col-md-4">
                           <input type="text" class="form-control" id="" name='name' value="{{user_profile.name|default_if_none:''}}">
                         </div>
-                        <label for="" class="col-md-2 col-form-label">User Role</label>
+                        <label for="" class="col-md-2 col-form-label">User Role<span class="required-field"></span></label>
                         <div class="col-md-4">
                             <select id="formrow-inputState" class="form-select" name='user_role' required>
                                 <option selected="" value=''>Choose...</option>
@@ -60,7 +60,7 @@
                         </div>
                     </div>
                     <div class="row mb-4">
-                        <label for="" class="col-md-2 col-form-label">Village Name</label>
+                        <label for="" class="col-md-2 col-form-label">Village Name<span class="required-field"></span></label>
                         <div class="col-md-4">
                             <select id="formrow-inputState" class="form-select" name='village_name' required>
                                 <option selected="" value=''>Choose...</option>

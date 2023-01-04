@@ -3,22 +3,41 @@ from application_masters.models import *
 
 
 class PhcForm(forms.ModelForm):
+    code = forms.CharField(max_length=3, required=True)
+
+    def __init__(self, *args, **kwargs):
+        super(PhcForm, self).__init__(*args, **kwargs)
+        self.fields['taluk'].widget.attrs['class'] = 'form-select'
+
     class Meta:
         model=PHC
         fields=['name','code','taluk']
 
 class SubcenterForm(forms.ModelForm):
+    code = forms.CharField(max_length=3, required=True)
+
+    def __init__(self, *args, **kwargs):
+        super(SubcenterForm, self).__init__(*args, **kwargs)
+        self.fields['phc'].widget.attrs['class'] = 'form-select'
+
     class Meta:
         model=Subcenter
         fields=['name','code','phc']
 
 class VillageForm(forms.ModelForm):
+    code = forms.CharField(max_length=3, required=True)
+    subcenter = forms.ModelChoiceField(queryset=Subcenter.objects.filter(status=2))
+
+    def __init__(self, *args, **kwargs):
+        super(VillageForm, self).__init__(*args, **kwargs)
+        self.fields['subcenter'].widget.attrs['class'] = 'form-select'
+
     class Meta:
         model=Village
         fields=['name','code','subcenter']
+        
 
 class MasterlookupForm(forms.ModelForm):
-    # parent = forms.ModelChoiceField(queryset = MasterLookup.objects.filter(id=4), initial=4) 
     class Meta:
         model=MasterLookup
         fields=['name']
