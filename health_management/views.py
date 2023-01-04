@@ -227,21 +227,31 @@ class Phc_pull(APIView):
             return Response({"message":"Invalid UUID"})
 
         if valid_user:
-            #Village
-            villages=valid_user.village
-            villagesites_serializer=VillageSerializers(villages)
 
             #State
-            stateserializer=StateSerializers(valid_user.village.subcenter.phc.taluk.district.state)
+            state=State.objects.filter(status=2).order_by('id')
+            stateserializer=StateSerializers(state, many=True)
+            
+            #Village
+            village=Village.objects.filter(status=2).order_by('id')
+            villagesites_serializer=VillageSerializers(village, many=True)
+
+
             #district
-            districtserializers=DistrictSerializers(valid_user.village.subcenter.phc.taluk.district)
+            district=District.objects.filter(status=2).order_by('id')   
+            districtserializers=DistrictSerializers(district, many=True)
+
             #taluk
-            talukserializers=TalukSerializers(valid_user.village.subcenter.phc.taluk)
+            taluk=Taluk.objects.filter(status=2).order_by('id')   
+            talukserializers=TalukSerializers(taluk, many=True)
+
             #phc
-            phcserializers=PHCSerializers(valid_user.village.subcenter.phc)
+            phc=PHC.objects.filter(status=2).order_by('id')   
+            phcserializers=PHCSerializers(phc, many=True)
 
             #subcenter
-            subcenterserializers=SubcenterSerializers(valid_user.village.subcenter)
+            subcenter=Subcenter.objects.filter(status=2).order_by('id')   
+            subcenterserializers=SubcenterSerializers(subcenter, many=True)
 
             #ndcs
             ndcs=MasterLookup.objects.filter(parent__id=4)
