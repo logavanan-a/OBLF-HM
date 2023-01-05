@@ -34,13 +34,18 @@
     type="text/css" />
     {% endblock css %}
 </head>
+<style>
+    .navbar-brand-box {
+        padding: 0px!important;
+    }
+    @media only screen and (max-width: 992px) {
+        .navbar-brand-box {
+            padding: 0 1.5rem!important;
+        }
+    }
 
-<!-- <style>
-    .table{margin: 0px!important;}
-    .table>thead { vertical-align: top}
-    .card-title{ margin-right: 5px }
-    th, td{border: 1px solid!important}
-</style> -->
+</style>
+
 <body data-sidebar="dark">
     {% if heading != 'Login' %}
     <!-- Begin page -->
