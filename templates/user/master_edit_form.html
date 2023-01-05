@@ -10,14 +10,14 @@
                     {% csrf_token %}
                     <div class="row "> 
                         {% for field in forms %}
-                            <label for="" class="col-xl-1 col-md-2 col-form-label mb-4">
+                            <label for="" class="col-md-2 col-form-label mb-4">
                                 {% if field.field.required %}
                                 {{field.label}}<span class="required-field"></span>
                                 {% else %}
                                 {{field.label}}
                                 {% endif %}
                             </label>
-                            <div class="col-xl-5 col-md-4">
+                            <div class="col-md-4">
                                 {{field}}
                             </div>
                         {% endfor %}

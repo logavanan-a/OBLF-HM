@@ -159,8 +159,23 @@ class HomeVisit(BaseContent):
     image = models.FileField(
         upload_to='home_visit_image/%y/%m/%d/', blank=True, null=True)
 
+class MedicineStock(BaseContent):
+    medicine = models.ForeignKey(Medicines, on_delete=models.DO_NOTHING, null=True, blank=True)
+    date_of_creation = models.DateTimeField(null=True, blank=True)
+    unit_price = models.PositiveIntegerField(null=True, blank=True)
+    no_of_units = models.PositiveIntegerField(null=True, blank=True)
+    opening_stock = models.IntegerField(null=True, blank=True)
+    closing_stock = models.IntegerField(null=True, blank=True)
 
 
+class DrugDispensation(BaseContent):
+    medicine = models.ForeignKey(Medicines, on_delete=models.DO_NOTHING, null=True, blank=True)
+    village = models.ForeignKey(Village, on_delete=models.DO_NOTHING)
+    units_dispensed = models.PositiveIntegerField(null=True, blank=True)
+    date_of_dispensation = models.DateTimeField(null=True, blank=True)
+    opening_stock = models.IntegerField(null=True, blank=True)
+    closing_stock = models.IntegerField(null=True, blank=True)
+    
 
 
 

@@ -61,6 +61,15 @@ def logout_view(request):
     logout(request)
     return HttpResponseRedirect('/login/')
 
+def drug_dispensation_stock_list(request):
+    heading="Dispensation of drugs stocks details"
+    medicine=Medicines.objects.filter(status=2)
+    return render(request, 'manage_stocks/drug_dispensation_stock/drug_dispensation_list.html', locals())
+
+def medicine_stock_list(request):
+    heading="Medicine stocks detatials"
+    medicine=Medicines.objects.filter(status=2)
+    return render(request, 'manage_stocks/medicine_stock/medicine_list.html', locals())
 
 def user_add(request):
     heading='userprofile'

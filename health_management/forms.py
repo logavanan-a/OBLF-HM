@@ -53,7 +53,7 @@ class MasterlookupForm(forms.ModelForm):
     
 
 medicine_type=[
-    ('',''),
+    ('','--------'),
     ('Tab','Tab'),
     ('Syrup','Syrup'),
     ('Cap','Cap'),
@@ -72,9 +72,15 @@ class MedicinesForm(forms.ModelForm):
     type = forms.CharField(
         widget=forms.Select(choices=medicine_type),
     )
+
+    def __init__(self, *args, **kwargs):
+        super(MedicinesForm, self).__init__(*args, **kwargs)
+        self.fields['category_id'].widget.attrs['class'] = 'form-select'
+        self.fields['type'].widget.attrs['class'] = 'form-select'
+
     class Meta:
         model=Medicines
-        fields=['name','code','type','category_id']
+        fields=['name', 'type', 'category_id']
 
 
     # def __init__(self, *args, **kwargs):
