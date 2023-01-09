@@ -6,6 +6,7 @@ from rest_framework.views import APIView
 from django.db import transaction
 from django.http import HttpResponseRedirect
 from application_masters.models import *
+from health_management.models import *
 from .serializer import *
 from .forms import *
 from django.http import JsonResponse
@@ -15,6 +16,8 @@ from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 import json
 import sys, os
 from datetime import datetime
+from django.db.models import Q
+
 
 
 
@@ -64,7 +67,12 @@ def logout_view(request):
 
 def drug_dispensation_stock_list(request):
     heading="Dispensation of drugs stocks details"
-    prescription_list=Prescription.objects.filter(status=2)
+    userprofile_list=UserProfile.objects.filter(status=2)
+    search = request.GET.get('search', '')
+    if search:
+        prescription_list=Prescription.objects.filter(medicines__name__icontains=search)
+    else:
+        prescription_list=Prescription.objects.filter(status=2)
     data = pagination_function(request, prescription_list)
     current_page = request.GET.get('page', 1)
     page_number_start = int(current_page) - 2 if int(current_page) > 2 else 1
@@ -75,29 +83,33 @@ def drug_dispensation_stock_list(request):
 
 def medicine_stock_list(request):
     heading="Medicine stocks detatials"
-    medicine_stock = MedicineStock.objects.filter(status=2)
+    search = request.GET.get('search', '')
+    if search:
+        medicine_stock = MedicineStock.objects.filter(medicine__name__icontains=search)
+    else:
+        medicine_stock = MedicineStock.objects.filter(status=2)
     return render(request, 'manage_stocks/medicine_stock/medicine_list.html', locals())
 
 def add_medicine_stock(request):
     heading="Add medicine stocks details"
     now = datetime.now()
     current_data = now.strftime("%Y-%m-%d")
-    medicine_stock = MedicineStock.objects.filter(status=2).values_list('medicine_id', flat=True)
-    medicine_ids = list(medicine_stock)
-    medicine=Medicines.objects.filter(status=2).exclude(id__in=medicine_ids)
+    medicine=Medicines.objects.filter(status=2)
     if request.method == 'POST':
         data = request.POST
         for mdn in medicine:
             opening_stock = data.get(str(mdn.id)+'_opening_stock')
             if opening_stock:
-                # if not MedicineStock.objects.filter(medicine_id=mdn).exists():
-                unit_price = data.get(str(mdn.id)+'_unit_price')
-                date_of_creation = data.get(str(mdn.id)+'_date_of_creation')
-                no_of_units = data.get(str(mdn.id)+'_no_of_units')
-                closing_stock = data.get(str(mdn.id)+'_closing_stock')
-                medicine_stock = MedicineStock.objects.create(medicine=mdn, date_of_creation=date_of_creation or None, 
-                unit_price=unit_price or None, no_of_units=no_of_units or None, opening_stock=opening_stock or None, closing_stock=closing_stock or None)    
-                medicine_stock.save()
+                if MedicineStock.objects.filter(medicine_id=mdn, date_of_creation=current_data).exists():
+                    not_accepted = "Today,This is medicine alreay exist"
+                else:
+                    unit_price = data.get(str(mdn.id)+'_unit_price')
+                    date_of_creation = data.get(str(mdn.id)+'_date_of_creation')
+                    no_of_units = data.get(str(mdn.id)+'_no_of_units')
+                    closing_stock = data.get(str(mdn.id)+'_closing_stock')
+                    medicine_stock = MedicineStock.objects.create(medicine=mdn, date_of_creation=date_of_creation or None, 
+                    unit_price=unit_price or None, no_of_units=no_of_units or None, opening_stock=opening_stock or None, closing_stock=closing_stock or None)    
+                    medicine_stock.save()
         return redirect('/medicine/list/')
     return render(request, 'manage_stocks/medicine_stock/add_medicine.html', locals())
 
