@@ -10,7 +10,7 @@
                     <h4 class="card-title">Medicine stocks detatials:</h4>
                 </div>
                 <div class="d-flex justify-content-end mb-3"> 
-                    <button  onclick="location.href='/farmer-csv-export/'" class="btn btn-primary waves-effect justify-content-start">
+                    <button  onclick="location.href='/add/medicine/'" class="btn btn-primary waves-effect justify-content-start">
                         Add New
                     </button>
                 </div>
@@ -27,14 +27,15 @@
                             </tr>
                         </thead>
                         <tbody>
-                            {% for m in medicine %}
+                            {% for m in medicine_stock %}
                             <tr>
-                                <th>{{m.name}}</th>
-                                <td>-</td>
-                                <td>-</td>
-                                <td>-</td>
-                                <td>-</td>
-                                <td>-</td>
+                                <th>{{m.medicine|default_if_none:''}}</th>
+                                <th>{{m.opening_stock|default_if_none:''}}</th>
+                                <th>{{m.no_of_units|default_if_none:''}}</th>
+                                <th>{{m.unit_price|default_if_none:''}}</th>
+                                <th>{{m.date_of_creation|default_if_none:''}}</th>
+                                <th>{{m.medicine_stock|default_if_none:''}}</th>
+                                
                             </tr>
                             {% endfor %}
                         </tbody>

@@ -1,0 +1,111 @@
+{% extends 'base.html' %}
+{% load configuration_tags %}
+{% load static %}
+{% block contents %}
+
+<div class="row">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-body">
+                <div class="d-flex mb-3">
+                    <h4 class="card-title">Medicine stocks details:</h4>
+                </div>
+
+                <form method='POST' class="" enctype="multipart/form-data" novalidate>
+                    {% csrf_token %}
+                    <div class="table-rep-plugin">
+                        <table id="datatable-buttons" class="table  table-bordered dt-responsive w-100 ">
+                            {% if medicine|length > 0 %}
+                            <thead>
+                                <tr>
+                                    <th>Drug Name</th>
+                                    <th>Opening Stock</th>
+                                    <th>Add quantity</th>
+                                    <th>Unit price Rs.</th>
+                                    <th>Date</th>
+                                    <th>Closing Stock</th>                                   
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for m in medicine %}
+                                <tr>
+                                    <td>{{m.name}}</td>
+                                    <input type="hidden" id="custId" name="medicine" value="{{m.id}}" >
+                                    <td>
+                                        <input type="number" class="form-control o_stk" onkeypress="return /[0-9]/i.test(event.key)" name='{{m.id}}_opening_stock' id="opening_stock">
+                                    </td>
+                                    <td>
+                                        <input type="number" class="form-control add_units" onkeypress="return /[0-9]/i.test(event.key)" name='{{m.id}}_no_of_units' id="no_of_units">
+                                    </td>
+                                    <td>
+                                        <input type="number" class="form-control" name='{{m.id}}_unit_price' id="{{m.id}}_unit_price" >
+                                    </td>
+                                    <td>
+                                        <input type="date" class="form-control" name='{{m.id}}_date_of_creation' id="previous_data">
+                                    </td>
+                                    <td>
+                                        <input type="number" class="form-control c_stk" onkeypress="return /[0-9]/i.test(event.key)" name='{{m.id}}_closing_stock'>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                                {% else %}
+
+                                    <div class="text-center">data not available</div>
+                                {% endif %}
+                            </tbody>
+                        </table>
+                        <div class="d-flex mb-3 justify-content-end gap-2">
+                            <button type="reset" onclick="location.href='/medicine/list/'" class="btn btn-secondary waves-effect">
+                                Cancel
+                            </button>
+                            <button type="submit"  class="btn btn-primary float-end ml-2">Submit</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div> 
+</div> 
+<script type="text/javascript">
+    $('.o_stk,.add_units,.c_stk').keyup(function(){
+        var tr = $(this).closest('tr');
+        var opening_stock = tr.find('#opening_stock').val();
+        var no_of_units = tr.find('#no_of_units').val();
+        if(opening_stock == ''){
+            opening_stock = 0
+        }
+        if(no_of_units == ''){
+            no_of_units = 0
+        }
+        var closing_stock_total = parseInt(opening_stock) + parseInt(no_of_units)
+        if(closing_stock_total == ''){
+            closing_stock_total = 0
+        }
+        tr.find('#closing_stock').val(closing_stock_total);
+    });
+</script>`
+<script type="text/javascript">
+    $(function(){
+
+        var dtToday = new Date();
+        var day = dtToday.getDate();
+        var month = dtToday.getMonth() + 1;
+
+        if(month < 10){
+        month = '0' + month.toString();
+        }
+        if(day < 10){
+        day = '0' + day.toString();
+        }
+
+        var year = dtToday.getFullYear();
+        var maxDate = year + '-' + month + '-' + day;  
+        if (document.getElementById("previous_data") != null)  {
+        document.getElementById("previous_data").setAttribute('max' , maxDate) 
+        }
+
+    });
+</script>
+
+
+{% endblock %}

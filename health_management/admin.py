@@ -90,7 +90,7 @@ class HomeVisitAdmin(admin.ModelAdmin):
 
 
 @admin.register(MedicineStock)
-class MedicineStockAdmin(admin.ModelAdmin):
+class MedicineStockAdmin(ImportExportModelAdmin, ImportExportFormat):
     list_display = ['medicine', 'date_of_creation', 'unit_price', 'no_of_units',
      'opening_stock', 'closing_stock', 'created_by', 'modified_by', 'status']
     fields = ['medicine', 'date_of_creation', 'unit_price', 'no_of_units',
@@ -98,14 +98,14 @@ class MedicineStockAdmin(admin.ModelAdmin):
     search_fields = ['medicine__name']
     list_per_page = 15
 
-@admin.register(DrugDispensation)
-class DrugDispensationAdmin(admin.ModelAdmin):
-    list_display = ['medicine', 'village', 'units_dispensed',
-     'date_of_dispensation', 'opening_stock', 'closing_stock', 'status']
-    fields = ['medicine', 'village', 'units_dispensed',
-     'date_of_dispensation', 'opening_stock', 'closing_stock', 'status']
-    search_fields = ['medicine__name', 'village__name']
-    list_per_page = 15
+# @admin.register(DrugDispensation)
+# class DrugDispensationAdmin(admin.ModelAdmin):
+#     list_display = ['medicine', 'village', 'units_dispensed',
+#      'date_of_dispensation', 'opening_stock', 'closing_stock', 'status']
+#     fields = ['medicine', 'village', 'units_dispensed',
+#      'date_of_dispensation', 'opening_stock', 'closing_stock', 'status']
+#     search_fields = ['medicine__name', 'village__name']
+#     list_per_page = 15
 
 
 

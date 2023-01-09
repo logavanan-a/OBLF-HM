@@ -3,7 +3,8 @@ from application_masters.models import *
 
 
 class PhcForm(forms.ModelForm):
-    code = forms.CharField(max_length=3, required=True)
+    name = forms.CharField(required=True, widget=forms.TextInput(attrs={'pattern':'[A-Za-z ]+'}))
+    code = forms.CharField(max_length=3, required=True, widget=forms.TextInput(attrs={'pattern':'[A-Za-z0-9 ]+'}))
 
     def __init__(self, *args, **kwargs):
         super(PhcForm, self).__init__(*args, **kwargs)
@@ -14,7 +15,8 @@ class PhcForm(forms.ModelForm):
         fields=['name','code','taluk']
 
 class SubcenterForm(forms.ModelForm):
-    code = forms.CharField(max_length=3, required=True)
+    name = forms.CharField(required=True, widget=forms.TextInput(attrs={'pattern':'[A-Za-z ]+'}))
+    code = forms.CharField(max_length=3, required=True, widget=forms.TextInput(attrs={'pattern':'[A-Za-z0-9 ]+'}))
 
     def __init__(self, *args, **kwargs):
         super(SubcenterForm, self).__init__(*args, **kwargs)
@@ -25,7 +27,8 @@ class SubcenterForm(forms.ModelForm):
         fields=['name','code','phc']
 
 class VillageForm(forms.ModelForm):
-    code = forms.CharField(max_length=3, required=True)
+    name = forms.CharField(required=True, widget=forms.TextInput(attrs={'pattern':'[A-Za-z ]+'}))
+    code = forms.CharField(max_length=3, required=True, widget=forms.TextInput(attrs={'pattern':'[A-Za-z0-9 ]+'}))
     subcenter = forms.ModelChoiceField(queryset=Subcenter.objects.filter(status=2))
 
     def __init__(self, *args, **kwargs):
@@ -38,6 +41,7 @@ class VillageForm(forms.ModelForm):
         
 
 class MasterlookupForm(forms.ModelForm):
+    name = forms.CharField(required=True, widget=forms.TextInput(attrs={'pattern':'[A-Za-z ]+'}))
     class Meta:
         model=MasterLookup
         fields=['name']
@@ -64,6 +68,7 @@ medicine_type=[
     ('Inhaler','Inhaler'),
 ]
 class MedicinesForm(forms.ModelForm):
+    name = forms.CharField(required=True, widget=forms.TextInput(attrs={'pattern':'[A-Za-z ]+'}))
     category_id = forms.CharField(
         max_length=3,
         label='category',
@@ -82,7 +87,7 @@ class MedicinesForm(forms.ModelForm):
         model=Medicines
         fields=['name', 'type', 'category_id']
 
-
+#  widget=forms.TextInput(attrs={'pattern':'[A-Za-z0-9 ]+'})
     # def __init__(self, *args, **kwargs):
     #     super(MedicinesForm, self).__init__(*args, **kwargs)
     #     self.fields['category_id'].fields.forms.Select = choices[(e.id, e.name) for e in Category.objects.all()]

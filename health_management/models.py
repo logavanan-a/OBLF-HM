@@ -3,6 +3,7 @@ from django.db import models
 from application_masters.models import *
 import datetime
 from django.db.models import Q
+from django.core.exceptions import ObjectDoesNotExist
 
 # Create your models here.
 
@@ -103,6 +104,20 @@ class Prescription(BaseContent):
 
     def __str__(self):
         return self.medicines.name
+    
+    def get_user_uuid(self):
+        try:
+            userprofile_list=UserProfile.objects.get(uuid=self.patient_uuid)
+        except ObjectDoesNotExist:
+            userprofile_list = None
+        return userprofile_list
+    
+    def get_treatment_uuid(self):
+        try:
+            treatments_list=Treatments.objects.get(uuid=self.treatment_uuid)
+        except ObjectDoesNotExist:
+            treatments_list = None
+        return treatments_list
 
 
 class Diagnosis(BaseContent):
@@ -161,20 +176,20 @@ class HomeVisit(BaseContent):
 
 class MedicineStock(BaseContent):
     medicine = models.ForeignKey(Medicines, on_delete=models.DO_NOTHING, null=True, blank=True)
-    date_of_creation = models.DateTimeField(null=True, blank=True)
+    date_of_creation = models.DateField(null=True, blank=True)
     unit_price = models.PositiveIntegerField(null=True, blank=True)
     no_of_units = models.PositiveIntegerField(null=True, blank=True)
     opening_stock = models.IntegerField(null=True, blank=True)
     closing_stock = models.IntegerField(null=True, blank=True)
 
 
-class DrugDispensation(BaseContent):
-    medicine = models.ForeignKey(Medicines, on_delete=models.DO_NOTHING, null=True, blank=True)
-    village = models.ForeignKey(Village, on_delete=models.DO_NOTHING)
-    units_dispensed = models.PositiveIntegerField(null=True, blank=True)
-    date_of_dispensation = models.DateTimeField(null=True, blank=True)
-    opening_stock = models.IntegerField(null=True, blank=True)
-    closing_stock = models.IntegerField(null=True, blank=True)
+# class DrugDispensation(BaseContent):
+#     medicine = models.ForeignKey(Medicines, on_delete=models.DO_NOTHING, null=True, blank=True)
+#     village = models.ForeignKey(Village, on_delete=models.DO_NOTHING)
+#     units_dispensed = models.PositiveIntegerField(null=True, blank=True)
+#     date_of_dispensation = models.DateTimeField(null=True, blank=True)
+#     opening_stock = models.IntegerField(null=True, blank=True)
+#     closing_stock = models.IntegerField(null=True, blank=True)c
     
 
 

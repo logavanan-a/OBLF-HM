@@ -45,9 +45,9 @@
                        
                     </div>
                     <div class="row mb-4">
-                        <label for="" class="col-md-2 col-form-label">First name<span class="required-field"></span></label>
+                        <label for="" class="col-md-2 col-form-label" >First name<span class="required-field"></span></label>
                         <div class="col-md-4">
-                          <input type="text" class="form-control" id="" name='name' value="{{user_profile.name|default_if_none:''}}">
+                          <input type="text" class="form-control" id="" name='name' pattern="[A-Za-z ]{0,150}" value="{{user_profile.name|default_if_none:''}}">
                         </div>
                         <label for="" class="col-md-2 col-form-label">User Role<span class="required-field"></span></label>
                         <div class="col-md-4">
