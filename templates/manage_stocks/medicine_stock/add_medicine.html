@@ -1,5 +1,4 @@
 {% extends 'base.html' %}
-{% load configuration_tags %}
 {% load static %}
 {% block contents %}
 
@@ -32,10 +31,10 @@
                                     <td>{{m.name}}</td>
                                     <input type="hidden" id="custId" name="medicine" value="{{m.id}}" >
                                     <td>
-                                        <input type="number" class="form-control o_stk" onkeypress="return /[0-9]/i.test(event.key)" name='{{m.id}}_opening_stock' id="opening_stock">
+                                        <input type="number" class="form-control o_stk" name='{{m.id}}_opening_stock' id="opening_stock">
                                     </td>
                                     <td>
-                                        <input type="number" class="form-control add_units" onkeypress="return /[0-9]/i.test(event.key)" name='{{m.id}}_no_of_units' id="no_of_units">
+                                        <input type="number" class="form-control add_units" name='{{m.id}}_no_of_units' id="no_of_units">
                                     </td>
                                     <td>
                                         <input type="number" class="form-control" name='{{m.id}}_unit_price' id="{{m.id}}_unit_price" >
@@ -44,7 +43,7 @@
                                         <input type="date" class="form-control" name='{{m.id}}_date_of_creation' id="previous_data">
                                     </td>
                                     <td>
-                                        <input type="number" class="form-control c_stk" onkeypress="return /[0-9]/i.test(event.key)" name='{{m.id}}_closing_stock'>
+                                        <input type="number" class="form-control c_stk" name='{{m.id}}_closing_stock' readonly>
                                     </td>
                                 </tr>
                                 {% endfor %}
@@ -66,6 +65,8 @@
         </div>
     </div> 
 </div> 
+{% endblock %}
+{% block extra_javascript %}
 <script type="text/javascript">
     $('.o_stk,.add_units,.c_stk').keyup(function(){
         var tr = $(this).closest('tr');
@@ -81,31 +82,8 @@
         if(closing_stock_total == ''){
             closing_stock_total = 0
         }
-        tr.find('#closing_stock').val(closing_stock_total);
-    });
-</script>`
-<script type="text/javascript">
-    $(function(){
-
-        var dtToday = new Date();
-        var day = dtToday.getDate();
-        var month = dtToday.getMonth() + 1;
-
-        if(month < 10){
-        month = '0' + month.toString();
-        }
-        if(day < 10){
-        day = '0' + day.toString();
-        }
-
-        var year = dtToday.getFullYear();
-        var maxDate = year + '-' + month + '-' + day;  
-        if (document.getElementById("previous_data") != null)  {
-        document.getElementById("previous_data").setAttribute('max' , maxDate) 
-        }
-
+        tr.find('.c_stk').val(closing_stock_total);
     });
 </script>
-
 
 {% endblock %}
