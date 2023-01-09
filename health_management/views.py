@@ -14,6 +14,8 @@ from django.apps import apps
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 import json
 import sys, os
+from datetime import datetime
+
 
 
 
@@ -74,11 +76,12 @@ def drug_dispensation_stock_list(request):
 def medicine_stock_list(request):
     heading="Medicine stocks detatials"
     medicine_stock = MedicineStock.objects.filter(status=2)
-
     return render(request, 'manage_stocks/medicine_stock/medicine_list.html', locals())
 
 def add_medicine_stock(request):
     heading="Add medicine stocks details"
+    now = datetime.now()
+    current_data = now.strftime("%Y-%m-%d")
     medicine_stock = MedicineStock.objects.filter(status=2).values_list('medicine_id', flat=True)
     medicine_ids = list(medicine_stock)
     medicine=Medicines.objects.filter(status=2).exclude(id__in=medicine_ids)
@@ -86,26 +89,14 @@ def add_medicine_stock(request):
         data = request.POST
         for mdn in medicine:
             opening_stock = data.get(str(mdn.id)+'_opening_stock')
-            if opening_stock: 
+            if opening_stock:
+                # if not MedicineStock.objects.filter(medicine_id=mdn).exists():
                 unit_price = data.get(str(mdn.id)+'_unit_price')
                 date_of_creation = data.get(str(mdn.id)+'_date_of_creation')
                 no_of_units = data.get(str(mdn.id)+'_no_of_units')
                 closing_stock = data.get(str(mdn.id)+'_closing_stock')
                 medicine_stock = MedicineStock.objects.create(medicine=mdn, date_of_creation=date_of_creation or None, 
                 unit_price=unit_price or None, no_of_units=no_of_units or None, opening_stock=opening_stock or None, closing_stock=closing_stock or None)    
-            # medicine_stock = MedicineStock.objects.create(medicine=mdn)
-            # if medicine:
-            #     medicine_stock.medicine = mdn
-            # if date_of_creation:
-            #     medicine_stock.date_of_creation = date_of_creation
-            # if unit_price:
-            #     medicine_stock.unit_price = unit_price
-            # if no_of_units:
-            #     medicine_stock.no_of_units = no_of_units
-            # if opening_stock:
-            #     medicine_stock.opening_stock = opening_stock
-            # if closing_stock:
-            #     medicine_stock.closing_stock = closing_stock
                 medicine_stock.save()
         return redirect('/medicine/list/')
     return render(request, 'manage_stocks/medicine_stock/add_medicine.html', locals())

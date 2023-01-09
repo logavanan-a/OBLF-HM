@@ -40,7 +40,7 @@
                                         <input type="number" class="form-control" name='{{m.id}}_unit_price' id="{{m.id}}_unit_price" >
                                     </td>
                                     <td>
-                                        <input type="date" class="form-control" name='{{m.id}}_date_of_creation' id="previous_data">
+                                        <input type="date" class="form-control previous_data" name='{{m.id}}_date_of_creation' max="{{current_data}}">
                                     </td>
                                     <td>
                                         <input type="number" class="form-control c_stk" name='{{m.id}}_closing_stock' readonly>
@@ -67,6 +67,7 @@
 </div> 
 {% endblock %}
 {% block extra_javascript %}
+
 <script type="text/javascript">
     $('.o_stk,.add_units,.c_stk').keyup(function(){
         var tr = $(this).closest('tr');
