@@ -373,12 +373,12 @@ class Phc_pull(APIView):
                 "status":2,
                 "message":"Data Already Sent",
             } 
-            jsonresponse_full['villages'] = [villagesites_serializer.data]
-            jsonresponse_full['state'] = [stateserializer.data]
-            jsonresponse_full['district'] = [districtserializers.data]
-            jsonresponse_full['taluk'] = [talukserializers.data]
-            jsonresponse_full['phc'] = [phcserializers.data]
-            jsonresponse_full['subcenter'] = [subcenterserializers.data]
+            jsonresponse_full['villages'] = villagesites_serializer.data
+            jsonresponse_full['state'] = stateserializer.data
+            jsonresponse_full['district'] = districtserializers.data
+            jsonresponse_full['taluk'] = talukserializers.data
+            jsonresponse_full['phc'] = phcserializers.data
+            jsonresponse_full['subcenter'] = subcenterserializers.data
             jsonresponse_full['medicines'] = medicineserializer.data
             jsonresponse_full['dosage'] = dosageserializer.data
             jsonresponse_full['ndcs'] = ndcserializers.data
