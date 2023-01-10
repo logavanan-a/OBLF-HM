@@ -92,7 +92,6 @@ def medicine_stock_list(request):
 
 def add_medicine_stock(request):
     heading="Add medicine stocks details"
-    heading="Medicine stocks detatials"
     search = request.GET.get('search', '')
     if search:
         medicine = Medicines.objects.filter(name__icontains=search)
