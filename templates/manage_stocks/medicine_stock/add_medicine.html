@@ -6,9 +6,16 @@
     <div class="col-12">
         <div class="card">
             <div class="card-body">
-                <div class="d-flex mb-3">
-                    <h4 class="card-title">Medicine stocks details:</h4>
-                </div>
+                <form action="" method="get" class="mb-3">
+                    <div class="row justify-content-end">
+                        <div class="col-lg-3 mt-3">
+                            <input type="search" name="search" class='form-control' value='{{search}}' placeholder='Search...'>
+                        </div>
+                        <div class="col-auto mt-3 ">
+                            <button type="submit" class="form-control btn btn-success waves-effect btn-xs float-right">Search</button>
+                        </div>  
+                    </div>
+                </form>
 
                 <form method='POST' class="" enctype="multipart/form-data" novalidate>
                     {% csrf_token %}

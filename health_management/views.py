@@ -92,9 +92,14 @@ def medicine_stock_list(request):
 
 def add_medicine_stock(request):
     heading="Add medicine stocks details"
+    heading="Medicine stocks detatials"
+    search = request.GET.get('search', '')
+    if search:
+        medicine = Medicines.objects.filter(name__icontains=search)
+    else:
+        medicine = Medicines.objects.filter(status=2)
     now = datetime.now()
     current_data = now.strftime("%Y-%m-%d")
-    medicine=Medicines.objects.filter(status=2)
     if request.method == 'POST':
         data = request.POST
         for mdn in medicine:
