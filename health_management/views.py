@@ -65,6 +65,34 @@ def logout_view(request):
     logout(request)
     return HttpResponseRedirect('/login/')
 
+def village_of_drug_list(request):
+    heading="village of drug dispensation"
+    now = datetime.now()
+    current_data = now.strftime("%Y-%m-%d")
+    medicine_search = request.GET.get('medicine_search', '')
+    village_search = request.GET.get('village_search', '')
+    if medicine_search or village_search:
+        medicine = Medicines.objects.filter(name__icontains=medicine_search)
+    else:
+        medicine = Medicines.objects.filter(status=2)
+    if village_search:
+        village = Village.objects.filter(name__icontains=village_search)
+    else:
+        village = Village.objects.filter(status=2)
+    if request.method == 'POST':
+        data = request.POST
+        for mids in medicine:
+            for vids in village:
+                if data.get(str(mids.id)+'_units_dispensed_'+str(vids.id)):
+                    units_dispensed = data.get(str(mids.id)+'_units_dispensed_'+str(vids.id))
+                    date_of_dispensation = data.get('date_of_dispensation')
+                    drug_dispensation = DrugDispensation.objects.create(medicine=mids, village=vids,
+                     units_dispensed=units_dispensed, date_of_dispensation=date_of_dispensation)    
+                    drug_dispensation.save()
+
+        return redirect('/manage-stocks/village-of-drugs/list/')
+    return render(request, 'manage_stocks/village_of_drug_dispensation/village_of_drug_list.html', locals())
+
 def drug_dispensation_stock_list(request):
     heading="Dispensation of drugs stocks details"
     userprofile_list=UserProfile.objects.filter(status=2)

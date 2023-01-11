@@ -14,6 +14,7 @@ urlpatterns = [
     path('phc/pull/<pk>/', Phc_pull.as_view()),
     path('phc/push/<pk>/', Phc_push.as_view()),
     path('manage-stocks/drug-dispensation/list/', drug_dispensation_stock_list, name='drug_dispensation_stock_list'),
+    path('manage-stocks/village-of-drugs/list/', village_of_drug_list, name='village_of_drug_list'),
     path('add/medicine/', add_medicine_stock, name='add_medicine_stock'),
     path('medicine/list/', medicine_stock_list, name='medicine_stock_list'),
     path('add/userprofile/', user_add),

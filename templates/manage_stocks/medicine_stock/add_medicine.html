@@ -21,7 +21,6 @@
                     {% csrf_token %}
                     <div class="table-rep-plugin">
                         <table id="datatable-buttons" class="table  table-bordered dt-responsive w-100 ">
-                            {% if medicine|length > 0 %}
                             <thead>
                                 <tr>
                                     <th>Drug Name</th>
@@ -54,10 +53,6 @@
                                     </td>
                                 </tr>
                                 {% endfor %}
-                                {% else %}
-
-                                    <div class="text-center">data not available</div>
-                                {% endif %}
                             </tbody>
                         </table>
                         <div class="d-flex mb-3 justify-content-end gap-2">
