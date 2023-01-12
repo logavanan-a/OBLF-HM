@@ -65,13 +65,18 @@ def logout_view(request):
     logout(request)
     return HttpResponseRedirect('/login/')
 
-def village_of_drug_list(request):
+def village_of_drugs_list(request):
+    heading="Add the village of drug dispensation"
+    drug_dispensation = DrugDispensation.objects.filter(status=2)
+    return render(request, 'manage_stocks/village_of_drug_dispensation/village_of_drug_list.html', locals())
+
+def add_village_of_drugs(request):
     heading="village of drug dispensation"
     now = datetime.now()
     current_data = now.strftime("%Y-%m-%d")
     medicine_search = request.GET.get('medicine_search', '')
     village_search = request.GET.get('village_search', '')
-    if medicine_search or village_search:
+    if medicine_search:
         medicine = Medicines.objects.filter(name__icontains=medicine_search)
     else:
         medicine = Medicines.objects.filter(status=2)
@@ -90,8 +95,8 @@ def village_of_drug_list(request):
                      units_dispensed=units_dispensed, date_of_dispensation=date_of_dispensation)    
                     drug_dispensation.save()
 
-        return redirect('/manage-stocks/village-of-drugs/list/')
-    return render(request, 'manage_stocks/village_of_drug_dispensation/village_of_drug_list.html', locals())
+        return redirect('/village-of-drugs/list/')
+    return render(request, 'manage_stocks/village_of_drug_dispensation/add_village_of_drugs.html', locals())
 
 def drug_dispensation_stock_list(request):
     heading="Dispensation of drugs stocks details"

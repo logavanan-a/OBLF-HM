@@ -2,12 +2,16 @@
 {% load static %}
 {% block contents %}
 
+{% block extra_css %}
+<!-- Sweet Alert-->
+<link href="{% static 'libs/sweetalert2/dist/sweetalert2.min.css' %}" rel="stylesheet" type="text/css" />
+{% endblock %}
 <div class="row">
     <div class="col-12">
         <div class="card">
             <div class="card-body">
                 <form action="" method="get" class="mb-3">
-                    <div class="row justify-content-end">
+                    <div class="row justify-content-start">
                         <div class="col-lg-3 mt-3">
                             <input type="search" name="search" class='form-control' value='{{search}}' placeholder='Search...'>
                         </div>
@@ -17,7 +21,7 @@
                     </div>
                 </form>
 
-                <form method='POST' class="" enctype="multipart/form-data" novalidate>
+                <form method='POST'  id="sumbit-form"  enctype="multipart/form-data" novalidate>
                     {% csrf_token %}
                     <div class="table-rep-plugin">
                         <table id="datatable-buttons" class="table  table-bordered dt-responsive w-100 ">
@@ -59,7 +63,7 @@
                             <button type="reset" onclick="location.href='/medicine/list/'" class="btn btn-secondary waves-effect">
                                 Cancel
                             </button>
-                            <button type="submit"  class="btn btn-primary float-end ml-2">Submit</button>
+                            <button type="button" class="btn btn-primary waves-effect waves-light" onclick="Confirm('Submit')" id="myForm">Submit</button>
                         </div>
                     </form>
                 </div>
@@ -88,5 +92,26 @@
         tr.find('.c_stk').val(closing_stock_total);
     });
 </script>
+
+
+<script>
+    function Confirm(title){
+        var form_sumbit = document.getElementById('sumbit-form');
+        Swal.fire({
+        title: 'Are you sure you want to '+ title +' ?',
+        showCancelButton: true,
+        confirmButtonText: 'Yes',
+        }).then((result) => {
+            if (result.isConfirmed){
+                form_sumbit.submit();
+            }
+        })
+    }
+</script>
+        <!-- Sweet Alerts js -->
+        <script src="{% static 'libs/sweetalert2/dist/sweetalert2.min.js' %}"></script>
+
+        <!-- Sweet alert init js-->
+        <script src="{% static 'js/pages/sweet-alerts.init.js' %}"></script>
 
 {% endblock %}

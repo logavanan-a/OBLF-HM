@@ -7,19 +7,19 @@
         <div class="card">
             <div class="card-body">
                 <form action="" method="get" class="mb-3">
-                    <div class="row justify-content-end">
+                    <div class="row justify-content-start">
                         <div class="col-lg-3 mt-3">
                             <input type="search" name="search" class='form-control' value='{{search}}' placeholder='Search...'>
                         </div>
                         <div class="col-auto mt-3 ">
                             <button type="submit" class="form-control btn btn-success waves-effect btn-xs float-right">Search</button>
                         </div>  
-                        <div class="col-auto mt-3 ">
-                            <button type="button" class="form-control btn btn-primary waves-effect btn-xs float-right" onclick="location.href='/add/medicine/'">Add New</button>
-                        </div>
                     </div>
                 </form>
                 <div class="d-flex justify-content-end mb-3"> 
+                    <div class="col-auto mt-3 ">
+                        <button type="button" class="form-control btn btn-primary waves-effect btn-xs float-right" onclick="location.href='/add/medicine/'">Add New</button>
+                    </div>
                 </div>
                 <div class="table-rep-plugin">
                     <table id="datatable-buttons" class="table  table-bordered dt-responsive w-100 ">
@@ -37,11 +37,11 @@
                             {% for m in medicine_stock %}
                             <tr>
                                 <th>{{m.medicine|default_if_none:''}}</th>
-                                <th>{{m.opening_stock|default_if_none:''}}</th>
-                                <th>{{m.no_of_units|default_if_none:''}}</th>
-                                <th>{{m.unit_price|default_if_none:''}}</th>
-                                <th>{{m.date_of_creation|default_if_none:''}}</th>
-                                <th>{{m.closing_stock|default_if_none:''}}</th>
+                                <td>{{m.opening_stock|default_if_none:''}}</td>
+                                <td>{{m.no_of_units|default_if_none:''}}</td>
+                                <td>{{m.unit_price|default_if_none:''}}</td>
+                                <td>{{m.date_of_creation|default_if_none:''}}</td>
+                                <td>{{m.closing_stock|default_if_none:''}}</th>
                             </tr>
                             {% endfor %}
                         </tbody>

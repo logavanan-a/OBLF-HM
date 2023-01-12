@@ -13,10 +13,15 @@ urlpatterns = [
     path('app-login/', LoginAPIView.as_view()),
     path('phc/pull/<pk>/', Phc_pull.as_view()),
     path('phc/push/<pk>/', Phc_push.as_view()),
-    path('manage-stocks/drug-dispensation/list/', drug_dispensation_stock_list, name='drug_dispensation_stock_list'),
-    path('manage-stocks/village-of-drugs/list/', village_of_drug_list, name='village_of_drug_list'),
+
+    path('village-of-drugs/list/', village_of_drugs_list, name='village_of_drug_list'),
+    path('add/village-of-drugs/', add_village_of_drugs, name='add_village_of_drugs'),
+
+    path('drug-dispensation/list/', drug_dispensation_stock_list, name='drug_dispensation_stock_list'),
     path('add/medicine/', add_medicine_stock, name='add_medicine_stock'),
+
     path('medicine/list/', medicine_stock_list, name='medicine_stock_list'),
+
     path('add/userprofile/', user_add),
     path('edit/userprofile/<id>/', user_edit),
     path('list/<model>/', master_list_form),

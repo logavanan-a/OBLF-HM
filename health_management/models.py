@@ -187,7 +187,7 @@ class DrugDispensation(BaseContent):
     medicine = models.ForeignKey(Medicines, on_delete=models.DO_NOTHING, null=True, blank=True)
     village = models.ForeignKey(Village, on_delete=models.DO_NOTHING)
     units_dispensed = models.PositiveIntegerField(null=True, blank=True)
-    date_of_dispensation = models.DateTimeField(null=True, blank=True)
+    date_of_dispensation = models.DateField(null=True, blank=True)
 
     
 
