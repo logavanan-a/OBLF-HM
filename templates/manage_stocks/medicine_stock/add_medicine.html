@@ -39,9 +39,10 @@
                                 {% for m in medicine %}
                                 <tr>
                                     <td>{{m.name}}</td>
+                                    
                                     <input type="hidden" id="custId" name="medicine" value="{{m.id}}" >
                                     <td>
-                                        <input type="number" class="form-control o_stk" name='{{m.id}}_opening_stock' id="opening_stock">
+                                        <input type="number" class="form-control o_stk" name='{{m.id}}_opening_stock' value="{{m.get_no_of_units}}" id="opening_stock" readonly>
                                     </td>
                                     <td>
                                         <input type="number" class="form-control add_units" name='{{m.id}}_no_of_units' id="no_of_units">

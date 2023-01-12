@@ -8,7 +8,6 @@ from django.contrib.gis.db import models
 import uuid
 import datetime
 from django.core.validators import RegexValidator
-
 from import_export.admin import ImportExportModelAdmin, ImportExportMixin
 from import_export.formats import base_formats
 from import_export import resources, fields
@@ -166,6 +165,20 @@ class Medicines(BaseContent):
 
     def __str__(self):
         return self.name
+
+    def get_no_of_units(self):
+        from health_management.models import MedicineStock, DrugDispensation
+        from django.db.models import Sum
+        medicine = MedicineStock.objects.filter(medicine=self)
+        medicine_stock_totals = medicine.aggregate(sum=Sum('no_of_units')).get('sum')
+        drug_dispensation = DrugDispensation.objects.filter(medicine=self)
+        drug_dispensation_total = drug_dispensation.aggregate(sum=Sum('units_dispensed')).get('sum')
+        if drug_dispensation_total == None:
+            drug_dispensation_total = 0
+        if medicine_stock_totals == None:
+            medicine_stock_totals = 0
+        opening_stock_total = abs(int(medicine_stock_totals) - int(drug_dispensation_total))
+        return opening_stock_total
 
 class Dosage(BaseContent):
     name = models.CharField(max_length=200)

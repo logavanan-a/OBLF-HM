@@ -67,7 +67,11 @@ def logout_view(request):
 
 def village_of_drugs_list(request):
     heading="Add the village of drug dispensation"
-    drug_dispensation = DrugDispensation.objects.filter(status=2)
+    search = request.GET.get('search', '')
+    if search:
+        drug_dispensation = DrugDispensation.objects.filter(Q(Q(medicine__name__icontains=search)|Q(village__name__icontains=search)), status=2)
+    else:
+        drug_dispensation = DrugDispensation.objects.filter(status=2)
     return render(request, 'manage_stocks/village_of_drug_dispensation/village_of_drug_list.html', locals())
 
 def add_village_of_drugs(request):
@@ -94,7 +98,6 @@ def add_village_of_drugs(request):
                     drug_dispensation = DrugDispensation.objects.create(medicine=mids, village=vids,
                      units_dispensed=units_dispensed, date_of_dispensation=date_of_dispensation)    
                     drug_dispensation.save()
-
         return redirect('/village-of-drugs/list/')
     return render(request, 'manage_stocks/village_of_drug_dispensation/add_village_of_drugs.html', locals())
 
@@ -135,18 +138,15 @@ def add_medicine_stock(request):
     if request.method == 'POST':
         data = request.POST
         for mdn in medicine:
-            opening_stock = data.get(str(mdn.id)+'_opening_stock')
-            if opening_stock:
-                if MedicineStock.objects.filter(medicine_id=mdn, date_of_creation=current_data).exists():
-                    not_accepted = "Today,This is medicine alreay exist"
-                else:
-                    unit_price = data.get(str(mdn.id)+'_unit_price')
-                    date_of_creation = data.get(str(mdn.id)+'_date_of_creation')
-                    no_of_units = data.get(str(mdn.id)+'_no_of_units')
-                    closing_stock = data.get(str(mdn.id)+'_closing_stock')
-                    medicine_stock = MedicineStock.objects.create(medicine=mdn, date_of_creation=date_of_creation or None, 
-                    unit_price=unit_price or None, no_of_units=no_of_units or None, opening_stock=opening_stock or None, closing_stock=closing_stock or None)    
-                    medicine_stock.save()
+            no_of_units = data.get(str(mdn.id)+'_no_of_units')
+            if no_of_units:
+                unit_price = data.get(str(mdn.id)+'_unit_price')
+                opening_stock = data.get(str(mdn.id)+'_opening_stock')
+                date_of_creation = data.get(str(mdn.id)+'_date_of_creation')
+                closing_stock = data.get(str(mdn.id)+'_closing_stock')
+                medicine_stock = MedicineStock.objects.create(medicine=mdn, date_of_creation=date_of_creation or None, 
+                unit_price=unit_price or None, no_of_units=no_of_units or None, opening_stock=opening_stock or None, closing_stock=closing_stock or None)    
+                medicine_stock.save()
         return redirect('/medicine/list/')
     return render(request, 'manage_stocks/medicine_stock/add_medicine.html', locals())
 

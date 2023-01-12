@@ -26,22 +26,18 @@
                         <thead>
                             <tr>
                                 <th>Drug Name</th>
-                                <th>Opening Stock</th>
                                 <th>Add quantity</th>
                                 <th>Unit price Rs.</th>
                                 <th>Date</th>
-                                <th>Closing Stock</th>                                   
                             </tr>
                         </thead>
                         <tbody>
                             {% for m in medicine_stock %}
                             <tr>
                                 <th>{{m.medicine|default_if_none:''}}</th>
-                                <td>{{m.opening_stock|default_if_none:''}}</td>
                                 <td>{{m.no_of_units|default_if_none:''}}</td>
                                 <td>{{m.unit_price|default_if_none:''}}</td>
                                 <td>{{m.date_of_creation|default_if_none:''}}</td>
-                                <td>{{m.closing_stock|default_if_none:''}}</th>
                             </tr>
                             {% endfor %}
                         </tbody>

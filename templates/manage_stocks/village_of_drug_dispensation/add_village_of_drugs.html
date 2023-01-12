@@ -28,10 +28,11 @@
                     
                     <div class="table-rep-plugin">
                         <div class="table-responsive mb-3" data-pattern="priority-columns">
-                            <table id="tech-companies-1" class="table table-striped mb-0">
+                            <table id="tech-companies-1" class="table mb-0">
                                 <thead>
                                     <tr>
                                         <th>Village of Drugs Dispensation</th>
+                                        <th>Opening Stock</th>
                                         {% for v in village %}
                                             <th>{{v.name}}</th>
                                         {% endfor %}                             
@@ -39,12 +40,16 @@
                                 </thead>
                                 <tbody>
                                     {% for m in medicine %}
-                                    <tr>
+                                    
+                                    <tr  {% if m.get_no_of_units == 0  %}style="background-color: #FAAB78!important;"{% endif%}>
                                         <td>{{m.name}}</td>
+                                        <td>
+                                            <input type="text" class="form-control units_dispensed" name='name' value="{{m.get_no_of_units}}" id="opening_stock" onkeypress="myFunction()" readonly>
+                                        </td>
                                         <input type="hidden" id="custId" name="medicine" value="{{m.id}}" >
                                         {% for v in village %}
                                         <td>
-                                            <input type="text" class="form-control" name='{{m.id}}_units_dispensed_{{v.id}}' id="units_dispensed">
+                                            <input type="text" class="form-control units_dispensed" name='{{m.id}}_units_dispensed_{{v.id}}' id="units_dispensed" {% if m.get_no_of_units == 0  %}readonly{% endif%}>
                                         </td>
                                         {% endfor %}
                                     </tr>
@@ -63,7 +68,7 @@
                                 Cancel
                             </button>
                             <!-- <button type="submit"  class="btn btn-primary float-end ml-2">Submit</button> -->
-                            <button type="submit" class="btn btn-primary waves-effect waves-light" onclick="Confirm('Submit')" id="myForm">Submit</button>
+                            <button type="submit" class="btn btn-primary waves-effect waves-light validation" onclick="Confirm('Submit')" id="myForm">Submit</button>
                         </div>
                     </form>
                 </div>
@@ -76,14 +81,22 @@
 
 <script>
     
+    // $('#units_dispensed').each(function() {
+        // if ($(this).val() == '') {
+        //     $(this).setAttribute("required", "true");
+        // }else{
+        //     $(this).setAttribute("required", "true");
+        //     }
+        // })
     function Confirm(title){
-        // $("form input:text").each(function() {
-        // if ($(this).val() == "") 
-        // {
-        //     alert('uiuiy')
-        // //Do here shaking and error showing.
-        // }
+        // $("#units_dispensed").each(function (){
+        //     if ($(this).val() == "") {
+        //         $(this).attr('required', 'required');    
+        //     }else{
+        //         $(this).removeAttr('required', 'required');    
+        //     }
         // });
+        
         // // const elementsList = document.querySelectorAll("#units_dispensed");
         // const elementsArray = [...elementsList];
 
@@ -101,13 +114,7 @@
         //         alert('ojlk')
         //     }
         // });
-        // $('#units_dispensed').each(function() {
-        // if ($(this).val() == '') {
-        //     $(this).setAttribute("required", "true");
-        // }else{
-        //     $(this).setAttribute("required", "true");
-        //     }
-        // })
+        
         var form_sumbit = document.getElementById('sumbit-form');
         Swal.fire({
         title: 'Are you sure you want to '+ title +' ?',
@@ -116,7 +123,6 @@
         }).then((result) => {
             if (result.isConfirmed){
                 form_sumbit.submit();
-            
             }
         });
     }
