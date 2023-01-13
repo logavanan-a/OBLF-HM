@@ -65,17 +65,17 @@ def logout_view(request):
     logout(request)
     return HttpResponseRedirect('/login/')
 
-def village_of_drugs_list(request):
-    heading="Add the village of drug dispensation"
+def village_wise_drugs_list(request):
+    heading="village wise drug dispensation"
     search = request.GET.get('search', '')
     if search:
         drug_dispensation = DrugDispensation.objects.filter(Q(Q(medicine__name__icontains=search)|Q(village__name__icontains=search)), status=2)
     else:
         drug_dispensation = DrugDispensation.objects.filter(status=2)
-    return render(request, 'manage_stocks/village_of_drug_dispensation/village_of_drug_list.html', locals())
+    return render(request, 'manage_stocks/village_wise_drug_dispensation/village_wise_drug_list.html', locals())
 
-def add_village_of_drugs(request):
-    heading="village of drug dispensation"
+def add_village_wise_drugs(request):
+    heading="Add the village wise drug dispensation"
     now = datetime.now()
     current_data = now.strftime("%Y-%m-%d")
     medicine_search = request.GET.get('medicine_search', '')
@@ -98,8 +98,8 @@ def add_village_of_drugs(request):
                     drug_dispensation = DrugDispensation.objects.create(medicine=mids, village=vids,
                      units_dispensed=units_dispensed, date_of_dispensation=date_of_dispensation)    
                     drug_dispensation.save()
-        return redirect('/village-of-drugs/list/')
-    return render(request, 'manage_stocks/village_of_drug_dispensation/add_village_of_drugs.html', locals())
+        return redirect('/village-wise-drugs/list/')
+    return render(request, 'manage_stocks/village_wise_drug_dispensation/add_village_wise_drugs.html', locals())
 
 def drug_dispensation_stock_list(request):
     heading="Dispensation of drugs stocks details"
@@ -142,6 +142,7 @@ def add_medicine_stock(request):
         for mdn in medicine:
             no_of_units = data.get(str(mdn.id)+'_no_of_units')
             if no_of_units:
+                no_of_units = no_of_units
                 unit_price = data.get(str(mdn.id)+'_unit_price')
                 opening_stock = data.get(str(mdn.id)+'_opening_stock')
                 date_of_creation = data.get(str(mdn.id)+'_date_of_creation')

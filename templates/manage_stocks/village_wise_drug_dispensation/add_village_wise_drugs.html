@@ -44,12 +44,12 @@
                                     <tr  {% if m.get_no_of_units == 0  %}style="background-color: #FAAB78!important;"{% endif%}>
                                         <td>{{m.name}}</td>
                                         <td>
-                                            <input type="text" class="form-control units_dispensed" name='name' value="{{m.get_no_of_units}}" id="opening_stock" onkeypress="myFunction()" readonly>
+                                            <input type="text" class="form-control" name='name' value="{{m.get_no_of_units}}" id="opening_stock" onkeypress="myFunction()" readonly>
                                         </td>
                                         <input type="hidden" id="custId" name="medicine" value="{{m.id}}" >
                                         {% for v in village %}
                                         <td>
-                                            <input type="text" class="form-control units_dispensed" name='{{m.id}}_units_dispensed_{{v.id}}' id="units_dispensed" {% if m.get_no_of_units == 0  %}readonly{% endif%}>
+                                            <input type="number" class="form-control units_dispensed" name='{{m.id}}_units_dispensed_{{v.id}}' id="units_dispensed" {% if m.get_no_of_units == 0  %}readonly{% endif%}>
                                         </td>
                                         {% endfor %}
                                     </tr>
@@ -60,15 +60,17 @@
                         <div class="row">
                             <label for="" class="col-md-2 col-form-label" >Date of dispensation<span class="required-field"></span></label>
                             <div class="col-md-4">
-                                <input type="date" class="form-control" name='date_of_dispensation' max="{{current_data}}" required>
+                                <input type="date" class="form-control date_of_dispensation" name='date_of_dispensation' max="{{current_data}}" required>
                             </div>
                         </div>
                         <div class="d-flex mb-3 justify-content-end gap-2">
-                            <button type="reset" onclick="location.href='/village-of-drugs/list/'" class="btn btn-secondary waves-effect">
+                            <button type="reset" onclick="location.href='/village-wise-drugs/list/'" class="btn btn-secondary waves-effect">
                                 Cancel
                             </button>
                             <!-- <button type="submit"  class="btn btn-primary float-end ml-2">Submit</button> -->
-                            <button type="button" class="btn btn-primary waves-effect waves-light validation" onclick="Confirm('Submit')" id="myForm">Submit</button>
+                            
+                            <button type="button" class="btn btn-primary waves-effect waves-light validation" {% if unit_price == '' %}onclick="Confirm('Submit')"{% else %}onclick="Confirm('Submit')" {% endif %} id="myForm">Submit</button>
+                           
                         </div>
                     </form>
                 </div>
@@ -80,51 +82,34 @@
 {% block extra_javascript %}
 
 <script>
-    
-    // $('#units_dispensed').each(function() {
-        // if ($(this).val() == '') {
-        //     $(this).setAttribute("required", "true");
-        // }else{
-        //     $(this).setAttribute("required", "true");
-        //     }
-        // })
+
     function Confirm(title){
-        // $("#units_dispensed").each(function (){
-        //     if ($(this).val() == "") {
-        //         $(this).attr('required', 'required');    
-        //     }else{
-        //         $(this).removeAttr('required', 'required');    
-        //     }
-        // });
-        
-        // // const elementsList = document.querySelectorAll("#units_dispensed");
-        // const elementsArray = [...elementsList];
-
-        // // Now you can use cool array prototypes
-        // elementsArray.forEach(element => {
-        //     if (element.value.length == '') {
-        //        
-        //     }
-        // });
-        // const forms = document.querySelectorAll('form');
-        // const form = forms[0];
-
-        // Array.from(form.elements).forEach((input) => {
-        //     if (input.value == ''){
-        //         alert('ojlk')
-        //     }
-        // });
-        
-        var form_sumbit = document.getElementById('sumbit-form');
-        Swal.fire({
-        title: 'Are you sure you want to '+ title +' ?',
-        showCancelButton: true,
-        confirmButtonText: 'Yes',
+        var values = false
+        $( ".units_dispensed,.date_of_dispensation" ).each(function() {
+            if( $('.units_dispensed' && '.date_of_dispensation').val() != ''){
+                values = true
+            }
+        })
+        if (values){
+            var form_sumbit = document.getElementById('sumbit-form');
+            Swal.fire({
+            title: 'Are you sure you want to '+ title +' ?',
+            showCancelButton: true,
+            confirmButtonText: 'Yes',
+            icon: 'success',
         }).then((result) => {
             if (result.isConfirmed){
                 form_sumbit.submit();
             }
         });
+    }else{     
+        Swal.fire({
+                icon: 'warning',
+                title: 'Please provide a valid date of dispensation and units dispensed',
+                showCancelButton: true,
+                showConfirmButton:false,
+            });
+        }
     }
 </script>
         <!-- Sweet Alerts js -->

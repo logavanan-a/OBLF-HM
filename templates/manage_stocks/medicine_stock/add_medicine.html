@@ -97,16 +97,32 @@
 
 <script>
     function Confirm(title){
-        var form_sumbit = document.getElementById('sumbit-form');
-        Swal.fire({
-        title: 'Are you sure you want to '+ title +' ?',
-        showCancelButton: true,
-        confirmButtonText: 'Yes',
+        var values = false
+        $( ".add_units" ).each(function() {
+            if($('.add_units').val() != ''){
+                values = true
+            }
+        })
+        if (values){
+            var form_sumbit = document.getElementById('sumbit-form');
+            Swal.fire({
+            title: 'Are you sure you want to '+ title +' ?',
+            showCancelButton: true,
+            confirmButtonText: 'Yes',
+            icon: 'success',
         }).then((result) => {
             if (result.isConfirmed){
                 form_sumbit.submit();
             }
-        })
+        });
+    }else{     
+        Swal.fire({
+                icon: 'warning',
+                title: 'Please provide a valid add quantity',
+                showCancelButton: true,
+                showConfirmButton:false,
+            });
+        }
     }
 </script>
         <!-- Sweet Alerts js -->
