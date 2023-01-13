@@ -106,7 +106,9 @@ def drug_dispensation_stock_list(request):
     userprofile_list=UserProfile.objects.filter(status=2)
     search = request.GET.get('search', '')
     if search:
-        prescription_list=Prescription.objects.filter(medicines__name__icontains=search)
+        patients = Patients.objects.filter(name__icontains=search).values_list('uuid', flat=True)
+        search_patients = list(patients)
+        prescription_list=Prescription.objects.filter(Q(Q(medicines__name__icontains=search)|Q(patient_uuid__in=search_patients)), status=2)
     else:
         prescription_list=Prescription.objects.filter(status=2)
     data = pagination_function(request, prescription_list)

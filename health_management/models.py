@@ -107,10 +107,10 @@ class Prescription(BaseContent):
     
     def get_user_uuid(self):
         try:
-            userprofile_list=UserProfile.objects.get(uuid=self.patient_uuid)
+            patients_list=Patients.objects.get(uuid=self.patient_uuid)
         except ObjectDoesNotExist:
-            userprofile_list = None
-        return userprofile_list
+            patients_list = None
+        return patients_list
     
     def get_treatment_uuid(self):
         try:
