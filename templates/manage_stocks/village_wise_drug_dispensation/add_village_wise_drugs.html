@@ -28,7 +28,7 @@
                     
                     <div class="table-rep-plugin">
                         <div class="table-responsive mb-3" data-pattern="priority-columns">
-                            <table id="tech-companies-1" class="table mb-0">
+                            <table id="tech-companies-1" class="table table-bordered dt-responsive mb-0">
                                 <thead>
                                     <tr>
                                         <th>Village of Drugs Dispensation</th>
@@ -41,15 +41,17 @@
                                 <tbody>
                                     {% for m in medicine %}
                                     
-                                    <tr  {% if m.get_no_of_units == 0  %}style="background-color: #FAAB78!important;"{% endif%}>
+                                    <tr  {% if m.get_no_of_units <= 0  %}style="background-color: #FAAB78!important;"{% endif%}>
                                         <td>{{m.name}}</td>
                                         <td>
-                                            <input type="text" class="form-control" name='name' value="{{m.get_no_of_units}}" id="opening_stock" onkeypress="myFunction()" readonly>
+                                            <input type="text" class="form-control" name='name' value="{{m.get_no_of_units}}" id="opening_stock" readonly>
                                         </td>
                                         <input type="hidden" id="custId" name="medicine" value="{{m.id}}" >
                                         {% for v in village %}
                                         <td>
-                                            <input type="number" class="form-control units_dispensed" name='{{m.id}}_units_dispensed_{{v.id}}' id="units_dispensed" {% if m.get_no_of_units == 0  %}readonly{% endif%}>
+                                            <input type="number" class="form-control units_dispensed" 
+                                            name='{{m.id}}_units_dispensed_{{v.id}}' min="1" max="{{m.get_no_of_units}}" oninput="validity.valid||(value='');"
+                                             id="units_dispensed" {% if m.get_no_of_units <= 0  %}readonly{% endif%}>
                                         </td>
                                         {% endfor %}
                                     </tr>
@@ -84,13 +86,17 @@
 <script>
 
     function Confirm(title){
-        var values = false
-        $( ".units_dispensed,.date_of_dispensation" ).each(function() {
-            if( $('.units_dispensed' && '.date_of_dispensation').val() != ''){
-                values = true
+        var units_dispensed = false
+        $( ".units_dispensed" ).each(function() {
+            if($(this).val() != ''){
+                units_dispensed = true
             }
-        })
-        if (values){
+        })        
+        var date_of_dispensation = false
+        if($('.date_of_dispensation').val() != ''){
+            date_of_dispensation = true
+        }
+        if (units_dispensed && date_of_dispensation){
             var form_sumbit = document.getElementById('sumbit-form');
             Swal.fire({
             title: 'Are you sure you want to '+ title +' ?',
@@ -102,8 +108,8 @@
                 form_sumbit.submit();
             }
         });
-    }else{     
-        Swal.fire({
+        }else{     
+            Swal.fire({
                 icon: 'warning',
                 title: 'Please provide a valid date of dispensation and units dispensed',
                 showCancelButton: true,

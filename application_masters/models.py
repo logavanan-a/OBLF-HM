@@ -167,17 +167,21 @@ class Medicines(BaseContent):
         return self.name
 
     def get_no_of_units(self):
-        from health_management.models import MedicineStock, DrugDispensation
+        from health_management.models import MedicineStock, DrugDispensation, Prescription
         from django.db.models import Sum
         medicine = MedicineStock.objects.filter(medicine=self)
         medicine_stock_totals = medicine.aggregate(sum=Sum('no_of_units')).get('sum')
         drug_dispensation = DrugDispensation.objects.filter(medicine=self)
         drug_dispensation_total = drug_dispensation.aggregate(sum=Sum('units_dispensed')).get('sum')
+        prescription = Prescription.objects.filter(medicines=self)
+        prescription_total = prescription.aggregate(sum=Sum('qty')).get('sum')
         if drug_dispensation_total == None:
             drug_dispensation_total = 0
         if medicine_stock_totals == None:
             medicine_stock_totals = 0
-        opening_stock_total = abs(int(medicine_stock_totals) - int(drug_dispensation_total))
+        if prescription_total == None:
+            prescription_total = 0
+        opening_stock_total = abs(int(medicine_stock_totals) - int(drug_dispensation_total)) - int(prescription_total)
         return opening_stock_total
 
 class Dosage(BaseContent):
