@@ -22,9 +22,9 @@
                             <tr>
                                 <th>Patient Name</th>
                                 <th>Village</th>
-                                <th>Symptoms</th>
+                                <!-- <th>Symptoms</th> -->
                                 <th>Medicine Name</th>
-                                <th>Dosage</th>
+                                <!-- <th>Dosage</th> -->
                                 <th>Quantity</th>
                                 <th>Visit Date</th>
                                 <th>Created On</th>                                   
@@ -36,11 +36,11 @@
                             <tr>
                                 <th>{{pl.get_user_uuid.name|default_if_none:''}}</th>
                                 <td>{{pl.get_user_uuid.village|default_if_none:''}}</td>
-                                <td>{{pl.get_treatment_uuid.symptoms|default_if_none:''}}</td>
+                               {% comment %} <td>{{pl.get_treatment_uuid.symptoms|default_if_none:''}}</td>
+                                <td>{{pl.dosage|default_if_none:''}}</td>{% endcomment %}
                                 <td>{{pl.medicines|default_if_none:''}}</td>
-                                <td>{{pl.dosage|default_if_none:''}}</td>
                                 <td>{{pl.qty|default_if_none:''}}</td>
-                                <td>{{pl.get_treatment_uuid.visit_date|default_if_none:''}}</td>
+                                <td>{{pl.get_treatment_uuid.visit_date|date:"d-m-Y"|default_if_none:''}}</td>
                                 <td>{{pl.server_created_on|date:"d-m-Y h:i a"}}</td>
                             </tr>
                             {% endfor %}
