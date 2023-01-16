@@ -128,6 +128,11 @@ def medicine_stock_list(request):
         medicine_stock = MedicineStock.objects.filter(status=2)
     return render(request, 'manage_stocks/medicine_stock/medicine_list.html', locals())
 
+def pateint_registration_report(request):
+    heading="Pateint Registration Report"
+    pateint_registration_report = Patients.objects.filter(status=2)
+    return render(request, 'reports/pateint_registration_report.html', locals())
+
 def add_medicine_stock(request):
     heading="Add medicine stocks details"
     search = request.GET.get('search', '')
@@ -460,7 +465,7 @@ class Phc_push(APIView):
                 valid_user = UserProfile.objects.filter(uuid = pk)
             except:
                 return Response({"message":"Invalid UUID"})
-            #-TODO-valid user based on that mhu
+            #-TODO-valid user based on that village
             if  valid_user :
                 user = valid_user.first()
                 with transaction.atomic():

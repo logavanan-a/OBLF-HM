@@ -48,6 +48,14 @@ class Patients(BaseContent):
     def __str__(self):
         return self.name
 
+    def get_health_worker(self):
+        try:
+            health_worker = UserProfile.objects.get(village=self.village, user_type=1)
+        except ObjectDoesNotExist:
+            health_worker = None
+        return health_worker
+
+
 
 
 class Treatments(BaseContent):

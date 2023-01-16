@@ -1,0 +1,41 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block contents %}
+
+<div class="row">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-body">
+                <div class="table-rep-plugin">
+                    <table id="datatable-buttons" class="table  table-bordered dt-responsive w-100 ">
+                        <thead>
+                            <tr>
+                                <th>PHC name</th>
+                                <th>Sub-centre</th>
+                                <th>Village</th>                                   
+                                <th>Name</th>
+                                <th>DOB</th>
+                                <th>Gender</th>
+                                <th>Health Worker</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for prr in pateint_registration_report %}
+                            <tr>
+                                <th>{{prr.village.subcenter.phc}}</th>
+                                <th>{{prr.village.subcenter}}</th>
+                                <th>{{prr.village}}</th>
+                                <th>{{prr.name}}</th>
+                                <th>{{prr.dob}}</th>
+                                <th>{{prr.get_gender_display}}</th>
+                                <th>{{prr.get_health_worker.user.username}}</th>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div> 
+</div> 
+{% endblock %}

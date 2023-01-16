@@ -14,6 +14,8 @@ urlpatterns = [
     path('phc/pull/<pk>/', Phc_pull.as_view()),
     path('phc/push/<pk>/', Phc_push.as_view()),
 
+    path('report/pateint-registration-list/', pateint_registration_report, name='pateint_registration_report'),
+
     path('village-wise-drugs/list/', village_wise_drugs_list, name='village_wise_drug_list'),
     path('add/village-wise-drugs/', add_village_wise_drugs, name='add_village_wise_drugs'),
 
