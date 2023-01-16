@@ -22,45 +22,7 @@
         <div class="card">
             <div class="card-body">
                 <form action="" method="get" class="mb-3">
-                    <div class="row justify-content-start">
-                        {% comment %} <div class="col-lg-3 mt-3">
-                            <select class="select2 form-select teacher" id='teacher' name='teacher'>
-                                <option value='' selected>Select Teacher</option>
-                                {% for teacher_id in teachers %}
-                                <option value="{{teacher_id.id}}" {% if teacher_id.id == teacher  %}selected{% endif %}>
-                                    {{teacher_id}}</option>
-                                {% endfor %}
-                            </select>
-                        </div>  {% endcomment %}
-                        {% comment %} {% if request.user.is_superuser %}
-                        <div class="col-lg-3 mt-3">
-                            <select class="select2 form-select supervisor" id='supervisor' name='supervisor'>
-                                <option value='' selected>Select Supervisor</option>
-                                {% for select_supervisor in supervisors %}
-                                <option value="{{select_supervisor.id}}" {% if select_supervisor.id == supervisor  %}selected{% endif %}>
-                                    {{select_supervisor.user}}</option>
-                                {% endfor %}
-                            </select>
-                        </div>
-                        {% else %}
-                        <div class="col-lg-3 mt-3">
-                            <select class="select2 form-select school" id='school' name='school'>
-                                <option value='' selected>Select School</option>
-                                {% for school_obj in schools %}
-                                <option value="{{school_obj.id}}" {% if school_obj.id == school  %}selected{% endif %}>
-                                    {{school_obj.name}}</option>
-                                {% endfor %}
-                            </select>
-                        </div>
-                        
-                        {% endif %} {% endcomment %}
-                        {% comment %} <div class="col-lg-3 mt-3">
-                            <select id="formrow-inputState" class="form-select" name='status'>
-                                <option value="1" {% if status == "1" %}selected{% endif %}>Pending</option>
-                                <option value="2" {% if status == "2" %}selected{% endif %}>Accepted</option>
-                                <option value="3" {% if status == "3" %}selected{% endif %}>Rejected</option>
-                            </select>
-                        </div>   {% endcomment %}
+                    <div class="row justify-content-end">
                         <div class="col-lg-3 mt-3">
                             <input type="search" name="search" class='form-control' value='{{search}}' placeholder='Search...'>
                         </div>
@@ -107,10 +69,8 @@
                         <ul class="pagination justify-content-end ">
                             {% if data.has_previous %}
                             <li class="paginate_button page-item"><a class="page-link" href="?page=1&status={{status}}&teacher={{teacher}}&supervisor={{supervisor}}">First</a></li>
-                            {% comment %} <li class="paginate_button page-item"><a class="page-link" href="?page={{ data.previous_page_number }}">Previous</a></li> {% endcomment %}
                             {% else %}
                             <li class="paginate_button page-item disabled"><span class="page-link">First</span></li>
-                                {% comment %} <li class="paginate_button page-item disabled"><span class="page-link">Previous</span></li> {% endcomment %}
                             {% endif %}
                             {% for i in display_page_range %}
                                 {% if data.number == i %}
@@ -120,10 +80,8 @@
                                 {% endif %}
                             {% endfor %}
                             {% if data.has_next %}
-                                {% comment %} <li class="paginate_button page-item"><a class="page-link" href="?page={{ data.next_page_number }}">Next</a></li> {% endcomment %}
                                 <li class="paginate_button page-item"><a class="page-link" href="?page={{ data.paginator.num_pages }}&status={{status}}&teacher={{teacher}}&supervisor={{supervisor}}">Last</a></li>
                             {% else %}
-                                {% comment %} <li class="paginate_button page-item disabled"><span class="page-link">Next</span></li> {% endcomment %}
                                 <li class="paginate_button page-item disabled"><span class="page-link">Last</span></li>
                             {% endif %}
                             </ul>
