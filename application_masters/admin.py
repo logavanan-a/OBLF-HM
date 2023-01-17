@@ -32,6 +32,7 @@ class StateAdmin(ImportExportModelAdmin, ImportExportFormat):
     list_display = ['name', 'code',  'parent_id', 'status']
     fields = ['name', 'parent_id', 'code', 'status']
     search_fields = ['name']
+    ordering = ['name']
     list_per_page = 15
 
 
@@ -40,6 +41,7 @@ class DistrictAdmin(ImportExportModelAdmin, ImportExportFormat):
     list_display = ['name', 'code', 'state', 'status']
     fields = ['name', 'code', 'state', 'status']
     search_fields = ['name', 'state__name']
+    ordering = ['name']
     list_per_page = 15
 
 
@@ -48,6 +50,7 @@ class TalukAdmin(ImportExportModelAdmin, ImportExportFormat):
     list_display = ['name', 'code', 'district', 'status']
     fields = ['name', 'code', 'district', 'status']
     search_fields = ['name', 'district__name']
+    ordering = ['name']
     list_per_page = 15
 
 
@@ -56,6 +59,7 @@ class PHCAdmin(ImportExportModelAdmin, ImportExportFormat):
     list_display = ['name', 'taluk', 'code', 'status']
     fields = ['name', 'taluk', 'code', 'status']
     search_fields = ['name', 'taluk__name', 'code']
+    ordering = ['name']
     list_per_page = 15
 
 @admin.register(Subcenter)
@@ -63,6 +67,7 @@ class SubcenterAdmin(ImportExportModelAdmin, ImportExportFormat):
     list_display = ['name', 'phc', 'code', 'status']
     fields = ['name', 'phc', 'code', 'status']
     search_fields = ['name', 'phc__name', 'code']
+    ordering = ['name']
     list_per_page = 15
 
 @admin.register(Village)
@@ -70,6 +75,7 @@ class VillageAdmin(ImportExportModelAdmin, ImportExportFormat):
     list_display = ['name', 'subcenter', 'code', 'status']
     fields = ['name', 'subcenter', 'code', 'status']
     search_fields = ['name', 'subcenter__name', 'code']
+    ordering = ['name']
     list_per_page = 15
 
 
@@ -78,6 +84,7 @@ class ComorbidAdmin(ImportExportModelAdmin, ImportExportFormat):
     list_display = ['name', 'patient_id', 'status']
     fields = ['name', 'patient_id', 'status']
     search_fields = ['name', 'patient_id']
+    ordering = ['name']
     list_per_page = 15
 
 @admin.register(Category)
@@ -85,6 +92,7 @@ class CategoryAdmin(ImportExportModelAdmin, ImportExportFormat):
     list_display = ['name', 'parent_id', 'status']
     fields = ['name', 'parent_id', 'status']
     search_fields = ['name']
+    ordering = ['name']
     list_per_page = 15
 
 @admin.register(Medicines)
@@ -92,6 +100,7 @@ class MedicinesAdmin(ImportExportModelAdmin, ImportExportFormat):
     list_display = ['name', 'code', 'type', 'category_id', 'status']
     fields = ['name', 'code', 'type', 'category_id', 'status']
     search_fields = ['name']
+    ordering = ['name']
     list_per_page = 15
 
 @admin.register(Dosage)
@@ -99,5 +108,6 @@ class DosageAdmin(ImportExportModelAdmin, ImportExportFormat):
     list_display = ['name', 'value', 'status']
     fields = ['name', 'value', 'status']
     search_fields = ['name']
+    ordering = ['name']
     list_per_page = 15
 

@@ -44,6 +44,8 @@ class Patients(BaseContent):
 
     class Meta:
         verbose_name_plural = "Patients"
+        ordering = ["village"]
+
     
     def __str__(self):
         return self.name
@@ -165,7 +167,7 @@ class Scanned_Report(BaseContent):
 class UserProfile(BaseContent):
     USER_TYPE_CHOICES = ((1, 'Health worker'), (2, 'Doctor'))
     uuid = models.CharField(max_length=200,unique =True, default=uuid.uuid4,null=True)
-    phone_no = models.CharField(max_length=150, unique=True, blank=True, null=True)
+    phone_no = models.CharField(max_length=150, unique=False, blank=True, null=True)
     user = models.ForeignKey(
         User, on_delete=models.DO_NOTHING)
     village = models.ForeignKey(

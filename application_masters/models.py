@@ -128,10 +128,10 @@ class Village(BaseContent):
     code = models.CharField(max_length=50, blank=True, null=True)
     subcenter = models.ForeignKey(
         Subcenter, on_delete=models.DO_NOTHING, blank=True, null=True)
-    
     class Meta:
         unique_together = [['name', 'subcenter']]
         verbose_name_plural = "Village"
+        ordering = ["subcenter"]
 
     def __str__(self):
         return self.name
