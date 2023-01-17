@@ -1,7 +1,93 @@
 {% extends 'base.html' %}
 {% load static %}
 {% block contents %}
-
+<div class="row align-items-center">
+    <div class="col-xl-12 mx-auto">
+        <div class="card">
+            <div class="card-body">
+                <form class="needs-validation form-horizontal" enctype="multipart/form-data" novalidate  method="POST" id="filters">
+                    {%csrf_token%}
+                    <div class="row">
+                        <div class="col-md-4">  
+                            <div class="mb-3">
+                                <label for="floatingnameInput">PHC :</label>
+                                <select  class="form-select select2"  aria-label="Floating label select example" 
+                                placeholder="Choose Phc" id="phc" name='phc' >      
+                                    <option selected value="">Choose Phc</option>
+                                    {% for phc in phc_obj %}
+                                        <option value="{{phc.id}}" {% if phc.id == phc_ids %}selected{% endif %}>{{phc.name}}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>   
+                        </div>
+                        <div class="col-md-4">  
+                            <div class="mb-3">
+                                <label for="floatingnameInput">Sub Center :</label>
+                                <select  class="form-select select2"  aria-label="Floating label select example" 
+                                placeholder="Choose Sub Center" id="sub_center" name='sub_center' >      
+                                    <option selected value="">Choose Sub Center</option>
+                                    {% for sub_center in sub_center_obj %}
+                                    <option value="{{sub_center.id}}" {% if sub_center.id == sub_center_ids %}selected{% endif %}>{{sub_center.name}}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>   
+                        </div>
+                        <div class="col-md-4">  
+                            <div class="mb-3">
+                                <label for="floatingnameInput">Village :</label>
+                                <select  class="form-select select2"  aria-label="Floating label select example" 
+                                placeholder="Choose Village" id="village" name='village' >  
+                                <option selected value="">Choose Village</option>
+                                {% for village in village_obj %}
+                                <option value="{{village.id}}" {% if village.id == village_ids %}selected{% endif %}>{{village.name}}</option>
+                                {% endfor %}
+                                </select>
+                            </div>   
+                        </div>
+                        <div class="col-md-4">  
+                            <div class="mb-3">
+                                <label for="floatingnameInput">Health Worker :</label>
+                                <select  class="form-select select2"  aria-label="Floating label select example" 
+                                placeholder="Choose Health Worker" id="health_worker" name='health_worker' >  
+                                <option selected value="">Choose Health Worker</option>
+                                {% for health_worker in health_worker_obj %}
+                                <option value="{{health_worker.id}}" {% if health_worker.id == health_worker_ids %}selected{% endif %}>{{health_worker.name}}</option>
+                                {% endfor %}
+                                </select>
+                            </div>   
+                        </div>
+                        <div class="col-md-4">  
+                            <div class="mb-3">
+                                <label for="floatingnameInput">Start month & year:</label>
+                                <input type="month" class="form-control" name='start_filter'  value="{{req_list.start_filter}}" id="start_filter" onchange='onselected_start_month(this)' onkeyup="month();">
+                                <div class="invalid-feedback">
+                                    Please provide a valid both date field.
+                                </div>
+                            </div>   
+                        </div>
+                        <div class="col-md-4">  
+                            <div class="mb-3">
+                                <label for="floatingnameInput">End month & year:</label>
+                                <input type="month" class="form-control" name='start_filter'  value="{{req_list.start_filter}}" id="start_filter" onchange='onselected_start_month(this)' onkeyup="month();">
+                                <div class="invalid-feedback">
+                                    Please provide a valid both date field.
+                                </div>
+                            </div>   
+                        </div>
+                    </div>
+                    <div class="row justify-content-end mt-3">
+                        <div class="col-auto">
+                            <button type="submit" class="form-control btn btn-success waves-effect btn-xs float-right">Filter</button>
+                        </div>
+                        <div class="col-auto">
+                            <button type="reset" id="filter_reset"  class="form-control btn btn-warning waves-effect btn-xs float-right" value="True">Reset Filters</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
 <div class="row">
     <div class="col-12">
         <div class="card">
@@ -10,8 +96,8 @@
                     <table id="datatable-buttons" class="table  table-bordered dt-responsive w-100 ">
                         <thead>
                             <tr>
-                                <th>PHC name</th>
-                                <th>Sub-centre</th>
+                                <th>PHC Name</th>
+                                <th>Sub Centre</th>
                                 <th>Village</th>                                   
                                 <th>Name</th>
                                 <th>DOB</th>
@@ -20,7 +106,7 @@
                             </tr>
                         </thead>
                         <tbody>
-                            {% for prr in pateint_registration_report %}
+                            {% for prr in data %}
                             <tr>
                                 <th>{{prr.village.subcenter.phc}}</th>
                                 <th>{{prr.village.subcenter}}</th>
@@ -28,14 +114,76 @@
                                 <th>{{prr.name}}</th>
                                 <th>{{prr.dob}}</th>
                                 <th>{{prr.get_gender_display}}</th>
-                                <th>{{prr.get_health_worker.user.username}}</th>
+                                <th>{{prr.get_health_worker.name}}</th>
                             </tr>
                             {% endfor %}
                         </tbody>
                     </table>
                 </div>
+                <nav aria-label="..." class="d-flex justify-content-end">
+                    <!-- <div>
+                        <button type="reset" onclick="location.href='/fossil/po/monthly/report/{{task_id}}/#fpos-1'" class="btn btn-secondary waves-effect justify-content-start">
+                            Back
+                        </button>
+                    </div> -->
+                    <div>
+                        {% if data.has_other_pages %}
+                        <ul class="pagination">
+                            {% if data.has_previous %}
+                            <li class="paginate_button page-item"><a class="page-link" href="?page=1">First</a></li>
+                            {% else %}
+                            <li class="paginate_button page-item disabled"><span class="page-link">First</span></li>
+                            {% endif %}
+                            {% for i in display_page_range %}
+                                {% if data.number == i %}
+                                <li class="page-item active"><span class="page-link">{{ i }} <span class="sr-only">(current)</span></span></li>
+                                {% else %}
+                                <li class="paginate_button paginate_button page-item"><a class="page-link" href="?page={{ i }}">{{ i }}</a></li>
+                                {% endif %}
+                            {% endfor %}
+                            {% if data.has_next %}
+                                <li class="paginate_button page-item"><a class="page-link" href="?page={{ data.paginator.num_pages }}">Last</a></li>
+                            {% else %}
+                                <li class="paginate_button page-item disabled"><span class="page-link">Last</span></li>
+                            {% endif %}
+                            </ul>
+                        {% endif %}
+                    </div>
+                </nav>
             </div>
         </div>
     </div> 
 </div> 
+{% endblock %}
+{% block extra_javascript %}
+<script type="text/javascript">
+    document.addEventListener('DOMContentLoaded', function() { 
+        $('#sub_center').change(function () {
+            var optionSelected = $(this).find("option:selected");
+            var valueSelected  = optionSelected.val();
+            $.ajax({
+                type:"GET",
+                url: '/ajax/village/'+valueSelected+'/',
+                success:function(result){
+                    $("#village option").remove();
+                    a = '<option selected value="">Choose Village Name</option>';
+                    $("#village").append(a);
+                    if(JSON.parse(result) == 0){
+                        $("#village option").remove();
+                        a = '<option selected value="">No Village is mapped to this Block Name</option>';
+                        console.log(a)
+                        $("#village").append(a);
+                    }
+                    else{
+                        $.each(JSON.parse(result),function(key, value)
+                        {
+                            a = '<option value=' + value['id']+'>' + value['name']+'</option>';
+                            $("#village").append(a);
+                        });
+                    }
+                }
+            });
+        });
+    })
+</script> 
 {% endblock %}

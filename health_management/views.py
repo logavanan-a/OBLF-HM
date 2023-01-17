@@ -4,7 +4,7 @@ from django.contrib.auth.decorators import login_required
 from rest_framework import viewsets
 from rest_framework.views import APIView
 from django.db import transaction
-from django.http import HttpResponseRedirect
+from django.http import HttpResponseRedirect, HttpResponse
 from application_masters.models import *
 from health_management.models import *
 from .serializer import *
@@ -130,8 +130,53 @@ def medicine_stock_list(request):
 
 def pateint_registration_report(request):
     heading="Pateint Registration Report"
+    phc_obj = PHC.objects.filter(status=2)
+    sub_center_obj = Subcenter.objects.filter(status=2)
+    health_worker_obj = UserProfile.objects.filter(status=2, user_type=1)
+    phc = request.POST.get('phc', '')
+    sub_center = request.POST.get('sub_center', '')
+    village = request.POST.get('village', '')
+    block = request.POST.get('block', '')
+    phc_ids = int(phc) if phc != '' else ''
+    sub_center_ids = int(sub_center) if sub_center != '' else ''
+    village_ids = int(village) if village != '' else ''
+    # block_ids = int(block) if block != '' else ''
+    # if phc_ids:
+    #     sub_center_obj = Subcenter.objects.filter(status=1, phc__id=phc_ids)
+    #     pateint_registration_report = Patients.objects.filter(status=2, village__subcenter__phc__id=sub_center_obj)
     pateint_registration_report = Patients.objects.filter(status=2)
+    if sub_center_ids:
+        village_obj = Village.objects.filter(status=2, subcenter__id=sub_center_ids)
+        pateint_registration_report = pateint_registration_report.filter(status=2, village__subcenter__id=sub_center_ids)
+    if village_ids:
+        pateint_registration_report = pateint_registration_report.filter(status=2, village__id=village_ids)
+
+
+    data = pagination_function(request, pateint_registration_report)
+    current_page = request.GET.get('page', 1)
+    page_number_start = int(current_page) - 2 if int(current_page) > 2 else 1
+    page_number_end = page_number_start + 5 if page_number_start + \
+        5 < data.paginator.num_pages else data.paginator.num_pages+1
+    display_page_range = range(page_number_start, page_number_end)
     return render(request, 'reports/pateint_registration_report.html', locals())
+
+def get_sub_center(request, p_id):
+    if request.method == 'GET' and request.is_ajax():
+        result_set = []
+        sub_center = Subcenter.objects.filter(status=1, district__id=block_id)
+        for sub_center in sub_centers:
+            result_set.append(
+                {'id': sub_center.id, 'name': sub_center.name,})
+        return HttpResponse(json.dumps(result_set))
+
+def get_village(request, village_id):
+    if request.method == 'GET' and request.is_ajax():
+        result_set = []
+        villages = Village.objects.filter(status=2, subcenter__id=village_id)
+        for village in villages:
+            result_set.append(
+                {'id': village.id, 'name': village.name,})
+        return HttpResponse(json.dumps(result_set))
 
 def add_medicine_stock(request):
     heading="Add medicine stocks details"
@@ -572,6 +617,7 @@ def patient_details(self):
         # print(type(data.get('village_id')))
         obj, created = Patients.objects.update_or_create(
             uuid = data.get('uuid'),
+            user_uuid = data.get('user_uuid'),
             defaults= {
                         "name" : data.get('name'),
                         "dob" : data.get('dob'),
@@ -611,8 +657,8 @@ def treatment_details(self):
     for data in json.loads(self.get('treatment')):
         obj,created = Treatments.objects.update_or_create(
             uuid = data.get('uuid'),
+            user_uuid = data.get('user_uuid'),
             patient_uuid = data.get('patient_uuid'),
-
             defaults = {
                     "visit_date" : data.get('visit_date'),
                     "bp_sys1" : data.get('bp_sys1'),
@@ -647,8 +693,8 @@ def prescription_details(self):
     for data in json.loads(self.get('prescription')):
         obj,created = Prescription.objects.update_or_create(
             uuid = data.get('uuid'),
+            user_uuid = data.get('user_uuid'),
             patient_uuid = data.get('patient_uuid'),
-
             defaults = {
                     "treatment_uuid" : data.get('treatment_uuid'),
                     "medicines_id" : data.get('medicine_id'),
@@ -668,7 +714,7 @@ def diagnosis_details(self):
     for data in json.loads(self.get('diagnosis')):
         obj,created = Diagnosis.objects.update_or_create(
             uuid = data.get('uuid'),
-
+            user_uuid = data.get('user_uuid'),
             defaults = {
                     "treatment_uuid" : data.get('treatment_uuid'),
                     "source_treatment" : data.get('source_treatment'),
@@ -687,6 +733,7 @@ def scanned_report_details(self):
     for data in json.loads(self.get('scanned_report')):
         obj,created = Scanned_Report.objects.update_or_create(
             uuid = data.get('uuid'),
+            user_uuid = data.get('user_uuid'),
             patient_uuid = data.get('patient_uuid'),
 
             defaults = {
@@ -704,7 +751,7 @@ def home_visit_details(self):
     for data in json.loads(self.data.get('home_visit')):
         obj,created = HomeVisit.objects.update_or_create(
             uuid = data.get('uuid'),
-
+            user_uuid = data.get('user_uuid'),
             defaults = {
                     "patient_uuid" : data.get('patient_uuid'),
                     "image": self.FILES.get(data.get('uuid')),
