@@ -108,4 +108,4 @@ class UserProfileSerializers(serializers.ModelSerializer):
     phc_id = serializers.CharField(source='village.subcenter.phc.id')
     class Meta:
         model = UserProfile
-        exclude = ['user', 'email', 'name', 'village']
+        exclude = ['user', 'village']
