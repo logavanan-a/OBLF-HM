@@ -7,10 +7,10 @@ admin.site.site_url = '/list/userprofile/'
 
 @admin.register(Patients)
 class PatientsAdmin(admin.ModelAdmin):
-    list_display = ['name', 'village', 'uuid', 'patient_id', 'dob', 'age', 'gender', 'phone_number', 'image',
+    list_display = ['name', 'village', 'uuid', 'patient_id', 'user_uuid', 'dob', 'age', 'gender', 'phone_number', 'image',
      'height', 'weight', 'door_no', 'seq_no', 'patient_visit_type', 'fee_status', 
      'fee_paid', 'fee_date', 'registered_date', 'last_visit_date', 'status']
-    fields = ['name', 'village', 'uuid', 'patient_id', 'dob', 'age', 'gender', 'phone_number', 'image',
+    fields = ['name', 'village', 'uuid', 'patient_id', 'user_uuid', 'dob', 'age', 'gender', 'phone_number', 'image',
      'height', 'weight', 'door_no', 'seq_no', 'patient_visit_type', 'fee_status',
      'fee_paid', 'fee_date', 'registered_date', 'last_visit_date', 'status']
     search_fields = ['name', 'village__name']

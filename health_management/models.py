@@ -17,6 +17,7 @@ class Patients(BaseContent):
         (3, 'Other')
         )
     uuid = models.CharField(max_length=150, blank=True, null=True)
+    user_uuid = models.CharField(max_length=150, null=True, blank=True)
     patient_id = models.CharField(max_length=150, blank=True, null=True)
     name = models.CharField(max_length=150)
     dob = models.DateField(blank=True, null=True)
@@ -52,7 +53,7 @@ class Patients(BaseContent):
 
     def get_health_worker(self):
         try:
-            health_worker = UserProfile.objects.get(village=self.village, user_type=1)
+            health_worker = UserProfile.objects.get(uuid=self.user_uuid, user_type=1)
         except ObjectDoesNotExist:
             health_worker = None
         return health_worker
