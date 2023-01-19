@@ -131,25 +131,27 @@ def medicine_stock_list(request):
 def pateint_registration_report(request):
     heading="Pateint Registration Report"
     phc_obj = PHC.objects.filter(status=2)
-    sub_center_obj = Subcenter.objects.filter(status=2)
-    health_worker_obj = UserProfile.objects.filter(status=2, user_type=1)
+    health_worker_obj = UserProfile.objects.filter(status=2, user_type=1).distinct('user__first_name').order_by('user__first_name').exclude(user__first_name__exact='')
     phc = request.POST.get('phc', '')
     sub_center = request.POST.get('sub_center', '')
     village = request.POST.get('village', '')
-    block = request.POST.get('block', '')
+    health_worker = request.POST.get('health_worker', '')
     phc_ids = int(phc) if phc != '' else ''
     sub_center_ids = int(sub_center) if sub_center != '' else ''
     village_ids = int(village) if village != '' else ''
-    # block_ids = int(block) if block != '' else ''
-    # if phc_ids:
-    #     sub_center_obj = Subcenter.objects.filter(status=1, phc__id=phc_ids)
-    #     pateint_registration_report = Patients.objects.filter(status=2, village__subcenter__phc__id=sub_center_obj)
+    health_worker_ids = int(health_worker) if health_worker != '' else ''
     pateint_registration_report = Patients.objects.filter(status=2)
+    if health_worker_ids:
+        health_worker = UserProfile.objects.filter(status=2, user__id=health_worker).values_list('uuid', flat=True)
+        pateint_registration_report = pateint_registration_report.filter(user_uuid__in=health_worker)
+    if phc_ids:
+        sub_center_obj = Subcenter.objects.filter(status=2, phc__id=phc_ids)
+        pateint_registration_report = pateint_registration_report.filter(village__subcenter__phc__id=phc_ids)
     if sub_center_ids:
         village_obj = Village.objects.filter(status=2, subcenter__id=sub_center_ids)
-        pateint_registration_report = pateint_registration_report.filter(status=2, village__subcenter__id=sub_center_ids)
+        pateint_registration_report = pateint_registration_report.filter(village__subcenter__id=sub_center_ids)
     if village_ids:
-        pateint_registration_report = pateint_registration_report.filter(status=2, village__id=village_ids)
+        pateint_registration_report = pateint_registration_report.filter(village__id=village_ids)
 
 
     data = pagination_function(request, pateint_registration_report)
@@ -160,10 +162,12 @@ def pateint_registration_report(request):
     display_page_range = range(page_number_start, page_number_end)
     return render(request, 'reports/pateint_registration_report.html', locals())
 
-def get_sub_center(request, p_id):
+
+
+def get_sub_center(request, subcenter_id):
     if request.method == 'GET' and request.is_ajax():
         result_set = []
-        sub_center = Subcenter.objects.filter(status=1, district__id=block_id)
+        sub_centers = Subcenter.objects.filter(status=2, phc__id=subcenter_id)
         for sub_center in sub_centers:
             result_set.append(
                 {'id': sub_center.id, 'name': sub_center.name,})

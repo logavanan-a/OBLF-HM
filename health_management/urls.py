@@ -24,6 +24,7 @@ urlpatterns = [
 
     path('medicine/list/', medicine_stock_list, name='medicine_stock_list'),
 
+    path('ajax/subcenter/<subcenter_id>/', get_sub_center, name="subcenter"),
     path('ajax/village/<village_id>/', get_village, name="village"),
 
 

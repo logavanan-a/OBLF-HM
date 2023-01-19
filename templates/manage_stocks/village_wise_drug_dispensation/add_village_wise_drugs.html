@@ -22,7 +22,12 @@
                         </div>  
                     </div>
                 </form>
-
+                <div class="d-flex mb-3 justify-content-end gap-2">
+                    <button type="reset" onclick="location.href='/village-wise-drugs/list/'; this.disabled=true; this.value='Sending…';" class="btn btn-secondary waves-effect">
+                        Cancel
+                    </button>
+                    <button type="button" class="btn btn-primary waves-effect waves-light validation" {% if unit_price == '' %}onclick="Confirm('Submit')"{% else %}onclick="Confirm('Submit')" {% endif %} id="myForm">Submit</button>
+                </div>
                 <form method='POST' id="sumbit-form" enctype="multipart/form-data" >
                     {% csrf_token %}
                     
@@ -62,17 +67,14 @@
                         <div class="row">
                             <label for="" class="col-md-2 col-form-label" >Date of dispensation<span class="required-field"></span></label>
                             <div class="col-md-4">
-                                <input type="date" class="form-control date_of_dispensation" name='date_of_dispensation' max="{{current_data}}" required>
+                                <input type="date" class="form-control date_of_dispensation" name='date_of_dispensation' value="{{current_data}}" max="{{current_data}}" required>
                             </div>
                         </div>
                         <div class="d-flex mb-3 justify-content-end gap-2">
                             <button type="reset" onclick="location.href='/village-wise-drugs/list/'" class="btn btn-secondary waves-effect">
                                 Cancel
                             </button>
-                            <!-- <button type="submit"  class="btn btn-primary float-end ml-2">Submit</button> -->
-                            
                             <button type="button" class="btn btn-primary waves-effect waves-light validation" {% if unit_price == '' %}onclick="Confirm('Submit')"{% else %}onclick="Confirm('Submit')" {% endif %} id="myForm">Submit</button>
-                           
                         </div>
                     </form>
                 </div>
@@ -82,7 +84,12 @@
 </div> 
 {% endblock %}
 {% block extra_javascript %}
-
+<script>
+    // $('.units_dispensed').keyup(function() {
+    //     alert('khkjh')
+    //     this.disabled = true;
+    // })
+</script>
 <script>
 
     function Confirm(title){

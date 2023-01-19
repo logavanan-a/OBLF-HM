@@ -20,7 +20,12 @@
                         </div>  
                     </div>
                 </form>
-
+                <div class="d-flex mb-3 justify-content-end gap-2">
+                    <button type="reset" onclick="location.href='/medicine/list/'" class="btn btn-secondary waves-effect">
+                        Cancel
+                    </button>
+                    <button type="button" class="btn btn-primary waves-effect waves-light" onclick="Confirm('Submit')" id="myForm">Submit</button>
+                </div>
                 <form method='POST'  id="sumbit-form"  enctype="multipart/form-data" novalidate>
                     {% csrf_token %}
                     <div class="table-rep-plugin">
@@ -51,7 +56,7 @@
                                         <input type="number" class="form-control" name='{{m.id}}_unit_price' id="{{m.id}}_unit_price" min="1" oninput="validity.valid||(value='');">
                                     </td>
                                     <td>
-                                        <input type="date" class="form-control previous_data" name='{{m.id}}_date_of_creation' max="{{current_data}}">
+                                        <input type="date" class="form-control previous_data" name='{{m.id}}_date_of_creation' value="{{current_data}}" max="{{current_data}}">
                                     </td>
                                     <td>
                                         <input type="number" class="form-control c_stk" name='{{m.id}}_closing_stock' readonly>
@@ -59,7 +64,7 @@
                                 </tr>
                                 {% endfor %}
                             </tbody>
-                        </table>oninput="validity.valid||(value='');"
+                        </table>
                         <div class="d-flex mb-3 justify-content-end gap-2">
                             <button type="reset" onclick="location.href='/medicine/list/'" class="btn btn-secondary waves-effect">
                                 Cancel

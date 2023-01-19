@@ -51,7 +51,7 @@
                                 placeholder="Choose Health Worker" id="health_worker" name='health_worker' >  
                                 <option selected value="">Choose Health Worker</option>
                                 {% for health_worker in health_worker_obj %}
-                                <option value="{{health_worker.id}}" {% if health_worker.id == health_worker_ids %}selected{% endif %}>{{health_worker.name}}</option>
+                                <option value="{{health_worker.user.id}}" {% if health_worker.user.id == health_worker_ids %}selected{% endif %}>{{health_worker.user.first_name}}</option>
                                 {% endfor %}
                                 </select>
                             </div>   
@@ -157,7 +157,42 @@
 {% endblock %}
 {% block extra_javascript %}
 <script type="text/javascript">
+    $("#filter_reset").click(function() {
+        $('#phc').prop('selectedIndex', 0).change();
+        $('#sub_center').prop('selectedIndex', 0).change();
+        $('#village').prop('selectedIndex', 0).change();
+        $('#health_worker').prop('selectedIndex', 0).change();
+        $('#start_filter').val('');
+        $('#end_filter').val('');
+        this.form.submit();
+    });
     document.addEventListener('DOMContentLoaded', function() { 
+        $('#phc').change(function () {
+            var optionSelected = $(this).find("option:selected");
+            var valueSelected  = optionSelected.val();
+            $.ajax({
+                type:"GET",
+                url: '/ajax/subcenter/'+valueSelected+'/',
+                success:function(result){
+                    $("#sub_center option").remove();
+                    a = '<option selected value="">Choose sub center Name</option>';
+                    $("#sub_center").append(a);
+                    if(JSON.parse(result) == 0){
+                        $("#sub_center option").remove();
+                        a = '<option selected value="">No sub center is mapped to this phc</option>';
+                        console.log(a)
+                        $("#sub_center").append(a);
+                    }
+                    else{
+                        $.each(JSON.parse(result),function(key, value)
+                        {
+                            a = '<option value=' + value['id']+'>' + value['name']+'</option>';
+                            $("#sub_center").append(a);
+                        });
+                    }
+                }
+            });
+        });
         $('#sub_center').change(function () {
             var optionSelected = $(this).find("option:selected");
             var valueSelected  = optionSelected.val();
@@ -170,7 +205,7 @@
                     $("#village").append(a);
                     if(JSON.parse(result) == 0){
                         $("#village option").remove();
-                        a = '<option selected value="">No Village is mapped to this Block Name</option>';
+                        a = '<option selected value="">No Village is mapped to this sub center</option>';
                         console.log(a)
                         $("#village").append(a);
                     }
