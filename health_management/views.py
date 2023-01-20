@@ -376,9 +376,10 @@ class Phc_pull(APIView):
             #State
             state=State.objects.filter(status=2).order_by('id')
             stateserializer=StateSerializers(state, many=True)
-            
+
             #Village
-            village=Village.objects.filter(status=2).order_by('id')
+            village_id = UserProfile.objects.filter(user=valid_user.user).values_list('village__id', flat=True)
+            village=Village.objects.filter(status=2, id__in=village_id).order_by('id')
             villagesites_serializer=VillageSerializers(village, many=True)
 
 
@@ -391,11 +392,13 @@ class Phc_pull(APIView):
             talukserializers=TalukSerializers(taluk, many=True)
 
             #phc
-            phc=PHC.objects.filter(status=2).order_by('id')   
+            phc_id = UserProfile.objects.filter(user=valid_user.user).values_list('village__subcenter__phc__id', flat=True)
+            phc=PHC.objects.filter(status=2, id__in=phc_id).order_by('id')   
             phcserializers=PHCSerializers(phc, many=True)
 
             #subcenter
-            subcenter=Subcenter.objects.filter(status=2).order_by('id')   
+            subcenter_id = UserProfile.objects.filter(user=valid_user.user).values_list('village__subcenter__id', flat=True)
+            subcenter=Subcenter.objects.filter(status=2, id__in=subcenter_id).order_by('id')   
             subcenterserializers=SubcenterSerializers(subcenter, many=True)
 
             #ndcs
