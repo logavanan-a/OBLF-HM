@@ -378,8 +378,11 @@ class Phc_pull(APIView):
             stateserializer=StateSerializers(state, many=True)
 
             #Village
-            village_id = UserProfile.objects.filter(user=valid_user.user).values_list('village__id', flat=True)
-            village=Village.objects.filter(status=2, id__in=village_id).order_by('id')
+            village_id = UserProfile.objects.filter(user=valid_user.user, user_type=1).values_list('village__id', flat=True)
+            if village_id:
+                village=Village.objects.filter(status=2, id__in=village_id).order_by('id')
+            else:
+                village=Village.objects.filter(status=2).order_by('id')
             villagesites_serializer=VillageSerializers(village, many=True)
 
 
@@ -392,13 +395,19 @@ class Phc_pull(APIView):
             talukserializers=TalukSerializers(taluk, many=True)
 
             #phc
-            phc_id = UserProfile.objects.filter(user=valid_user.user).values_list('village__subcenter__phc__id', flat=True)
-            phc=PHC.objects.filter(status=2, id__in=phc_id).order_by('id')   
+            phc_id = UserProfile.objects.filter(user=valid_user.user, user_type=1).values_list('village__subcenter__phc__id', flat=True)
+            if village_id:
+                phc=PHC.objects.filter(status=2, id__in=phc_id).order_by('id') 
+            else: 
+                phc=PHC.objects.filter(status=2, id__in=phc_id).order_by('id')   
             phcserializers=PHCSerializers(phc, many=True)
 
             #subcenter
-            subcenter_id = UserProfile.objects.filter(user=valid_user.user).values_list('village__subcenter__id', flat=True)
-            subcenter=Subcenter.objects.filter(status=2, id__in=subcenter_id).order_by('id')   
+            subcenter_id = UserProfile.objects.filter(user=valid_user.user, user_type=1).values_list('village__subcenter__id', flat=True)
+            if village_id:
+                subcenter=Subcenter.objects.filter(status=2, id__in=subcenter_id).order_by('id')   
+            else: 
+                subcenter=Subcenter.objects.filter(status=2).order_by('id')   
             subcenterserializers=SubcenterSerializers(subcenter, many=True)
 
             #ndcs
