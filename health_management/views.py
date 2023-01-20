@@ -396,15 +396,15 @@ class Phc_pull(APIView):
 
             #phc
             phc_id = UserProfile.objects.filter(user=valid_user.user, user_type=1).values_list('village__subcenter__phc__id', flat=True)
-            if village_id:
+            if phc_id:
                 phc=PHC.objects.filter(status=2, id__in=phc_id).order_by('id') 
             else: 
-                phc=PHC.objects.filter(status=2, id__in=phc_id).order_by('id')   
+                phc=PHC.objects.filter(status=2).order_by('id')   
             phcserializers=PHCSerializers(phc, many=True)
 
-            #subcenter
+            # subcenter
             subcenter_id = UserProfile.objects.filter(user=valid_user.user, user_type=1).values_list('village__subcenter__id', flat=True)
-            if village_id:
+            if subcenter_id:
                 subcenter=Subcenter.objects.filter(status=2, id__in=subcenter_id).order_by('id')   
             else: 
                 subcenter=Subcenter.objects.filter(status=2).order_by('id')   
@@ -431,7 +431,10 @@ class Phc_pull(APIView):
 
             # patient data
             patient_visit_type=MasterLookup.objects.filter(parent__id=6)
-            patient_smo_date = Patients.objects.filter(status=2, patient_visit_type__in=patient_visit_type).order_by('server_modified_on')
+            if village_id:
+                patient_smo_date = Patients.objects.filter(status=2, village__id__in=village_id, patient_visit_type__in=patient_visit_type).order_by('server_modified_on')
+            else:
+                patient_smo_date = Patients.objects.filter(status=2, patient_visit_type__in=patient_visit_type).order_by('server_modified_on')
             patient_uuids=patient_smo_date.values_list('uuid',flat=True)
             if data.get('patient_smo_date'):
                 patient_smo_date= patient_smo_date.filter(server_modified_on__gt = data.get('patient_smo_date'))
