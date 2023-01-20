@@ -449,20 +449,20 @@ class Phc_pull(APIView):
 
             
             # medicine
-            prescription_smo_date = Prescription.objects.filter(status=2).order_by('server_modified_on')
+            prescription_smo_date = Prescription.objects.filter(status=2, treatment_uuid__in=patient_treatment_uuids).order_by('server_modified_on')
             if data.get('prescription_smo_date'):
                 prescription_smo_date = prescription_smo_date.filter(server_modified_on__gt = data.get('prescription_smo_date'))
             prescriptionserializers = PrescriptionSerializers(prescription_smo_date,many=True)
 
             #diagnosis
             ndcs=MasterLookup.objects.filter(parent__id=4)
-            diagnosis_smo_date = Diagnosis.objects.filter(status=2, ndc__in=ndcs).order_by('server_modified_on')
+            diagnosis_smo_date = Diagnosis.objects.filter(status=2, treatment_uuid__in=patient_treatment_uuids, ndc__in=ndcs).order_by('server_modified_on')
             if data.get('diagnosis_smo_date'):
                 diagnosis_smo_date = diagnosis_smo_date.filter(server_modified_on__gt = data.get('diagnosis_smo_date'))
             diagnosisserializers = DiagnosisSerializers(diagnosis_smo_date,many=True)
 
             # scanned report
-            scanned_report_smo_date = Scanned_Report.objects.filter(status=2).order_by('server_modified_on')
+            scanned_report_smo_date = Scanned_Report.objects.filter(status=2, patient_uuid__in=patient_uuids).order_by('server_modified_on')
             if data.get('scanned_report_smo_date'):
                 scanned_report_smo_date = scanned_report_smo_date.filter(server_modified_on__gt = data.get('scanned_report_smo_date'))
             scanned_reportserializers = ScannedReportSerializers(scanned_report_smo_date,many=True)
