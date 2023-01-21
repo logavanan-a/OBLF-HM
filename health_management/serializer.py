@@ -103,6 +103,8 @@ class ScannedReportSerializers(serializers.ModelSerializer):
 
 class UserProfileSerializers(serializers.ModelSerializer):
     username = serializers.CharField(source='user.username')
+    email = serializers.CharField(source='user.email')
+    first_name = serializers.CharField(source='user.first_name')
     village_id = serializers.CharField(source='village.id')
     subcenter_id = serializers.CharField(source='village.subcenter.id')
     phc_id = serializers.CharField(source='village.subcenter.phc.id')

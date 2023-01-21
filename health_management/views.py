@@ -117,7 +117,7 @@ def drug_dispensation_stock_list(request):
     page_number_end = page_number_start + 5 if page_number_start + \
         5 < data.paginator.num_pages else data.paginator.num_pages+1
     display_page_range = range(page_number_start, page_number_end)
-    return render(request, 'manage_stocks/drug_dispensation_stock/drug_dispensation_list.html', locals())
+    return render(request, 'reports/drug_dispensation_list.html', locals())
 
 def medicine_stock_list(request):
     heading="Medicine stocks detatials"
