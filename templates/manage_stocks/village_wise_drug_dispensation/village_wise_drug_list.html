@@ -32,7 +32,7 @@
                             </tr>
                         </thead>
                         <tbody>
-                            {% for dp in drug_dispensation %}
+                            {% for dp in data %}
                             <tr>
                                 <th>{{dp.medicine|default_if_none:''}}</th>
                                 <th>{{dp.village|default_if_none:''}}</th>
@@ -43,6 +43,7 @@
                         </tbody>
                     </table>
                 </div>
+                {% include 'partials/pagination.html' %}
             </div>
         </div>
     </div> 

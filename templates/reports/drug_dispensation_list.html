@@ -1,6 +1,7 @@
 {% extends 'base.html' %}
 {% load static %}
 {% block contents %}
+{% include 'partials/filter_report.html' %}
 
 <div class="row">
     <div class="col-12">
@@ -16,6 +17,11 @@
                         </div>  
                     </div>
                 </form>
+                <div class="d-flex justify-content-end mb-3"> 
+                    <button  onclick="location.href='/drug-prescription-csv-export/'" class="btn btn-primary waves-effect justify-content-start">
+                        Export
+                    </button>
+                </div>
                 <div class="table-rep-plugin">
                     <table id="datatable-buttons" class="table  table-bordered dt-responsive w-100 ">
                         <thead>
@@ -47,31 +53,7 @@
                         </tbody>
                     </table>
                 </div>
-                <nav aria-label="..." class="d-flex justify-content-end">
-                    <div>
-                        {% if data.has_other_pages %}
-                        <ul class="pagination">
-                            {% if data.has_previous %}
-                            <li class="paginate_button page-item"><a class="page-link" href="?page=1">First</a></li>
-                            {% else %}
-                            <li class="paginate_button page-item disabled"><span class="page-link">First</span></li>
-                            {% endif %}
-                            {% for i in display_page_range %}
-                                {% if data.number == i %}
-                                <li class="page-item active"><span class="page-link">{{ i }} <span class="sr-only">(current)</span></span></li>
-                                {% else %}
-                                <li class="paginate_button paginate_button page-item"><a class="page-link" href="?page={{ i }}">{{ i }}</a></li>
-                                {% endif %}
-                            {% endfor %}
-                            {% if data.has_next %}
-                                <li class="paginate_button page-item"><a class="page-link" href="?page={{ data.paginator.num_pages }}">Last</a></li>
-                            {% else %}
-                                <li class="paginate_button page-item disabled"><span class="page-link">Last</span></li>
-                            {% endif %}
-                            </ul>
-                        {% endif %}
-                    </div>
-                </nav>
+                {% include 'partials/pagination.html' %}
             </div>
         </div>
     </div> 

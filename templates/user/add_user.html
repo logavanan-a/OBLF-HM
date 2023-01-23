@@ -1,6 +1,8 @@
 {% extends 'base.html' %}
 {% load static %}
-
+{% block extra_css %}
+    <link href="{% static 'libs/select2/dist/css/select2.min.css'%}" rel="stylesheet" type="text/css" />
+{% endblock %}
 {% block contents %}
 <div class="row align-items-center">
     <div class="col-xl-12 mx-auto">
@@ -15,7 +17,7 @@
                         {% if not user_profile %}
                         <label for="" class="col-md-2 col-form-label">User Name<span class="required-field"></span></label>
                         <div class="col-md-4">
-                          <input type="text" class="form-control" pattern="[A-Za-z0-9]{0,150}"  id="" name='username' required>
+                          <input type="text" class="form-control"  id="" name='username' required>
                           <div class='text-danger'>
                               {{user_exist}}
                           </div>
@@ -62,7 +64,7 @@
                     <div class="row mb-4">
                         <label for="" class="col-md-2 col-form-label">Village Name<span class="required-field"></span></label>
                         <div class="col-md-4">
-                            <select id="formrow-inputState" class="form-select" name='village_name' required>
+                            <select class="select2 form-control select2-multiple" name='village_name' multiple="multiple" data-placeholder="Choose ..." required>
                                 <option selected="" value=''>Choose...</option>
                                 {% for village in village_names %}
                                     <option value='{{village.id}}' {% if user_profile.village_id == village.id %}selected{% endif %}>{{village.name}}</option>
@@ -90,3 +92,7 @@
 
     
 {% endblock %}
+{% block extra_javascript %}
+<script src="{% static 'libs/select2/dist/js/select2.min.js'%}"></script>
+{% endblock %}
+

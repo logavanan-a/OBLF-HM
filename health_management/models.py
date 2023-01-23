@@ -57,6 +57,15 @@ class Patients(BaseContent):
         except ObjectDoesNotExist:
             health_worker = None
         return health_worker
+    
+    def get_diagnosis_id(self):
+        try:
+            patient_ids=Treatments.objects.get(patient_uuid=self.uuid)
+            diagnosis_id = Diagnosis.objects.get(treatment_uuid=patient_ids.uuid)
+        except ObjectDoesNotExist:
+            diagnosis_id = None
+        return diagnosis_id
+
 
 
 
@@ -131,6 +140,27 @@ class Prescription(BaseContent):
         except ObjectDoesNotExist:
             treatments_list = None
         return treatments_list
+    
+    def get_qty(self):
+        from django.db.models import Sum
+        medicine = MedicineStock.objects.filter(medicine=self.medicines)
+        medicine_stock_totals = medicine.aggregate(sum=Sum('no_of_units')).get('sum')
+        drug_dispensation = DrugDispensation.objects.filter(medicine=self.medicines)
+        drug_dispensation_total = drug_dispensation.aggregate(sum=Sum('units_dispensed')).get('sum')
+        prescription_total=self.qty
+        if drug_dispensation_total == None:
+            drug_dispensation_total = 0
+        if medicine_stock_totals == None:
+            medicine_stock_totals = 0
+        if prescription_total == None:
+            prescription_total = 0
+            
+        opening_stock_total = abs(int(medicine_stock_totals) - int(drug_dispensation_total)) - int(prescription_total)
+        return opening_stock_total
+        
+
+
+    
 
 
 class Diagnosis(BaseContent):
@@ -146,6 +176,9 @@ class Diagnosis(BaseContent):
 
     class Meta:
         verbose_name_plural = "Diagnosis"
+
+    
+
 
 
 

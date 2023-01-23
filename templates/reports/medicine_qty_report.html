@@ -16,34 +16,28 @@
                         </div>  
                     </div>
                 </form>
-                <div class="d-flex justify-content-end mb-3"> 
-                    <div class="col-auto mt-3 ">
-                        <button type="button" class="form-control btn btn-primary waves-effect btn-xs float-right" onclick="location.href='/add/medicine/'">Add New</button>
-                    </div>
-                </div>
                 <div class="table-rep-plugin">
                     <table id="datatable-buttons" class="table  table-bordered dt-responsive w-100 ">
                         <thead>
                             <tr>
                                 <th>Drug Name</th>
-                                <th>Add quantity</th>
-                                <th>Unit price Rs.</th>
-                                <th>Date</th>
+                                <th>Quantity</th>
+
                             </tr>
                         </thead>
                         <tbody>
-                            {% for m in data %}
+                            {% for m in medicine_stock %}
+                            {% if m.get_no_of_units != 0 %}
                             <tr>
-                                <th>{{m.medicine|default_if_none:''}}</th>
-                                <td>{{m.no_of_units|default_if_none:''}}</td>
-                                <td>{{m.unit_price|default_if_none:''}}</td>
-                                <td>{{m.date_of_creation|default_if_none:''}}</td>
+                                <th>{{m.name|default_if_none:''}}</th>
+                                <td>{{m.get_no_of_units|default_if_none:''}}</td>
+                                
                             </tr>
+                            {% endif %}
                             {% endfor %}
                         </tbody>
                     </table>
                 </div>
-                {% include 'partials/pagination.html' %}
             </div>
         </div>
     </div> 

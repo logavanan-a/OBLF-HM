@@ -8,7 +8,7 @@
         <div class="card">
             <div class="card-body">
                 <div class="d-flex justify-content-end mb-3"> 
-                    <button  onclick="location.href='/distribution-csv-export/'" class="btn btn-primary waves-effect justify-content-start">
+                    <button  onclick="location.href='/patient-csv-export/'" class="btn btn-primary waves-effect justify-content-start">
                         Export
                     </button>
                 </div>
@@ -18,19 +18,31 @@
                             <tr>
                                 <th>PHC Name</th>
                                 <th>Sub Centre</th>
-                                <th>Village</th>
-                                <th>Medicine</th>
-                                <th>Quantity</th>
+                                <th>Village</th>                                   
+                                <th>Patient names</th>
+                                <th>Age</th>
+                                <th>DOB</th>
+                                <th>Gender</th>
+                                <th>Date of registration</th>
+                                <th>Source of treatment</th>
+                                <th>Health Worker</th>
+                                <th>Created On</th>
                             </tr>
                         </thead>
                         <tbody>
-                            {% for dl in data %}
+                            {% for prr in data %}
                             <tr>
-                                <td>{{dl.get_user_uuid.village.subcenter.phc|default_if_none:'-'}}</td>
-                                <td>{{dl.get_user_uuid.village.subcenter|default_if_none:'-'}}</td>
-                                <td>{{dl.get_user_uuid.village|default_if_none:'-'}}</td>
-                                <th>{{dl.medicines|default_if_none:'-'}}</th>
-                                <th>{{dl.get_qty}}</th>
+                                <th>{{prr.village.subcenter.phc}}</th>
+                                <th>{{prr.village.subcenter}}</th>
+                                <th>{{prr.village}}</th>
+                                <th>{{prr.name}}</th>
+                                <th>{{prr.age}}</th>
+                                <th>{{prr.dob|date:"d-m-Y"}}</th>
+                                <th>{{prr.get_gender_display}}</th>
+                                <th>{{prr.registered_date|date:"d-m-Y h:i a"}}</th>
+                                <th>{{prr.get_diagnosis_id.source_treatment}}</th>
+                                <th>{{prr.get_health_worker.user.first_name}}</th>
+                                <th>{{prr.server_created_on|date:"d-m-Y h:i a"}}</th>
                             </tr>
                             {% endfor %}
                         </tbody>
@@ -41,12 +53,27 @@
         </div>
     </div> 
 </div> 
-
 {% endblock %}
 {% block extra_javascript %}
 <script src="{% static 'js/pages/form-validation.init.js' %}"></script>
-
 <script type="text/javascript">
+
+    function onselected_start_month(){
+        var start_month = document.getElementById("start_filter");
+        var end_month = document.getElementById("end_filter");
+        if (start_month != '' && end_month != ''){
+            document.querySelector('#start_filter').required = true;
+            document.querySelector('#end_filter').required = true;
+        }
+        else{
+            document.querySelector('#start_filter').required = false;
+            document.querySelector('#end_filter').required = false;
+            
+        }  
+    }
+     $("#start_filter").on("change", function(event){
+           document.getElementById("end_filter").min=$("#start_filter").val()
+    });
     $("#filter_reset").click(function() {
         $('#phc').prop('selectedIndex', 0).change();
         $('#sub_center').prop('selectedIndex', 0).change();
@@ -112,3 +139,4 @@
     })
 </script> 
 {% endblock %}
+

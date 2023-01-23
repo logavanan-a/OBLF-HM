@@ -14,15 +14,22 @@ urlpatterns = [
     path('phc/pull/<pk>/', Phc_pull.as_view()),
     path('phc/push/<pk>/', Phc_push.as_view()),
 
-    path('report/pateint-registration-list/', pateint_registration_report, name='pateint_registration_report'),
+    path('distribution-csv-export/', distribution_village_wise_csv, name='distribution_village_wise_csv'),
+    path('patient-csv-export/', patient_csv_export, name='patient_csv_export'),
+    path('drug-prescription-csv-export/', drug_prescription_csv_export, name='drug_prescription_csv_export'),
+
+    path('medicine-stock/report/', medicine_report_list, name='medicine_report_list'),
+    path('phc-wise-patient/report/', phc_wise_patient_list, name='phc_wise_patient_list'),
+    path('patient-registration/report/', patient_registration_report, name='patient_registration_report'),
+    path('village-wise-medicine/report/', distribution_village_wise_medicine_report_list, name='village_wise_drug_list'),
+    path('drug-dispensation/report/', drug_dispensation_stock_list, name='drug_dispensation_stock_list'),
 
     path('village-wise-drugs/list/', village_wise_drugs_list, name='village_wise_drug_list'),
     path('add/village-wise-drugs/', add_village_wise_drugs, name='add_village_wise_drugs'),
 
-    path('drug-dispensation/list/', drug_dispensation_stock_list, name='drug_dispensation_stock_list'),
+    path('medicine/list/', medicine_stock_list, name='medicine_stock_list'),
     path('add/medicine/', add_medicine_stock, name='add_medicine_stock'),
 
-    path('medicine/list/', medicine_stock_list, name='medicine_stock_list'),
 
     path('ajax/subcenter/<subcenter_id>/', get_sub_center, name="subcenter"),
     path('ajax/village/<village_id>/', get_village, name="village"),

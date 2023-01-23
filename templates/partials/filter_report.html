@@ -1,0 +1,87 @@
+<div class="row align-items-center">
+    <div class="col-xl-12 mx-auto">
+        <div class="card">
+            <div class="card-body">
+                <form class="needs-validation form-horizontal" enctype="multipart/form-data" novalidate  method="POST" id="filters">
+                    {%csrf_token%}
+                    <div class="row">
+                        <div class="col-md-4">  
+                            <div class="mb-3">
+                                <label for="floatingnameInput">PHC :</label>
+                                <select  class="form-select select2"  aria-label="Floating label select example" 
+                                placeholder="Choose Phc" id="phc" name='phc' >      
+                                    <option selected value="">Choose Phc</option>
+                                    {% for phc in phc_obj %}
+                                        <option value="{{phc.id}}" {% if phc.id == phc_ids %}selected{% endif %}>{{phc.name}}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>   
+                        </div>
+                        <div class="col-md-4">  
+                            <div class="mb-3">
+                                <label for="floatingnameInput">Sub Center :</label>
+                                <select  class="form-select select2"  aria-label="Floating label select example" 
+                                placeholder="Choose Sub Center" id="sub_center" name='sub_center' >      
+                                    <option selected value="">Choose Sub Center</option>
+                                    {% for sub_center in sub_center_obj %}
+                                    <option value="{{sub_center.id}}" {% if sub_center.id == sub_center_ids %}selected{% endif %}>{{sub_center.name}}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>   
+                        </div>
+                        <div class="col-md-4">  
+                            <div class="mb-3">
+                                <label for="floatingnameInput">Village :</label>
+                                <select  class="form-select select2"  aria-label="Floating label select example" 
+                                placeholder="Choose Village" id="village" name='village' >  
+                                <option selected value="">Choose Village</option>
+                                {% for village in village_obj %}
+                                <option value="{{village.id}}" {% if village.id == village_ids %}selected{% endif %}>{{village.name}}</option>
+                                {% endfor %}
+                                </select>
+                            </div>   
+                        </div>
+                        <div class="col-md-4">  
+                            <div class="mb-3">
+                                <label for="floatingnameInput">Health Worker :</label>
+                                <select  class="form-select select2"  aria-label="Floating label select example" 
+                                placeholder="Choose Health Worker" id="health_worker" name='health_worker' >  
+                                <option selected value="">Choose Health Worker</option>
+                                {% for health_worker in health_worker_obj %}
+                                <option value="{{health_worker.user.id}}" {% if health_worker.user.id == health_worker_ids %}selected{% endif %}>{{health_worker.user.first_name}}</option>
+                                {% endfor %}
+                                </select>
+                            </div>   
+                        </div>
+                        <div class="col-md-4">  
+                            <div class="mb-3">
+                                <label for="floatingnameInput">Start month & year:</label>
+                                <input type="month" class="form-control" name='start_filter'  value="{{start_filter}}" id="start_filter" onchange='onselected_start_month(this)'>
+                                <div class="invalid-feedback">
+                                    Please provide a valid both date field.
+                                </div>
+                            </div>   
+                        </div>
+                        <div class="col-md-4">  
+                            <div class="mb-3">
+                                <label for="floatingnameInput">End month & year:</label>
+                                <input type="month" class="form-control" name='end_filter'  value="{{end_filter}}" id="end_filter" onchange='onselected_start_month(this)'>
+                                <div class="invalid-feedback">
+                                    Please provide a valid both date field and Start date should be greater than or equal to end date.
+                                </div>
+                            </div>   
+                        </div>
+                    </div>
+                    <div class="row justify-content-end mt-3">
+                        <div class="col-auto">
+                            <button type="submit" class="form-control btn btn-success waves-effect btn-xs float-right">Filter</button>
+                        </div>
+                        <div class="col-auto">
+                            <button type="reset" id="filter_reset"  class="form-control btn btn-warning waves-effect btn-xs float-right" value="True">Reset Filters</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>

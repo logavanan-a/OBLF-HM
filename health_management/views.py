@@ -16,7 +16,11 @@ from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 import json
 import sys, os
 from datetime import datetime
+from django.db import connection
 from django.db.models import Q
+from django.utils import timezone
+from django.utils.timezone import localtime
+import csv
 
 
 
@@ -29,7 +33,7 @@ def pagination_function(request, data):
     records_per_page = 10
     paginator = Paginator(data, records_per_page)
     page = request.GET.get('page', 1)
-    try:
+    try: 
         pagination = paginator.page(page)
     except PageNotAnInteger:
         pagination = paginator.page(1)
@@ -65,6 +69,157 @@ def logout_view(request):
     logout(request)
     return HttpResponseRedirect('/login/')
 
+def drug_prescription_csv_export(request):
+    response = HttpResponse(content_type='text/csv',)
+    response['Content-Disposition'] = 'attachment; filename="Drug prescription'+ str(localtime(timezone.now()).strftime("%m/%d/%Y %I:%M %p")) +'.csv"'
+    writer = csv.writer(response)
+    writer.writerow([
+        'Patient Name',
+        'Village',
+        'Medicine', 
+        'Quantity', 
+        'Visit Date', 
+        'Created On', 
+        ])
+    prescription_csv = Prescription.objects.filter()
+    for prescription in prescription_csv:
+        patient = prescription.get_user_uuid()
+        treatment = prescription.get_treatment_uuid()
+        writer.writerow([
+            patient.name if patient else '',
+            patient.village.name if patient else '',
+            prescription.medicines,
+            prescription.qty,
+            treatment.visit_date.strftime("%m/%d/%Y %I:%M %p") if treatment else '', 
+            prescription.server_created_on.strftime("%m/%d/%Y %I:%M %p"),
+             ])
+    return response
+
+def patient_csv_export(request):
+    response = HttpResponse(content_type='text/csv',)
+    response['Content-Disposition'] = 'attachment; filename="patient registeration'+ str(localtime(timezone.now()).strftime("%m/%d/%Y %I:%M %p")) +'.csv"'
+    writer = csv.writer(response)
+    writer.writerow([
+        'PHC Name',
+        'Sub Centre',
+        'Village', 
+        'Patient names', 
+        'Age', 
+        'DOB', 
+        'Gender', 
+        'Date of registration', 
+        'Health Worker', 
+        'Created On', 
+        ])
+    patients_csv = Patients.objects.filter()
+    for patient in patients_csv:
+        health_worker = patient.get_health_worker()
+        diagnosis = patient.get_diagnosis_id()
+        writer.writerow([
+            patient.village.subcenter.phc if patient.village else '',
+            patient.village.subcenter if patient.village else '',
+            patient.village if patient else '',
+            patient.name,
+            patient.age,
+            patient.dob,
+            patient.get_gender_display(),
+            patient.registered_date,
+            diagnosis.source_treatment if diagnosis else '',
+            health_worker.user.first_name if health_worker else '', 
+            patient.server_created_on.strftime("%m/%d/%Y %I:%M %p"),
+             ])
+    return response
+
+def distribution_village_wise_csv(request):
+    response = HttpResponse(content_type='text/csv',)
+    response['Content-Disposition'] = 'attachment; filename="distribution village wise medicine'+ str(localtime(timezone.now()).strftime("%m/%d/%Y %I:%M %p")) +'.csv"'
+    writer = csv.writer(response)
+    writer.writerow([
+        'PHC Name',
+        'Sub Centre',
+        'Village', 
+        'Medicine',
+        'Quantity'
+        ])
+    distribution_csv = Prescription.objects.filter()
+    for distribution in distribution_csv:
+        patient = distribution.get_user_uuid()
+        qty = distribution.get_qty()
+        writer.writerow([
+            patient.village.subcenter.phc if patient else '',
+            patient.village.subcenter if patient else '',
+            patient.village if patient else '',
+            distribution.medicines,
+            qty
+            ])
+    return response 
+
+
+def medicine_report_list(request):
+    heading="DISTRIBUTION OF MEDICINE"
+    search = request.GET.get('search', '')
+    if search:
+        medicine_stock = Medicines.objects.filter(name__icontains=search)
+    else:
+        medicine_stock = Medicines.objects.filter(status=2)
+    data = pagination_function(request, medicine_stock)
+    current_page = request.GET.get('page', 1)
+    page_number_start = int(current_page) - 2 if int(current_page) > 2 else 1
+    page_number_end = page_number_start + 5 if page_number_start + \
+        5 < data.paginator.num_pages else data.paginator.num_pages+1
+    display_page_range = range(page_number_start, page_number_end)
+    return render(request, 'reports/medicine_qty_report.html', locals())
+
+
+def distribution_village_wise_medicine_report_list(request):
+    heading="DISTRIBUTION OF MEDICINE - VILLAGE-WISE REPORT"
+    from dateutil.relativedelta import relativedelta
+    phc_obj = PHC.objects.filter(status=2)
+    health_worker_obj = UserProfile.objects.filter(status=2, user_type=1).distinct('user__first_name').order_by('user__first_name').exclude(user__first_name__exact='')
+    phc = request.POST.get('phc', '')
+    sub_center = request.POST.get('sub_center', '')
+    village = request.POST.get('village', '')
+    health_worker = request.POST.get('health_worker', '')
+    phc_ids = int(phc) if phc != '' else ''
+    sub_center_ids = int(sub_center) if sub_center != '' else ''
+    village_ids = int(village) if village != '' else ''
+    health_worker_ids = int(health_worker) if health_worker != '' else ''
+    start_filter = request.POST.get('start_filter', '')
+    end_filter = request.POST.get('end_filter', '')
+    s_date=''
+    e_date=''
+    distribution_list=Prescription.objects.filter(status=2)
+
+    if start_filter != '':
+        start_date = start_filter+'-01'
+        end_date = end_filter+'-01'
+        sd_date= datetime.strptime(start_date, "%Y-%m-%d")
+        ed_date= datetime.strptime(end_date, "%Y-%m-%d")
+        ed_date = ed_date + relativedelta(months=1)
+        s_date = sd_date.strftime("%Y-%m-%d")
+        e_date = ed_date.strftime("%Y-%m-%d")
+        distribution_list=Prescription.objects.filter(status=2, server_created_on__range=[s_date,e_date])
+    if health_worker_ids:
+        health_worker = UserProfile.objects.filter(status=2, user__id=health_worker).values_list('uuid', flat=True)
+        distribution_list = distribution_list.filter(user_uuid__in=health_worker)
+    # if phc_ids:
+    #     sub_center_obj = Subcenter.objects.filter(status=2, phc__id=phc_ids)
+    #     pateint_registration_report = pateint_registration_report.filter(village__subcenter__phc__id=phc_ids)
+    # if sub_center_ids:
+    #     village_obj = Village.objects.filter(status=2, subcenter__id=sub_center_ids)
+    #     pateint_registration_report = pateint_registration_report.filter(village__subcenter__id=sub_center_ids)
+    # if village_ids:
+    #     pateint_registration_report = pateint_registration_report.filter(village__id=village_ids)
+
+
+    data = pagination_function(request, distribution_list)
+    current_page = request.GET.get('page', 1)
+    page_number_start = int(current_page) - 2 if int(current_page) > 2 else 1
+    page_number_end = page_number_start + 5 if page_number_start + \
+        5 < data.paginator.num_pages else data.paginator.num_pages+1
+    display_page_range = range(page_number_start, page_number_end)
+    return render(request, 'reports/village_wise_report.html', locals())
+
 def village_wise_drugs_list(request):
     heading="village wise drug dispensation"
     search = request.GET.get('search', '')
@@ -72,6 +227,12 @@ def village_wise_drugs_list(request):
         drug_dispensation = DrugDispensation.objects.filter(Q(Q(medicine__name__icontains=search)|Q(village__name__icontains=search)), status=2)
     else:
         drug_dispensation = DrugDispensation.objects.filter(status=2)
+    data = pagination_function(request, drug_dispensation)
+    current_page = request.GET.get('page', 1)
+    page_number_start = int(current_page) - 2 if int(current_page) > 2 else 1
+    page_number_end = page_number_start + 5 if page_number_start + \
+        5 < data.paginator.num_pages else data.paginator.num_pages+1
+    display_page_range = range(page_number_start, page_number_end)
     return render(request, 'manage_stocks/village_wise_drug_dispensation/village_wise_drug_list.html', locals())
 
 def add_village_wise_drugs(request):
@@ -126,10 +287,17 @@ def medicine_stock_list(request):
         medicine_stock = MedicineStock.objects.filter(medicine__name__icontains=search)
     else:
         medicine_stock = MedicineStock.objects.filter(status=2)
+    data = pagination_function(request, medicine_stock)
+    current_page = request.GET.get('page', 1)
+    page_number_start = int(current_page) - 2 if int(current_page) > 2 else 1
+    page_number_end = page_number_start + 5 if page_number_start + \
+        5 < data.paginator.num_pages else data.paginator.num_pages+1
+    display_page_range = range(page_number_start, page_number_end)
     return render(request, 'manage_stocks/medicine_stock/medicine_list.html', locals())
 
-def pateint_registration_report(request):
-    heading="Pateint Registration Report"
+def patient_registration_report(request):
+    heading="Patient Registration Report"
+    from dateutil.relativedelta import relativedelta
     phc_obj = PHC.objects.filter(status=2)
     health_worker_obj = UserProfile.objects.filter(status=2, user_type=1).distinct('user__first_name').order_by('user__first_name').exclude(user__first_name__exact='')
     phc = request.POST.get('phc', '')
@@ -140,7 +308,21 @@ def pateint_registration_report(request):
     sub_center_ids = int(sub_center) if sub_center != '' else ''
     village_ids = int(village) if village != '' else ''
     health_worker_ids = int(health_worker) if health_worker != '' else ''
+    start_filter = request.POST.get('start_filter', '')
+    end_filter = request.POST.get('end_filter', '')
+    s_date=''
+    e_date=''
     pateint_registration_report = Patients.objects.filter(status=2)
+
+    if start_filter != '':
+        start_date = start_filter+'-01'
+        end_date = end_filter+'-01'
+        sd_date= datetime.strptime(start_date, "%Y-%m-%d")
+        ed_date= datetime.strptime(end_date, "%Y-%m-%d")
+        ed_date = ed_date + relativedelta(months=1)
+        s_date = sd_date.strftime("%Y-%m-%d")
+        e_date = ed_date.strftime("%Y-%m-%d")
+        pateint_registration_report = Patients.objects.filter(status=2, server_created_on__range=[s_date,e_date])   
     if health_worker_ids:
         health_worker = UserProfile.objects.filter(status=2, user__id=health_worker).values_list('uuid', flat=True)
         pateint_registration_report = pateint_registration_report.filter(user_uuid__in=health_worker)
@@ -160,8 +342,22 @@ def pateint_registration_report(request):
     page_number_end = page_number_start + 5 if page_number_start + \
         5 < data.paginator.num_pages else data.paginator.num_pages+1
     display_page_range = range(page_number_start, page_number_end)
-    return render(request, 'reports/pateint_registration_report.html', locals())
+    return render(request, 'reports/patient_registration_report.html', locals())
 
+def phc_wise_patient_list(request):
+    heading="Patient Registration Report"
+    cursor = connection.cursor()
+    cursor.execute('''SELECT  phc.name, sbc.name, vlg.name, hmp.dob FROM health_management_patients hmp
+    inner join application_masters_village vlg on hmp.village_id = vlg.id
+    inner join application_masters_subcenter sbc on vlg.subcenter_id = sbc.id
+    inner join application_masters_phc phc on sbc.phc_id = phc.id
+    group by phc.name, sbc.name, vlg.name, hmp.dob
+    ''')
+    data = cursor.fetchall()
+    # patient_list = Patients.objects.raw('SELECT * FROM health_management_patients where ')
+    # for i in patient_list:
+    #     print(i)
+    return render(request, 'reports/phc_wise_patient_list.html', locals())
 
 
 def get_sub_center(request, subcenter_id):
@@ -210,23 +406,24 @@ def add_medicine_stock(request):
 def user_add(request):
     heading='userprofile'
     if request.method == 'POST':
-        try:
-            username = request.POST.get('username')
-            password = request.POST.get('password')
-            name = request.POST.get('name')
-            email = request.POST.get('email')
-            phonenumber = request.POST.get('phonenumber')
-            user_role = request.POST.get('user_role', '')
-            village_name = request.POST.get('village_name', '')
-            if User.objects.filter(username=username).exists():
-                user_exist="Username already exists"
-                return render(request, 'user/add_user.html', locals())
-            user=User.objects.create_user(username=username,password=password)
-            user_profile=UserProfile.objects.create(user=user,name=name, email=email,phone_no=phonenumber, village_id=village_name, user_type=user_role)
-            return redirect('/list/userprofile/')
-        except:
-            user.delete()
-            error="User is not created. Please try again."  
+        # try:
+        username = request.POST.get('username')
+        password = request.POST.get('password')
+        name = request.POST.get('name')
+        email = request.POST.get('email')
+        phonenumber = request.POST.get('phonenumber')
+        user_role = request.POST.get('user_role', '')
+        village_name = request.POST.getlist('village_name', '')
+        if User.objects.filter(username=username).exists():
+            user_exist="Username already exists"
+            return render(request, 'user/add_user.html', locals())
+        user=User.objects.create_user(username=username,password=password, first_name=name, email=email)
+        for vi in village_name:
+            user_profile=UserProfile.objects.create(user=user, phone_no=phonenumber, village_id=vi, user_type=user_role)
+        return redirect('/list/userprofile/')
+        # except:
+        #     user.delete()
+        #     error="User is not created. Please try again."  
     village_names=Village.objects.filter(status=2).order_by('name')  
     user_type_chooces=UserProfile.USER_TYPE_CHOICES
     return render(request, 'user/add_user.html', locals())
