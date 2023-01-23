@@ -53,7 +53,7 @@
                             <tr>
                                 <td>{{l.id}}</td>
                                 {% if model == 'userprofile' %}
-                                    <td><a href="/edit/{{model}}/{{l.id}}/">{{l.user.username}}</a></td>
+                                    <td><a href="/edit/{{model}}/{{l.id}}/">{{l.user.username}}-{{l.village}}</a></td>
                                 {% else %}
                                     <td><a href="/edit/{{model}}/{{l.id}}/">{{l}}</a></td>
                                 {% endif %}

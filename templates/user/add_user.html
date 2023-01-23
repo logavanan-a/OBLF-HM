@@ -28,7 +28,7 @@
                     <div class="row mb-4">
                         <label for="" class="col-md-2 col-form-label">User Email ID</label>
                         <div class="col-md-4">
-                          <input type="email" class="form-control" id="" name='email' value="{{user_profile.email|default_if_none:''}}">
+                          <input type="email" class="form-control" id="" name='email' value="{{user_profile.user.email|default_if_none:''}}">
                         </div>
                         <label for="" class="col-md-2 col-form-label">User Phone no.<span class="required-field"></span></label>
                         <div class="col-md-4">
@@ -49,7 +49,7 @@
                     <div class="row mb-4">
                         <label for="" class="col-md-2 col-form-label" >First name<span class="required-field"></span></label>
                         <div class="col-md-4">
-                          <input type="text" class="form-control" id="" name='name' pattern="[A-Za-z ]{0,150}" value="{{user_profile.name|default_if_none:''}}">
+                          <input type="text" class="form-control" id="" name='name' value="{{user_profile.user.first_name|default_if_none:''}}">
                         </div>
                         <label for="" class="col-md-2 col-form-label">User Role<span class="required-field"></span></label>
                         <div class="col-md-4">
