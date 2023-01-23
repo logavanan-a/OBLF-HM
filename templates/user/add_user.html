@@ -1,8 +1,5 @@
 {% extends 'base.html' %}
 {% load static %}
-{% block extra_css %}
-    <link href="{% static 'libs/select2/dist/css/select2.min.css'%}" rel="stylesheet" type="text/css" />
-{% endblock %}
 {% block contents %}
 <div class="row align-items-center">
     <div class="col-xl-12 mx-auto">
@@ -65,9 +62,8 @@
                         <label for="" class="col-md-2 col-form-label">Village Name<span class="required-field"></span></label>
                         <div class="col-md-4">
                             <select class="select2 form-control select2-multiple" name='village_name' multiple="multiple" data-placeholder="Choose ..." required>
-                                <option selected="" value=''>Choose...</option>
                                 {% for village in village_names %}
-                                    <option value='{{village.id}}' {% if user_profile.village_id == village.id %}selected{% endif %}>{{village.name}}</option>
+                                    <option value='{{village.id}}' {% if village.id in user_profiles_village %}selected{% endif %}>{{village.name}}</option>
                                 {% endfor %}
                             </select>
                         </div>
@@ -92,7 +88,5 @@
 
     
 {% endblock %}
-{% block extra_javascript %}
-<script src="{% static 'libs/select2/dist/js/select2.min.js'%}"></script>
-{% endblock %}
+
 

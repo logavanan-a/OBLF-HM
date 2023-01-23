@@ -71,12 +71,15 @@ class Scanned_ReportAdmin(admin.ModelAdmin):
 
 @admin.register(UserProfile)
 class UserProfileAdmin(admin.ModelAdmin):
-    list_display = ['uuid', 'user', 'village', 'phone_no',
-    'user_type', 'status']
+    list_display = ('uuid', 'user', 'phone_no', 'villages', 
+    'user_type', 'status')
     fields = ['uuid', 'user', 'village', 'phone_no',
     'user_type', 'status']
     search_fields = ['name', 'user__username', 'village__name']
     list_per_page = 15
+
+    def villages(self, instance):
+        return [villages.name for villages in instance.village.all()]
 
     
 

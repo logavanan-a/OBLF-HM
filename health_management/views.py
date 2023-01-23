@@ -347,11 +347,10 @@ def patient_registration_report(request):
 def phc_wise_patient_list(request):
     heading="Patient Registration Report"
     cursor = connection.cursor()
-    cursor.execute('''SELECT  phc.name, sbc.name, vlg.name, hmp.dob FROM health_management_patients hmp
+    cursor.execute('''SELECT  phc.name, sbc.name, vlg.name FROM health_management_patients hmp
     inner join application_masters_village vlg on hmp.village_id = vlg.id
     inner join application_masters_subcenter sbc on vlg.subcenter_id = sbc.id
     inner join application_masters_phc phc on sbc.phc_id = phc.id
-    group by phc.name, sbc.name, vlg.name, hmp.dob
     ''')
     data = cursor.fetchall()
     # patient_list = Patients.objects.raw('SELECT * FROM health_management_patients where ')
@@ -418,8 +417,9 @@ def user_add(request):
                 user_exist="Username already exists"
                 return render(request, 'user/add_user.html', locals())
             user=User.objects.create_user(username=username,password=password, first_name=name, email=email)
-            for vi_name in village_name:
-                user_profile=UserProfile.objects.create(user=user, phone_no=phonenumber, village_id=vi_name, user_type=user_role)
+            user_profile=UserProfile.objects.create(user=user, phone_no=phonenumber, user_type=user_role)
+            user_profile.village.add(*village_name)
+            user_profile.save()
             return redirect('/list/userprofile/')
         except:
             user.delete()
@@ -431,6 +431,13 @@ def user_add(request):
 def user_edit(request,id):
     heading='userprofile'
     user_profile=UserProfile.objects.get(id=id)
+    user_profiles=UserProfile.objects.filter(id=id)
+    user_profiles_village = user_profiles.values_list('village__id', flat=True)
+    print(user_profiles_village)
+    # for user_profiles in user_profiles:
+    # print(user_profiles)
+    #     for i in UserProfile.village.through.objects.filter(village = user_profiles):
+    #         print(i.id)
     user_obj = User.objects.get(id=user_profile.user.id)
     if request.method == 'POST':
         username = request.POST.get('username')
@@ -444,11 +451,11 @@ def user_edit(request,id):
         user_obj.email=email
         user_obj.save()
         user_profile.phone_no=phonenumber
-        for vi_name in village_name:
-            user_profile.village_id=vi_name
-            user_profile.user_type=user_role
-            user_profile.user.set_password(password)
-            user_profile.save()
+        user_profile.user_type=user_role
+        user_profile.village.clear()
+        user_profile.village.add(*village_name)
+        user_profile.user.set_password(password)
+        user_profile.save()
         return redirect('/list/userprofile/')
     village_names=Village.objects.filter(status=2).order_by('name')  
     user_type_chooces=UserProfile.USER_TYPE_CHOICES

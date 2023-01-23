@@ -204,8 +204,7 @@ class UserProfile(BaseContent):
     phone_no = models.CharField(max_length=150, unique=False, blank=True, null=True)
     user = models.ForeignKey(
         User, on_delete=models.DO_NOTHING)
-    village = models.ForeignKey(
-        Village, on_delete=models.DO_NOTHING, blank=True, null=True)
+    village = models.ManyToManyField(Village, blank=True)
     user_type= models.PositiveIntegerField(choices=USER_TYPE_CHOICES,default=0, db_index=True)
     def __str__(self):
         return self.user.username
