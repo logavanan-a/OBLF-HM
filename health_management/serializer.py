@@ -67,8 +67,6 @@ class PatientSerializers(serializers.ModelSerializer):
     village_id = serializers.CharField(source='village.id', required=False,allow_blank=True)
     subcenter_id = serializers.CharField(source='village.subcenter.id', required=False,allow_blank=True)
     phc_id = serializers.CharField(source='village.subcenter.phc.id', required=False,allow_blank=True)
-    # taluk_id = serializers.CharField(source='village.phc.taluk.id')
-    # district_id = serializers.CharField(source='village.phc.taluk.district.id')
     class Meta:
         model = Patients
         exclude = ['village']
@@ -101,13 +99,20 @@ class ScannedReportSerializers(serializers.ModelSerializer):
         model = Scanned_Report
         fields = '__all__'
 
+# class VillageidSerializers(serializers.ModelSerializer):
+#     class Meta:
+#         model = Village
+#         fields = '__all__'
+
 class UserProfileSerializers(serializers.ModelSerializer):
     username = serializers.CharField(source='user.username')
     email = serializers.CharField(source='user.email')
     first_name = serializers.CharField(source='user.first_name')
-    village_id = serializers.CharField(source='village.id')
-    subcenter_id = serializers.CharField(source='village.subcenter.id')
-    phc_id = serializers.CharField(source='village.subcenter.phc.id')
+    # village = VillageSerializers(source='village_set', many=True)
+    # subcenter_id = serializers.CharField(source='village.subcenter.id')
+    # phc_id = serializers.CharField(source='village.subcenter.phc.id')
     class Meta:
         model = UserProfile
-        exclude = ['user', 'village']
+        exclude = ['user']
+    # def villages(self, instance):
+    #     return [villages.name for villages in instance.village.all()]

@@ -577,21 +577,30 @@ class Phc_pull(APIView):
             valid_user = UserProfile.objects.get(uuid = pk)
         except:
             return Response({"message":"Invalid UUID"})
-
         if valid_user:
+            patient_visit_type=MasterLookup.objects.filter(parent__id=6)
+            user_list = UserProfile.objects.filter(uuid = pk)
+            if valid_user.user_type == 1:
+                user_wise_village_ids = user_list.values_list('village__id', flat=True)
+                village=Village.objects.filter(status=2, id__in=user_wise_village_ids).order_by('id')
+                subcenter_ids=village.values_list('subcenter__id')
+                subcenter=Subcenter.objects.filter(status=2, id__in=subcenter_ids).order_by('id')
+                phc_ids=subcenter.values_list('phc__id')
+                phc=PHC.objects.filter(status=2, id__in=phc_ids).order_by('id')  
+                patient_smo_date = Patients.objects.filter(status=2, village__id__in=user_wise_village_ids, patient_visit_type__in=patient_visit_type).order_by('server_modified_on') 
+            else:
+                village=Village.objects.filter(status=2).order_by('id')
+                subcenter=Subcenter.objects.filter(status=2).order_by('id')   
+                phc=PHC.objects.filter(status=2).order_by('id')   
+                patient_smo_date = Patients.objects.filter(status=2, patient_visit_type__in=patient_visit_type).order_by('server_modified_on')
+
+            phcserializers=PHCSerializers(phc, many=True)
+            villagesites_serializer=VillageSerializers(village, many=True)
+            subcenterserializers=SubcenterSerializers(subcenter, many=True)
 
             #State
             state=State.objects.filter(status=2).order_by('id')
             stateserializer=StateSerializers(state, many=True)
-
-            #Village
-            village_id = UserProfile.objects.filter(user=valid_user.user, user_type=1).values_list('village__id', flat=True)
-            if village_id:
-                village=Village.objects.filter(status=2, id__in=village_id).order_by('id')
-            else:
-                village=Village.objects.filter(status=2).order_by('id')
-            villagesites_serializer=VillageSerializers(village, many=True)
-
 
             #district
             district=District.objects.filter(status=2).order_by('id')   
@@ -599,23 +608,7 @@ class Phc_pull(APIView):
 
             #taluk
             taluk=Taluk.objects.filter(status=2).order_by('id')   
-            talukserializers=TalukSerializers(taluk, many=True)
-
-            #phc
-            phc_id = UserProfile.objects.filter(user=valid_user.user, user_type=1).values_list('village__subcenter__phc__id', flat=True)
-            if phc_id:
-                phc=PHC.objects.filter(status=2, id__in=phc_id).order_by('id') 
-            else: 
-                phc=PHC.objects.filter(status=2).order_by('id')   
-            phcserializers=PHCSerializers(phc, many=True)
-
-            # subcenter
-            subcenter_id = UserProfile.objects.filter(user=valid_user.user, user_type=1).values_list('village__subcenter__id', flat=True)
-            if subcenter_id:
-                subcenter=Subcenter.objects.filter(status=2, id__in=subcenter_id).order_by('id')   
-            else: 
-                subcenter=Subcenter.objects.filter(status=2).order_by('id')   
-            subcenterserializers=SubcenterSerializers(subcenter, many=True)
+            talukserializers=TalukSerializers(taluk, many=True) 
 
             #ndcs
             ndcs=MasterLookup.objects.filter(parent__id=4)
@@ -634,14 +627,9 @@ class Phc_pull(APIView):
             dosageserializer=DosageSerializers(dosage,many=True)
 
             #userdata
-            userprofileserializer=UserProfileSerializers(valid_user)
+            userprofileserializer=UserProfileSerializers(user_list, many=True)
 
             # patient data
-            patient_visit_type=MasterLookup.objects.filter(parent__id=6)
-            if village_id:
-                patient_smo_date = Patients.objects.filter(status=2, village__id__in=village_id, patient_visit_type__in=patient_visit_type).order_by('server_modified_on')
-            else:
-                patient_smo_date = Patients.objects.filter(status=2, patient_visit_type__in=patient_visit_type).order_by('server_modified_on')
             patient_uuids=patient_smo_date.values_list('uuid',flat=True)
             if data.get('patient_smo_date'):
                 patient_smo_date= patient_smo_date.filter(server_modified_on__gt = data.get('patient_smo_date'))
