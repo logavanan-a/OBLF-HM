@@ -41,6 +41,7 @@
                                 </select>
                             </div>   
                         </div>
+                        {% if health_worker_in_patient %}
                         <div class="col-md-4">  
                             <div class="mb-3">
                                 <label for="floatingnameInput">Health Worker :</label>
@@ -53,6 +54,21 @@
                                 </select>
                             </div>   
                         </div>
+                        {% endif %}
+                        {% if medicine_list %}
+                        <div class="col-md-4">  
+                            <div class="mb-3">
+                                <label for="floatingnameInput">Medicine :</label>
+                                <select  class="form-select select2"  aria-label="Floating label select example" 
+                                placeholder="Choose Health Worker" id="medicine" name='medicine' >  
+                                <option selected value="">Choose Medicine</option>
+                                {% for medicine in medicine_obj %}
+                                <option value="{{medicine.id}}" {% if medicine.id == medicine_ids %}selected{% endif %}>{{medicine.name}}</option>
+                                {% endfor %}
+                                </select>
+                            </div>   
+                        </div>
+                        {% endif %}
                         <div class="col-md-4">  
                             <div class="mb-3">
                                 <label for="floatingnameInput">Start month & year:</label>

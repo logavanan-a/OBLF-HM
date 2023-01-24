@@ -93,6 +93,11 @@
         <div class="card">
             <div class="card-body">
                 <div class="table-rep-plugin">
+                    <div class="d-flex justify-content-end mb-3"> 
+                        <button  onclick="location.href='/phc-wise-patient-export-csv/'" class="btn btn-primary waves-effect justify-content-start">
+                            Export
+                        </button>
+                    </div>
                     <table id="datatable-buttons" class="table  table-bordered dt-responsive w-100 ">
                         <thead>
                             <tr>
@@ -111,18 +116,17 @@
                         <tbody>
                             {% for prr in data %}
                             <tr>
+                                
                                 <th>{{prr.0}}</th>
                                 <th>{{prr.1}}</th>
                                 <th>{{prr.2}}</th>
                                 <th>{{prr.3}}</th>
-                                <!-- <th>{{prr.0|default_if_none:"-"}}</th> -->
-                                <th>-</th>
-                                <th>-</th>
-                                <th>-</th>
-                                <th>-</th>
-                                <th>-</th>
-                                <th>-</th>
-                                <th>-</th>
+                                <th>{{prr.4}}</th>
+                                <th>{{prr.5}}</th>
+                                <th>{{prr.6}}</th>
+                                <th>{{prr.7}}</th>
+                                <th>{{prr.8}}</th>
+                                <th>{{prr.9}}</th>
                             </tr>
                             {% endfor %}
                         </tbody>

@@ -7,16 +7,6 @@
     <div class="col-12">
         <div class="card">
             <div class="card-body">
-                <form action="" method="get" class="mb-3">
-                    <div class="row justify-content-start">
-                        <div class="col-lg-3 mt-3">
-                            <input type="search" name="search" class='form-control' value='{{search}}' placeholder='Search...'>
-                        </div>
-                        <div class="col-auto mt-3 ">
-                            <button type="submit" class="form-control btn btn-success waves-effect btn-xs float-right">Search</button>
-                        </div>  
-                    </div>
-                </form>
                 <div class="d-flex justify-content-end mb-3"> 
                     <button  onclick="location.href='/drug-prescription-csv-export/'" class="btn btn-primary waves-effect justify-content-start">
                         Export
@@ -26,11 +16,11 @@
                     <table id="datatable-buttons" class="table  table-bordered dt-responsive w-100 ">
                         <thead>
                             <tr>
-                                <th>Patient Name</th>
+                                <th>PHC Name</th>
+                                <th>Sub Centre</th>
                                 <th>Village</th>
-                                <!-- <th>Symptoms</th> -->
+                                <th>Patient Name</th>
                                 <th>Medicine Name</th>
-                                <!-- <th>Dosage</th> -->
                                 <th>Quantity</th>
                                 <th>Visit Date</th>
                                 <th>Created On</th>                                   
@@ -40,10 +30,10 @@
                             {% for pl in data %}
 
                             <tr>
-                                <th>{{pl.get_user_uuid.name|default_if_none:''}}</th>
+                                <td>{{pl.get_user_uuid.village.subcenter.phc|default_if_none:''}}</td>
+                                <td>{{pl.get_user_uuid.village.subcenter|default_if_none:''}}</td>
                                 <td>{{pl.get_user_uuid.village|default_if_none:''}}</td>
-                               {% comment %} <td>{{pl.get_treatment_uuid.symptoms|default_if_none:''}}</td>
-                                <td>{{pl.dosage|default_if_none:''}}</td>{% endcomment %}
+                                <th>{{pl.get_user_uuid.name|default_if_none:''}}</th>
                                 <td>{{pl.medicines|default_if_none:''}}</td>
                                 <td>{{pl.qty|default_if_none:''}}</td>
                                 <td>{{pl.get_treatment_uuid.visit_date|date:"d-m-Y"|default_if_none:''}}</td>
@@ -59,4 +49,73 @@
     </div> 
 </div> 
 
+{% endblock %}
+{% block extra_javascript %}
+<script src="{% static 'js/pages/form-validation.init.js' %}"></script>
+
+<script type="text/javascript">
+    $("#filter_reset").click(function() {
+        $('#phc').prop('selectedIndex', 0).change();
+        $('#sub_center').prop('selectedIndex', 0).change();
+        $('#village').prop('selectedIndex', 0).change();
+        $('#medicine').prop('selectedIndex', 0).change();
+        $('#start_filter').val('');
+        $('#end_filter').val('');
+        this.form.submit();
+    });
+    document.addEventListener('DOMContentLoaded', function() { 
+        $('#phc').change(function () {
+            var optionSelected = $(this).find("option:selected");
+            var valueSelected  = optionSelected.val();
+            $.ajax({
+                type:"GET",
+                url: '/ajax/subcenter/'+valueSelected+'/',
+                success:function(result){
+                    $("#sub_center option").remove();
+                    a = '<option selected value="">Choose sub center Name</option>';
+                    $("#sub_center").append(a);
+                    if(JSON.parse(result) == 0){
+                        $("#sub_center option").remove();
+                        a = '<option selected value="">No sub center is mapped to this phc</option>';
+                        console.log(a)
+                        $("#sub_center").append(a);
+                    }
+                    else{
+                        $.each(JSON.parse(result),function(key, value)
+                        {
+                            a = '<option value=' + value['id']+'>' + value['name']+'</option>';
+                            $("#sub_center").append(a);
+                        });
+                    }
+                }
+            });
+        });
+        $('#sub_center').change(function () {
+            var optionSelected = $(this).find("option:selected");
+            var valueSelected  = optionSelected.val();
+            $.ajax({
+                type:"GET",
+                url: '/ajax/village/'+valueSelected+'/',
+                success:function(result){
+                    $("#village option").remove();
+                    a = '<option selected value="">Choose Village Name</option>';
+                    $("#village").append(a);
+                    if(JSON.parse(result) == 0){
+                        $("#village option").remove();
+                        a = '<option selected value="">No Village is mapped to this sub center</option>';
+                        console.log(a)
+                        $("#village").append(a);
+                    }
+                    else{
+                        $.each(JSON.parse(result),function(key, value)
+                        {
+                            a = '<option value=' + value['id']+'>' + value['name']+'</option>';
+                            $("#village").append(a);
+                        });
+                    }
+                }
+            });
+        });
+    })
+</script> 
 {% endblock %}

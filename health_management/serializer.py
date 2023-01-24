@@ -99,20 +99,30 @@ class ScannedReportSerializers(serializers.ModelSerializer):
         model = Scanned_Report
         fields = '__all__'
 
-# class VillageidSerializers(serializers.ModelSerializer):
-#     class Meta:
-#         model = Village
-#         fields = '__all__'
+class TagSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Village
+        fields = '__all__'
+
 
 class UserProfileSerializers(serializers.ModelSerializer):
     username = serializers.CharField(source='user.username')
     email = serializers.CharField(source='user.email')
     first_name = serializers.CharField(source='user.first_name')
-    # village = VillageSerializers(source='village_set', many=True)
+    # village_id = serializers.ReadOnlyField(source='village')
     # subcenter_id = serializers.CharField(source='village.subcenter.id')
     # phc_id = serializers.CharField(source='village.subcenter.phc.id')
     class Meta:
         model = UserProfile
-        exclude = ['user']
-    # def villages(self, instance):
-    #     return [villages.name for villages in instance.village.all()]
+        fields = '__all__'
+    # village_id = serializers.SerializerMethodField()
+    
+    # def get_village_id(self, obj):
+    #     return obj.village
+
+    # def get_village_id(self, obj):
+    #     if obj.get_villages():
+    #         return obj.get_villages().id 
+    #     else:
+    #         return 0 
+

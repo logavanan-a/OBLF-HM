@@ -74,8 +74,10 @@ def drug_prescription_csv_export(request):
     response['Content-Disposition'] = 'attachment; filename="Drug prescription'+ str(localtime(timezone.now()).strftime("%m/%d/%Y %I:%M %p")) +'.csv"'
     writer = csv.writer(response)
     writer.writerow([
-        'Patient Name',
+        'PHC Name',
+        'Sub Centre',
         'Village',
+        'Patient Name',
         'Medicine', 
         'Quantity', 
         'Visit Date', 
@@ -86,8 +88,10 @@ def drug_prescription_csv_export(request):
         patient = prescription.get_user_uuid()
         treatment = prescription.get_treatment_uuid()
         writer.writerow([
+            patient.village.subcenter.phc if patient else '',
+            patient.village.subcenter if patient else '',
+            patient.village if patient else '',
             patient.name if patient else '',
-            patient.village.name if patient else '',
             prescription.medicines,
             prescription.qty,
             treatment.visit_date.strftime("%m/%d/%Y %I:%M %p") if treatment else '', 
@@ -173,23 +177,23 @@ def medicine_report_list(request):
 
 def distribution_village_wise_medicine_report_list(request):
     heading="DISTRIBUTION OF MEDICINE - VILLAGE-WISE REPORT"
+    medicine_obj=Medicines.objects.filter(status=2)
     from dateutil.relativedelta import relativedelta
     phc_obj = PHC.objects.filter(status=2)
-    health_worker_obj = UserProfile.objects.filter(status=2, user_type=1).distinct('user__first_name').order_by('user__first_name').exclude(user__first_name__exact='')
     phc = request.POST.get('phc', '')
     sub_center = request.POST.get('sub_center', '')
     village = request.POST.get('village', '')
-    health_worker = request.POST.get('health_worker', '')
+    medicine = request.POST.get('medicine', '')
     phc_ids = int(phc) if phc != '' else ''
     sub_center_ids = int(sub_center) if sub_center != '' else ''
     village_ids = int(village) if village != '' else ''
-    health_worker_ids = int(health_worker) if health_worker != '' else ''
+    medicine_ids = int(medicine) if medicine != '' else ''
     start_filter = request.POST.get('start_filter', '')
     end_filter = request.POST.get('end_filter', '')
     s_date=''
     e_date=''
+    medicine_list = True
     distribution_list=Prescription.objects.filter(status=2)
-
     if start_filter != '':
         start_date = start_filter+'-01'
         end_date = end_filter+'-01'
@@ -198,18 +202,20 @@ def distribution_village_wise_medicine_report_list(request):
         ed_date = ed_date + relativedelta(months=1)
         s_date = sd_date.strftime("%Y-%m-%d")
         e_date = ed_date.strftime("%Y-%m-%d")
-        distribution_list=Prescription.objects.filter(status=2, server_created_on__range=[s_date,e_date])
-    if health_worker_ids:
-        health_worker = UserProfile.objects.filter(status=2, user__id=health_worker).values_list('uuid', flat=True)
-        distribution_list = distribution_list.filter(user_uuid__in=health_worker)
-    # if phc_ids:
-    #     sub_center_obj = Subcenter.objects.filter(status=2, phc__id=phc_ids)
-    #     pateint_registration_report = pateint_registration_report.filter(village__subcenter__phc__id=phc_ids)
-    # if sub_center_ids:
-    #     village_obj = Village.objects.filter(status=2, subcenter__id=sub_center_ids)
-    #     pateint_registration_report = pateint_registration_report.filter(village__subcenter__id=sub_center_ids)
-    # if village_ids:
-    #     pateint_registration_report = pateint_registration_report.filter(village__id=village_ids)
+        distribution_list=distribution_list.filter(status=2, server_created_on__range=[s_date,e_date])
+    if phc_ids:
+        sub_center_obj = Subcenter.objects.filter(status=2, phc__id=phc_ids)
+        pateint_registration_report = Patients.objects.filter(village__subcenter__phc__id=phc_ids).values_list('uuid')
+        distribution_list = distribution_list.filter(patient_uuid__in=pateint_registration_report)
+    if sub_center_ids:
+        village_obj = Village.objects.filter(status=2, subcenter__id=sub_center_ids)
+        pateint_registration_report = Patients.objects.filter(village__subcenter__id=sub_center_ids).values_list('uuid')
+        distribution_list = distribution_list.filter(patient_uuid__in=pateint_registration_report)
+    if village_ids:
+        pateint_registration_report = Patients.objects.filter(village__id=village_ids).values_list('uuid')
+        distribution_list = distribution_list.filter(patient_uuid__in=pateint_registration_report)
+    if medicine_ids:
+        distribution_list = distribution_list.filter(medicines__id=medicine_ids)
 
 
     data = pagination_function(request, distribution_list)
@@ -263,15 +269,48 @@ def add_village_wise_drugs(request):
     return render(request, 'manage_stocks/village_wise_drug_dispensation/add_village_wise_drugs.html', locals())
 
 def drug_dispensation_stock_list(request):
-    heading="Dispensation of drugs stocks details"
-    userprofile_list=UserProfile.objects.filter(status=2)
-    search = request.GET.get('search', '')
-    if search:
-        patients = Patients.objects.filter(name__icontains=search).values_list('uuid', flat=True)
-        search_patients = list(patients)
-        prescription_list=Prescription.objects.filter(Q(Q(medicines__name__icontains=search)|Q(patient_uuid__in=search_patients)), status=2)
-    else:
-        prescription_list=Prescription.objects.filter(status=2)
+    heading="Drugs Dispensation reports"
+    medicine_obj=Medicines.objects.filter(status=2)
+    from dateutil.relativedelta import relativedelta
+    phc_obj = PHC.objects.filter(status=2)
+    phc = request.POST.get('phc', '')
+    sub_center = request.POST.get('sub_center', '')
+    village = request.POST.get('village', '')
+    medicine = request.POST.get('medicine', '')
+    phc_ids = int(phc) if phc != '' else ''
+    sub_center_ids = int(sub_center) if sub_center != '' else ''
+    village_ids = int(village) if village != '' else ''
+    medicine_ids = int(medicine) if medicine != '' else ''
+    start_filter = request.POST.get('start_filter', '')
+    end_filter = request.POST.get('end_filter', '')
+    s_date=''
+    e_date=''
+    medicine_list = True
+    prescription_list=Prescription.objects.filter(status=2)
+    if start_filter != '':
+        start_date = start_filter+'-01'
+        end_date = end_filter+'-01'
+        sd_date= datetime.strptime(start_date, "%Y-%m-%d")
+        ed_date= datetime.strptime(end_date, "%Y-%m-%d")
+        ed_date = ed_date + relativedelta(months=1)
+        s_date = sd_date.strftime("%Y-%m-%d")
+        e_date = ed_date.strftime("%Y-%m-%d")
+        prescription_list=prescription_list.filter(status=2, server_created_on__range=[s_date,e_date])
+    if phc_ids:
+        sub_center_obj = Subcenter.objects.filter(status=2, phc__id=phc_ids)
+        pateint_registration_report = Patients.objects.filter(village__subcenter__phc__id=phc_ids).values_list('uuid')
+        prescription_list = prescription_list.filter(patient_uuid__in=pateint_registration_report)
+    if sub_center_ids:
+        village_obj = Village.objects.filter(status=2, subcenter__id=sub_center_ids)
+        pateint_registration_report = Patients.objects.filter(village__subcenter__id=sub_center_ids).values_list('uuid')
+        prescription_list = prescription_list.filter(patient_uuid__in=pateint_registration_report)
+    if village_ids:
+        pateint_registration_report = Patients.objects.filter(village__id=village_ids).values_list('uuid')
+        prescription_list = prescription_list.filter(patient_uuid__in=pateint_registration_report)
+    if medicine_ids:
+        prescription_list = prescription_list.filter(medicines__id=medicine_ids)
+
+
     data = pagination_function(request, prescription_list)
     current_page = request.GET.get('page', 1)
     page_number_start = int(current_page) - 2 if int(current_page) > 2 else 1
@@ -313,7 +352,7 @@ def patient_registration_report(request):
     s_date=''
     e_date=''
     pateint_registration_report = Patients.objects.filter(status=2)
-
+    health_worker_in_patient = True
     if start_filter != '':
         start_date = start_filter+'-01'
         end_date = end_filter+'-01'
@@ -344,18 +383,69 @@ def patient_registration_report(request):
     display_page_range = range(page_number_start, page_number_end)
     return render(request, 'reports/patient_registration_report.html', locals())
 
-def phc_wise_patient_list(request):
-    heading="Patient Registration Report"
+def phc_wise_patient_export_csv(request):
+    response = HttpResponse(content_type='text/csv',)
+    response['Content-Disposition'] = 'attachment; filename="distribution village wise medicine'+ str(localtime(timezone.now()).strftime("%m/%d/%Y %I:%M %p")) +'.csv"'
+    writer = csv.writer(response)
+    writer.writerow([
+        'PHC Name',
+        'Sub Centre',
+        'Village', 
+        '<30 Men',
+        '<30 women',
+        '>=30 and <=50 Men',
+        '>=30 and <=50 women',
+        '>50 Men',
+        '>50 women',
+        'Total',
+        ])
+    phc_wise_csv = phc_wise_sql_data(phc_ids, sbc_ids)
+    for data in phc_wise_csv:
+        writer.writerow([
+            data[0],data[1],data[2],data[3],data[4],data[5],data[6],data[7],data[8],data[9]
+            ])
+    return response 
+
+
+def phc_wise_sql_data(phc_ids, sbc_ids):
     cursor = connection.cursor()
-    cursor.execute('''SELECT  phc.name, sbc.name, vlg.name FROM health_management_patients hmp
-    inner join application_masters_village vlg on hmp.village_id = vlg.id
-    inner join application_masters_subcenter sbc on vlg.subcenter_id = sbc.id
-    inner join application_masters_phc phc on sbc.phc_id = phc.id
+    cursor.execute('''with a as(select phc.name as phc_name, sbc.name as sbc_name, vlg.name as vlg_name, coalesce(sum(case when date_part('year',age(dob))<30 and gender=1 then 1 else 0 end),0) as men_greater_30,coalesce(sum(case when date_part('year',age(dob))<30 and gender=2 then 1 else 0 end),0) as female_greater_30,coalesce(sum(case when date_part('year',age(dob))>=30 and date_part('year',age(dob))<=50 and gender=1 then 1 else 0 end),0) as men_between_30_50_age,coalesce(sum(case when date_part('year',age(dob))>=30 and date_part('year',age(dob))<=50 and gender=2 then 1 else 0 end),0) as female_between_30_50_age,coalesce(sum(case when date_part('year',age(dob))>50 and gender=1 then 1 else 0 end),0) as men_above_50,coalesce(sum(case when date_part('year',age(dob))>50 and gender=2 then 1 else 0 end),0) as female_above_50 from health_management_patients inner join application_masters_village vlg on health_management_patients.village_id = vlg.id inner join application_masters_subcenter sbc on vlg.subcenter_id = sbc.id inner join application_masters_phc phc on sbc.phc_id = phc.id where 1=1 '''+phc_ids+sbc_ids+''' group by village_id, phc.name, sbc.name, vlg.name) select phc_name, sbc_name, vlg_name, men_greater_30,female_greater_30, men_between_30_50_age, female_between_30_50_age, men_above_50, female_above_50,(men_greater_30 + female_greater_30 + men_between_30_50_age + female_between_30_50_age + men_above_50 + female_above_50) as total from a 
     ''')
     data = cursor.fetchall()
-    # patient_list = Patients.objects.raw('SELECT * FROM health_management_patients where ')
-    # for i in patient_list:
-    #     print(i)
+    return data
+
+
+def phc_wise_patient_list(request):
+    heading="Patient Registration Report"
+    from dateutil.relativedelta import relativedelta
+    phc_obj = PHC.objects.filter(status=2)
+    phc = request.POST.get('phc', '')
+    sub_center = request.POST.get('sub_center', '')
+    village = request.POST.get('village', '')
+    start_filter = request.POST.get('start_filter', '')
+    end_filter = request.POST.get('end_filter', '')
+    s_date=''
+    e_date=''
+    phc_ids= ""
+    if phc:
+        phc_ids = '''and phc.id='''+phc
+    sbc_ids= ""
+    if sub_center:
+        sbc_ids = '''and sbc.id='''+sub_center
+    #  where '''+village_filter+'''
+    data = phc_wise_sql_data(phc_ids, sbc_ids)
+    # data = phc_wise_patient_export_csv(phc_ids, sbc_ids)
+    
+    # print(data)
+    # dummy=[]
+    # for idx,i in enumerate(data):
+    #     total_data=list(i[3:])
+    #     n = sum(total_data)
+    #     my_lis=list(data[idx])
+    #     i_data = insert.insert(9,n)
+    #     dummy.append(i_data)
+    
+    
     return render(request, 'reports/phc_wise_patient_list.html', locals())
 
 
@@ -433,11 +523,6 @@ def user_edit(request,id):
     user_profile=UserProfile.objects.get(id=id)
     user_profiles=UserProfile.objects.filter(id=id)
     user_profiles_village = user_profiles.values_list('village__id', flat=True)
-    print(user_profiles_village)
-    # for user_profiles in user_profiles:
-    # print(user_profiles)
-    #     for i in UserProfile.village.through.objects.filter(village = user_profiles):
-    #         print(i.id)
     user_obj = User.objects.get(id=user_profile.user.id)
     if request.method == 'POST':
         username = request.POST.get('username')
@@ -843,7 +928,6 @@ def patient_details(self):
                         # "district_id" : data.get('district_id'),
                         "subcenter_id" : data.get('subcenter_id') if data.get('subcenter_id') != '' else None,
                         "phone_number": data.get('phone'),
-                        "image": self.FILES.get(data.get('uuid')),
                         "height":data.get('height'),
                         "weight":data.get('weight') if data.get('weight') != '' else None,
                         "door_no":data.get('door_no') if data.get('weight') != '' else None,
@@ -857,7 +941,8 @@ def patient_details(self):
                         })
         if created:
             obj.patient_id = data.get('patient_id')
-
+        if self.FILES.get(data.get('uuid')):
+            obj.image=self.FILES.get(data.get('uuid'))
         obj.save()
         
         objlist.append(obj)
@@ -968,13 +1053,14 @@ def home_visit_details(self):
             user_uuid = data.get('user_uuid'),
             defaults = {
                     "patient_uuid" : data.get('patient_uuid'),
-                    "image": self.FILES.get(data.get('uuid')),
                     "home_vist" : data.get('home_vist'),
                     "response_location" : data.get('response_location'),
                     "response_datetime" : data.get('response_datetime'),
                     })
         objlist.append(obj)
-
+        if self.FILES.get(data.get('uuid')):
+            obj.image=self.FILES.get(data.get('uuid'))
+        obj.save()
     return objlist
 
 

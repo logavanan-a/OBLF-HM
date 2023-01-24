@@ -14,6 +14,7 @@ urlpatterns = [
     path('phc/pull/<pk>/', Phc_pull.as_view()),
     path('phc/push/<pk>/', Phc_push.as_view()),
 
+    path('phc-wise-patient-export-csv/', phc_wise_patient_export_csv, name='phc_wise_patient_export_csv'),
     path('distribution-csv-export/', distribution_village_wise_csv, name='distribution_village_wise_csv'),
     path('patient-csv-export/', patient_csv_export, name='patient_csv_export'),
     path('drug-prescription-csv-export/', drug_prescription_csv_export, name='drug_prescription_csv_export'),

@@ -26,18 +26,16 @@
                             </tr>
                         </thead>
                         <tbody>
-                            {% for m in medicine_stock %}
-                            {% if m.get_no_of_units != 0 %}
+                            {% for m in data %}
                             <tr>
                                 <th>{{m.name|default_if_none:''}}</th>
                                 <td>{{m.get_no_of_units|default_if_none:''}}</td>
-                                
                             </tr>
-                            {% endif %}
                             {% endfor %}
                         </tbody>
                     </table>
                 </div>
+                {% include 'partials/pagination.html' %}
             </div>
         </div>
     </div> 
