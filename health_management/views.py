@@ -439,7 +439,6 @@ def phc_wise_patient_list(request):
     village = request.POST.get('village', '')
     start_filter = request.POST.get('start_filter', '')
     end_filter = request.POST.get('start_filter', '')
-    patient = True
     s_date=''
     e_date=''
     between_date = ""
@@ -1096,6 +1095,7 @@ def home_visit_details(self):
             defaults = {
                     "patient_uuid" : data.get('patient_uuid'),
                     "home_vist" : data.get('home_vist'),
+                    "image_location" : data.get('image_location'),
                     "response_location" : data.get('response_location'),
                     "response_datetime" : data.get('response_datetime'),
                     })

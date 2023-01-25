@@ -24,11 +24,11 @@ class PatientsAdmin(admin.ModelAdmin):
 
 @admin.register(Treatments)
 class TreatmentsAdmin(admin.ModelAdmin):
-    list_display = ['uuid', 'patient_uuid', 'visit_date', 'bp_sys1', 'bp_non_sys1', 'bp_sys2', 'bp_non_sys2',
+    list_display = ['uuid', 'user_uuid', 'patient_uuid', 'visit_date', 'bp_sys1', 'bp_non_sys1', 'bp_sys2', 'bp_non_sys2',
      'bp_sys3', 'bp_non_sys3', 'fbs', 'pp', 'random', 'weight', 
      'bmi', 'symptoms', 'remarks', 'hyper_diabetic', 'co_morbid_ids', 'co_morbid_names',
      'is_alcoholic', 'is_tobacco', 'is_smoker', 'status']
-    fields = ['uuid', 'patient_uuid', 'visit_date', 'bp_sys1', 'bp_non_sys1', 'bp_sys2', 'bp_non_sys2',
+    fields = ['uuid', 'user_uuid', 'patient_uuid', 'visit_date', 'bp_sys1', 'bp_non_sys1', 'bp_sys2', 'bp_non_sys2',
      'bp_sys3', 'bp_non_sys3', 'fbs', 'pp', 'random', 'weight', 
      'bmi', 'symptoms', 'remarks', 'hyper_diabetic', 'co_morbid_ids', 'co_morbid_names',
      'is_alcoholic', 'is_tobacco', 'is_smoker', 'status']
@@ -38,18 +38,18 @@ class TreatmentsAdmin(admin.ModelAdmin):
 
 @admin.register(Prescription)
 class PrescriptionAdmin(admin.ModelAdmin):
-    list_display = ['medicines', 'uuid', 'patient_uuid', 'treatment_uuid',
+    list_display = ['medicines', 'uuid', 'user_uuid', 'patient_uuid', 'treatment_uuid',
     'dosage', 'no_of_days', 'medicine_type', 'qty', 'status']
-    fields = ['medicines', 'uuid', 'patient_uuid', 'treatment_uuid',
+    fields = ['medicines', 'user_uuid', 'uuid', 'patient_uuid', 'treatment_uuid',
     'dosage', 'no_of_days', 'medicine_type', 'qty', 'status']
     search_fields = ['medicines__name']
     list_per_page = 15
 
 @admin.register(Diagnosis)
 class DiagnosisAdmin(admin.ModelAdmin):
-    list_display = ['ndc', 'uuid', 'treatment_uuid', 'detected_by', 'source_treatment',
+    list_display = ['ndc', 'uuid', 'user_uuid', 'treatment_uuid', 'detected_by', 'source_treatment',
     'years', 'status']
-    fields = ['ndc', 'uuid', 'treatment_uuid', 'detected_by', 'source_treatment',
+    fields = ['ndc', 'uuid', 'user_uuid', 'treatment_uuid', 'detected_by', 'source_treatment',
     'years', 'status']
     search_fields = ['ndc__name']
     list_per_page = 15
@@ -85,9 +85,9 @@ class UserProfileAdmin(admin.ModelAdmin):
 
 @admin.register(HomeVisit)
 class HomeVisitAdmin(admin.ModelAdmin):
-    list_display = ['uuid', 'patient_uuid',
-    'home_vist', 'response_location', 'response_datetime', 'image', 'status']
-    fields = ['uuid', 'patient_uuid',
+    list_display = ['uuid', 'patient_uuid', 'user_uuid',
+    'home_vist', 'image_location', 'response_location', 'response_datetime', 'image', 'status']
+    fields = ['uuid', 'image_location', 'patient_uuid', 'user_uuid',
     'home_vist', 'response_location', 'response_datetime',  'image', 'status']
     list_per_page = 15
 

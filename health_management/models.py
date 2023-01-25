@@ -215,6 +215,7 @@ class HomeVisit(BaseContent):
     user_uuid = models.CharField(max_length=150, null=True, blank=True)
     patient_uuid = models.CharField(max_length=150, null=True, blank=True)
     home_vist = models.PositiveIntegerField(choices=VISIT_TYPE_CHOICES, default=0)
+    image_location = models.CharField(max_length=150, null=True, blank=True)
     response_location = models.CharField(max_length=150, null=True, blank=True)
     response_datetime = models.DateTimeField(null=True, blank=True)
     image = models.FileField(
