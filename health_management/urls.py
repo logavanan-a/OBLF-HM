@@ -19,6 +19,7 @@ urlpatterns = [
     path('patient-csv-export/', patient_csv_export, name='patient_csv_export'),
     path('drug-prescription-csv-export/', drug_prescription_csv_export, name='drug_prescription_csv_export'),
 
+    path('disease/report/', disease_sql_data, name='disease_sql_data'),
     path('medicine-stock/report/', medicine_report_list, name='medicine_report_list'),
     path('phc-wise-patient/report/', phc_wise_patient_list, name='phc_wise_patient_list'),
     path('patient-registration/report/', patient_registration_report, name='patient_registration_report'),

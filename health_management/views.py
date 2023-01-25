@@ -64,7 +64,7 @@ def login_view(request):
 
 
 
-@ login_required(login_url='/login/')
+@login_required(login_url='/login/')
 def logout_view(request):
     logout(request)
     return HttpResponseRedirect('/login/')
@@ -399,7 +399,7 @@ def phc_wise_patient_export_csv(request):
         '>50 women',
         'Total',
         ])
-    phc_wise_csv = phc_wise_sql_data(phc_ids, sbc_ids)
+    phc_wise_csv = phc_wise_sql_data(phc_ids, sbc_ids, village_ids, between_date)
     for data in phc_wise_csv:
         writer.writerow([
             data[0],data[1],data[2],data[3],data[4],data[5],data[6],data[7],data[8],data[9]
@@ -407,9 +407,24 @@ def phc_wise_patient_export_csv(request):
     return response 
 
 
-def phc_wise_sql_data(phc_ids, sbc_ids):
+def phc_wise_sql_data(phc_ids, sbc_ids, village_ids, between_date):
     cursor = connection.cursor()
-    cursor.execute('''with a as(select phc.name as phc_name, sbc.name as sbc_name, vlg.name as vlg_name, coalesce(sum(case when date_part('year',age(dob))<30 and gender=1 then 1 else 0 end),0) as men_greater_30,coalesce(sum(case when date_part('year',age(dob))<30 and gender=2 then 1 else 0 end),0) as female_greater_30,coalesce(sum(case when date_part('year',age(dob))>=30 and date_part('year',age(dob))<=50 and gender=1 then 1 else 0 end),0) as men_between_30_50_age,coalesce(sum(case when date_part('year',age(dob))>=30 and date_part('year',age(dob))<=50 and gender=2 then 1 else 0 end),0) as female_between_30_50_age,coalesce(sum(case when date_part('year',age(dob))>50 and gender=1 then 1 else 0 end),0) as men_above_50,coalesce(sum(case when date_part('year',age(dob))>50 and gender=2 then 1 else 0 end),0) as female_above_50 from health_management_patients inner join application_masters_village vlg on health_management_patients.village_id = vlg.id inner join application_masters_subcenter sbc on vlg.subcenter_id = sbc.id inner join application_masters_phc phc on sbc.phc_id = phc.id where 1=1 '''+phc_ids+sbc_ids+''' group by village_id, phc.name, sbc.name, vlg.name) select phc_name, sbc_name, vlg_name, men_greater_30,female_greater_30, men_between_30_50_age, female_between_30_50_age, men_above_50, female_above_50,(men_greater_30 + female_greater_30 + men_between_30_50_age + female_between_30_50_age + men_above_50 + female_above_50) as total from a 
+    cursor.execute('''with a as (select phc.name as phc_name, sbc.name as sbc_name, vlg.name as vlg_name,
+    coalesce(sum(case when date_part('year',age(dob))<30 and gender=1 then 1 else 0 end),0) as men_greater_30,
+    coalesce(sum(case when date_part('year',age(dob))<30 and gender=2 then 1 else 0 end),0) as female_greater_30,
+    coalesce(sum(case when date_part('year',age(dob))>=30 and date_part('year',age(dob))<=50 and gender=1 then 1 else 0 end),0) as men_between_30_50_age,
+    coalesce(sum(case when date_part('year',age(dob))>=30 and date_part('year',age(dob))<=50 and gender=2 then 1 else 0 end),0) as female_between_30_50_age,
+    coalesce(sum(case when date_part('year',age(dob))>50 and gender=1 then 1 else 0 end),0) as men_above_50,
+    coalesce(sum(case when date_part('year',age(dob))>50 and gender=2 then 1 else 0 end),0) as female_above_50
+    from health_management_patients
+    inner join application_masters_village vlg on health_management_patients.village_id = vlg.id
+    inner join application_masters_subcenter sbc on vlg.subcenter_id = sbc.id
+    inner join application_masters_phc phc on sbc.phc_id = phc.id
+    where 1=1 '''+phc_ids+sbc_ids+village_ids+''' 
+    group by village_id, phc.name, sbc.name, vlg.name)
+    select phc_name, sbc_name, vlg_name, men_greater_30,female_greater_30, men_between_30_50_age, female_between_30_50_age, men_above_50, female_above_50,
+    (men_greater_30 + female_greater_30 + men_between_30_50_age + female_between_30_50_age + men_above_50 + female_above_50)
+    as total from a 
     ''')
     data = cursor.fetchall()
     return data
@@ -423,31 +438,58 @@ def phc_wise_patient_list(request):
     sub_center = request.POST.get('sub_center', '')
     village = request.POST.get('village', '')
     start_filter = request.POST.get('start_filter', '')
-    end_filter = request.POST.get('end_filter', '')
+    end_filter = request.POST.get('start_filter', '')
+    patient = True
     s_date=''
     e_date=''
+    between_date = ""
+    if start_filter != '':
+        start_date = start_filter+'-01'
+        end_date = end_filter+'-01'
+        sd_date= datetime.strptime(start_date, "%Y-%m-%d")
+        ed_date= datetime.strptime(end_date, "%Y-%m-%d")
+        ed_date = ed_date + relativedelta(months=1)
+        s_date = sd_date.strftime("%Y-%m-%d")
+        e_date = ed_date.strftime("%Y-%m-%d")
+        between_date = '''and server_created_on BETWEEN '''+str(s_date)+''' and '''+str(e_date)
     phc_ids= ""
     if phc:
-        phc_ids = '''and phc.id='''+phc
+        sub_center_obj = Subcenter.objects.filter(status=2, phc__id=phc)
+        phc_id = '''and phc.id='''+phc
     sbc_ids= ""
     if sub_center:
         sbc_ids = '''and sbc.id='''+sub_center
-    #  where '''+village_filter+'''
-    data = phc_wise_sql_data(phc_ids, sbc_ids)
+    village_ids=""
+    if village:
+        village_obj = Village.objects.filter(status=2, subcenter__id=village)
+        village_ids = '''and vlg.id='''+village
+    
+    data = phc_wise_sql_data(phc_ids, sbc_ids, village_ids, between_date)
     # data = phc_wise_patient_export_csv(phc_ids, sbc_ids)
-    
-    # print(data)
-    # dummy=[]
-    # for idx,i in enumerate(data):
-    #     total_data=list(i[3:])
-    #     n = sum(total_data)
-    #     my_lis=list(data[idx])
-    #     i_data = insert.insert(9,n)
-    #     dummy.append(i_data)
-    
-    
     return render(request, 'reports/phc_wise_patient_list.html', locals())
 
+def disease_sql_data(request):
+    cursor = connection.cursor()
+    cursor.execute('''with a as (select phc.name as phc_name, sbc.name as sbc_name, vlg.name as vlg_name, mtk.name as mtk_name,
+    coalesce(sum(case when date_part('year',age(dob))<30 and gender=1 then 1 else 0 end),0) as men_greater_30,
+    coalesce(sum(case when date_part('year',age(dob))<30 and gender=2 then 1 else 0 end),0) as female_greater_30,
+    coalesce(sum(case when date_part('year',age(dob))>=30 and date_part('year',age(dob))<=50 and gender=1 then 1 else 0 end),0) as men_between_30_50_age, 
+    coalesce(sum(case when date_part('year',age(dob))>=30 and date_part('year',age(dob))<=50 and gender=2 then 1 else 0 end),0) as female_between_30_50_age, 
+    coalesce(sum(case when date_part('year',age(dob))>50 and gender=1 then 1 else 0 end),0) as men_above_50, 
+    coalesce(sum(case when date_part('year',age(dob))>50 and gender=2 then 1 else 0 end),0) as female_above_50
+    from health_management_patients pt 
+    inner join application_masters_village vlg on pt.village_id = vlg.id 
+    inner join application_masters_subcenter sbc on vlg.subcenter_id = sbc.id 
+    inner join application_masters_phc phc on sbc.phc_id = phc.id 
+    inner join health_management_treatments as trmt on pt.uuid = trmt.patient_uuid 
+    inner join health_management_diagnosis as dgn on trmt.uuid = dgn.treatment_uuid 
+    inner join application_masters_masterlookup mtk on dgn.ndc_id = mtk.id 
+    group by village_id, phc.name, sbc.name, vlg.name, mtk.name) select phc_name, sbc_name, vlg_name, mtk_name, men_greater_30,
+    female_greater_30, men_between_30_50_age, female_between_30_50_age, men_above_50, female_above_50, 
+    (men_greater_30 + female_greater_30 + men_between_30_50_age + female_between_30_50_age + men_above_50 + female_above_50)
+    as total from a''')
+    data = cursor.fetchall()
+    return render(request, 'reports/phc_village_wise_disease_report.html', locals())
 
 def get_sub_center(request, subcenter_id):
     if request.method == 'GET' and request.is_ajax():
