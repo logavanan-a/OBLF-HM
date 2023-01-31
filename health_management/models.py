@@ -66,6 +66,12 @@ class Patients(BaseContent):
             diagnosis_id = None
         return diagnosis_id
 
+    def calculate_age(self):
+        from datetime import date
+        today = date.today()
+        return today.year - self.dob.year - ((today.month, today.day) < (self.dob.month, self.dob.day))
+
+
 
 
 
@@ -141,22 +147,22 @@ class Prescription(BaseContent):
             treatments_list = None
         return treatments_list
     
-    def get_qty(self):
-        from django.db.models import Sum
-        medicine = MedicineStock.objects.filter(medicine=self.medicines)
-        medicine_stock_totals = medicine.aggregate(sum=Sum('no_of_units')).get('sum')
-        drug_dispensation = DrugDispensation.objects.filter(medicine=self.medicines)
-        drug_dispensation_total = drug_dispensation.aggregate(sum=Sum('units_dispensed')).get('sum')
-        prescription_total=self.qty
-        if drug_dispensation_total == None:
-            drug_dispensation_total = 0
-        if medicine_stock_totals == None:
-            medicine_stock_totals = 0
-        if prescription_total == None:
-            prescription_total = 0
+    # def get_qty(self):
+    #     from django.db.models import Sum
+    #     medicine = MedicineStock.objects.filter(medicine=self.medicines)
+    #     medicine_stock_totals = medicine.aggregate(sum=Sum('no_of_units')).get('sum')
+    #     drug_dispensation = DrugDispensation.objects.filter(medicine=self.medicines)
+    #     drug_dispensation_total = drug_dispensation.aggregate(sum=Sum('units_dispensed')).get('sum')
+    #     prescription_total=self.qty
+    #     if drug_dispensation_total == None:
+    #         drug_dispensation_total = 0
+    #     if medicine_stock_totals == None:
+    #         medicine_stock_totals = 0
+    #     if prescription_total == None:
+    #         prescription_total = 0
             
-        opening_stock_total = abs(int(medicine_stock_totals) - int(drug_dispensation_total)) - int(prescription_total)
-        return opening_stock_total
+    #     opening_stock_total = abs(int(medicine_stock_totals) - int(drug_dispensation_total)) - int(prescription_total)
+    #     return opening_stock_total
         
 
 
@@ -176,12 +182,6 @@ class Diagnosis(BaseContent):
 
     class Meta:
         verbose_name_plural = "Diagnosis"
-
-    
-
-
-
-
 
 
 
@@ -206,6 +206,7 @@ class UserProfile(BaseContent):
         User, on_delete=models.DO_NOTHING)
     village = models.ManyToManyField(Village, blank=True)
     user_type= models.PositiveIntegerField(choices=USER_TYPE_CHOICES,default=0, db_index=True)
+
     def __str__(self):
         return self.user.username
 
@@ -221,6 +222,22 @@ class HomeVisit(BaseContent):
     image = models.FileField(
         upload_to='home_visit_image/%y/%m/%d/', blank=True, null=True)
 
+    def get_health_worker(self):
+        try:
+            health_worker = UserProfile.objects.get(uuid=self.user_uuid, user_type=1)
+        except ObjectDoesNotExist:
+            health_worker = None
+        return health_worker
+    
+    def get_patient_uuid(self):
+        try:
+            patients_list=Patients.objects.get(uuid=self.patient_uuid)
+        except ObjectDoesNotExist:
+            patients_list = None
+        return patients_list
+
+   
+
 class MedicineStock(BaseContent):
     medicine = models.ForeignKey(Medicines, on_delete=models.DO_NOTHING, null=True, blank=True)
     date_of_creation = models.DateField(null=True, blank=True)
@@ -235,6 +252,16 @@ class DrugDispensation(BaseContent):
     village = models.ForeignKey(Village, on_delete=models.DO_NOTHING)
     units_dispensed = models.PositiveIntegerField(null=True, blank=True)
     date_of_dispensation = models.DateField(null=True, blank=True)
+
+
+# class EmailVerification(BaseContent):
+#     email = models.EmailField(unique=True)
+#     is_verified = models.BooleanField(default=False)
+#     verified_on = models.DateTimeField()
+
+#     def __str__(self):
+#         return self.email
+
 
     
 

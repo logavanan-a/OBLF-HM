@@ -20,7 +20,7 @@ urlpatterns = [
     path('drug-prescription-csv-export/', drug_prescription_csv_export, name='drug_prescription_csv_export'),
 
     path('disease/report/', disease_sql_data, name='disease_sql_data'),
-    path('medicine-stock/report/', medicine_report_list, name='medicine_report_list'),
+    path('home-visit/report/', home_visit_report, name='home_visit_report'),
     path('phc-wise-patient/report/', phc_wise_patient_list, name='phc_wise_patient_list'),
     path('patient-registration/report/', patient_registration_report, name='patient_registration_report'),
     path('village-wise-medicine/report/', distribution_village_wise_medicine_report_list, name='village_wise_drug_list'),
