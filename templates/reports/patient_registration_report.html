@@ -7,9 +7,19 @@
     <div class="col-12">
         <div class="card">
             <div class="card-body">
-              
-                <div class="table-rep-plugin">
-                    <table id="datatable-buttons" class="table  table-bordered dt-responsive w-100 ">
+                <form action=""  method="POST" >
+                    {% csrf_token %}
+                    <div class="d-flex justify-content-end mb-3"> 
+                        {% for key, values in filter_values.items %}
+                            <input type="hidden" id="__hd1__{{key}}" name='{{key}}' value="{{values}}"/>
+                        {% endfor %}
+                        <button type="submit" name='export'  class="btn btn-primary waves-effect justify-content-start" value="True">
+                             Export
+                         </button>  
+                    </div>
+                </form>
+                <div class="table-responsive mb-3" data-pattern="priority-columns">
+                    <table id="tech-companies-1" class="table table-bordered dt-responsive mb-0">
                         <thead>
                             <tr>
                                 <th>PHC Name</th>
@@ -19,7 +29,12 @@
                                 <th>Patient Code</th>
                                 <th>Age</th>
                                 <th>Gender</th>
+                                <th>SBP</th>
+                                <th>DBP</th>
+                                <th>Blood Sugar</th>
+                                <th>Diagnosis</th>
                                 <th>Source of treatment</th>
+                                <th>Treatment</th>
                                 <th>Health Worker</th>
                                 <th>Created On</th>
                             </tr>
@@ -34,6 +49,8 @@
                                 <th>{{prr.patient_id}}</th>
                                 <th>{{prr.calculate_age}}</th>
                                 <th>{{prr.get_gender_display}}</th>
+                                <th>{{prr.get_treatment_uuid.bp_sys1}}{{prr.get_treatment_uuid.bp_sys2}}{{prr.get_treatment_uuid.bp_sys3}}</th>
+                                <th>{{prr.get_treatment_uuid.bp_non_sys1}}{{prr.get_treatment_uuid.bp_non_sys2}}{{prr.get_treatment_uuid.bp_non_sys3}}</th>
                                 {% if prr.get_diagnosis_id.source_treatment == 1 %}
                                     <th>Clinic</th>
                                 {% elif prr.get_diagnosis_id.source_treatment == 2 %}

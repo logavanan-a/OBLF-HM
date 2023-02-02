@@ -14,13 +14,12 @@ urlpatterns = [
     path('phc/pull/<pk>/', Phc_pull.as_view()),
     path('phc/push/<pk>/', Phc_push.as_view()),
 
-    path('patient-csv-export/', patient_csv_export, name='patient_csv_export'),
 
-    path('disease/report/', phc_village_wise_disease_list, name='phc_village_wise_disease_list'),
+    path('prevelance-of-ncd/report/', prevelance_of_ncd_list, name='prevelance_of_ncd_list'),
     path('home-visit/report/', home_visit_report, name='home_visit_report'),
-    path('phc-wise-patient/report/', phc_wise_patient_list, name='phc_wise_patient_list'),
+    path('utilisation-of-services/report/', utilisation_of_services_list, name='utilisation_of_services_list'),
     path('patient-registration/report/', patient_registration_report, name='patient_registration_report'),
-    path('village-wise-medicine/report/', distribution_village_wise_medicine_report_list, name='village_wise_drug_list'),
+    path('clinic-level-statistics/report/', clinic_level_statistics_list, name='clinic_level_statistics_list'),
     path('drug-dispensation/report/', drug_dispensation_stock_list, name='drug_dispensation_stock_list'),
 
     path('village-wise-drugs/list/', village_wise_drugs_list, name='village_wise_drug_list'),

@@ -71,6 +71,15 @@ class Patients(BaseContent):
         today = date.today()
         return today.year - self.dob.year - ((today.month, today.day) < (self.dob.month, self.dob.day))
 
+    def get_treatment_uuid(self):
+        try:
+            treatment_ids=Treatments.objects.get(patient_uuid=self.uuid)
+        except ObjectDoesNotExist:
+            treatment_ids=None
+        return treatment_ids
+    
+
+
 
 
 

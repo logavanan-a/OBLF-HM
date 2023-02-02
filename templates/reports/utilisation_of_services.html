@@ -8,12 +8,17 @@
         <div class="card">
             <div class="card-body">
                 <div class="table-rep-plugin">
-                    {% comment %} <div class="d-flex justify-content-end mb-3"> 
-                       <button  onclick="location.href='/phc-wise-patient-export-csv/'" class="btn btn-primary waves-effect justify-content-start">
-                            Export
-                        </button> 
-
-                    </div>  {% endcomment %} 
+                    <form action=""  method="POST" >
+                        {% csrf_token %}
+                        <div class="d-flex justify-content-end mb-3"> 
+                            {% for key, values in filter_values.items %}
+                                <input type="hidden" id="__hd1__{{key}}" name='{{key}}' value="{{values}}"/>
+                            {% endfor %}
+                            <button type="submit" name='export'  class="btn btn-primary waves-effect justify-content-start" value="True">
+                                 Export
+                             </button>  
+                        </div>
+                    </form>
                     <div class="table-responsive mb-3" data-pattern="priority-columns">
                         <table id="tech-companies-1" class="table table-bordered dt-responsive mb-0">
                             <thead>

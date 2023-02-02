@@ -3,34 +3,52 @@
 {% block contents %}
 {% include 'partials/filter_report.html' %}
 
+
 <div class="row">
     <div class="col-12">
         <div class="card">
             <div class="card-body">
-                <div class="d-flex justify-content-end mb-3"> 
-                    <button  onclick="location.href='/distribution-csv-export/'" class="btn btn-primary waves-effect justify-content-start">
-                        Export
-                    </button>
-                </div>
+                <form action=""  method="POST" >
+                    {% csrf_token %}
+                    <div class="d-flex justify-content-end mb-3"> 
+                        {% for key, values in filter_values.items %}
+                            <input type="hidden" id="__hd1__{{key}}" name='{{key}}' value="{{values}}"/>
+                        {% endfor %}
+                        <button type="submit" name='export'  class="btn btn-primary waves-effect justify-content-start" value="True">
+                             Export
+                         </button>  
+                    </div>
+                </form>
                 <div class="table-rep-plugin">
                     <table id="datatable-buttons" class="table  table-bordered dt-responsive w-100 ">
                         <thead>
                             <tr>
                                 <th>PHC Name</th>
                                 <th>Sub Centre</th>
-                                <th>Village</th>
-                                <th>Medicine</th>
-                                <th>Quantity</th>
+                                <th>Village</th>                                   
+                                <th>&lt;30 Men NCD</th>
+                                <th>&lt;30 women NCD</th>
+                                <th>&gt;=30 and &lt;=50 Men NCD</th>
+                                <th>&gt;=30 and &lt;=50 women NCD</th>
+                                <th>&gt;50 Men NCD</th>
+                                <th>&gt;50 women NCD</th>
+                                <th>Total NCD</th>
                             </tr>
                         </thead>
                         <tbody>
-                            {% for dl in data %}
+                            {% for prr in data %}
                             <tr>
-                                <td>{{dl.get_user_uuid.village.subcenter.phc|default_if_none:'-'}}</td>
-                                <td>{{dl.get_user_uuid.village.subcenter|default_if_none:'-'}}</td>
-                                <td>{{dl.get_user_uuid.village|default_if_none:'-'}}</td>
-                                <th>{{dl.medicines|default_if_none:'-'}}</th>
-                                <th>{{dl.get_qty}}</th>
+                                
+                                <th>{{prr.0}}</th>
+                                <th>{{prr.1}}</th>
+                                <th>{{prr.2}}</th>
+                                <th>{{prr.3}}</th>
+                                <th>{{prr.4}}</th>
+                                <th>{{prr.5}}</th>
+                                <th>{{prr.6}}</th>
+                                <th>{{prr.7}}</th>
+                                <th>{{prr.8}}</th>
+                                <th>{{prr.9}}</th>
                             </tr>
                             {% endfor %}
                         </tbody>
@@ -41,7 +59,6 @@
         </div>
     </div> 
 </div> 
-
 {% endblock %}
 {% block extra_javascript %}
 <script src="{% static 'js/pages/form-validation.init.js' %}"></script>
@@ -51,7 +68,7 @@
         $('#phc').prop('selectedIndex', 0).change();
         $('#sub_center').prop('selectedIndex', 0).change();
         $('#village').prop('selectedIndex', 0).change();
-        $('#medicine').prop('selectedIndex', 0).change();
+        $('#health_worker').prop('selectedIndex', 0).change();
         $('#start_filter').val('');
         $('#end_filter').val('');
         this.form.submit();
