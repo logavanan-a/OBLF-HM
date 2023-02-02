@@ -29,9 +29,9 @@
                                 <th>Patient Code</th>
                                 <th>Age</th>
                                 <th>Gender</th>
-                                <th>SBP</th>
+                                {% comment %}<th>SBP</th>
                                 <th>DBP</th>
-                                <th>Blood Sugar</th>
+                                <th>Blood Sugar</th>{% endcomment %}
                                 <th>Diagnosis</th>
                                 <th>Source of treatment</th>
                                 <th>Treatment</th>
@@ -49,8 +49,7 @@
                                 <th>{{prr.patient_id}}</th>
                                 <th>{{prr.calculate_age}}</th>
                                 <th>{{prr.get_gender_display}}</th>
-                                <th>{{prr.get_treatment_uuid.bp_sys1}}{{prr.get_treatment_uuid.bp_sys2}}{{prr.get_treatment_uuid.bp_sys3}}</th>
-                                <th>{{prr.get_treatment_uuid.bp_non_sys1}}{{prr.get_treatment_uuid.bp_non_sys2}}{{prr.get_treatment_uuid.bp_non_sys3}}</th>
+                                <th>{{prr.get_prescription_uuid.dosage}}</th>
                                 {% if prr.get_diagnosis_id.source_treatment == 1 %}
                                     <th>Clinic</th>
                                 {% elif prr.get_diagnosis_id.source_treatment == 2 %}
@@ -60,6 +59,7 @@
                                 {% else %}
                                     <th>-</th>
                                 {% endif %}
+                                <th>{{prr.get_prescription_uuid.medicines}}</th>
                                 <th>{{prr.get_health_worker.user.first_name}}</th>
                                 <th>{{prr.server_created_on|date:"d-m-Y h:i a"}}</th>
                             </tr>
