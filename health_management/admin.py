@@ -13,7 +13,7 @@ class PatientsAdmin(admin.ModelAdmin):
     fields = ['name', 'village', 'uuid', 'patient_id', 'user_uuid', 'dob', 'age', 'gender', 'phone_number', 'image',
      'height', 'weight', 'door_no', 'seq_no', 'patient_visit_type', 'fee_status',
      'fee_paid', 'fee_date', 'registered_date', 'last_visit_date', 'status']
-    search_fields = ['name', 'village__name']
+    search_fields = ['name', 'village__name', 'uuid', 'patient_id', 'user_uuid']
     list_per_page = 15
 
     def formfield_for_foreignkey(self, db_field, request, **kwargs):
@@ -32,6 +32,7 @@ class TreatmentsAdmin(admin.ModelAdmin):
      'bp_sys3', 'bp_non_sys3', 'fbs', 'pp', 'random', 'weight', 
      'bmi', 'symptoms', 'remarks', 'hyper_diabetic', 'co_morbid_ids', 'co_morbid_names',
      'is_alcoholic', 'is_tobacco', 'is_smoker', 'status']
+    search_fields = ['uuid', 'user_uuid', 'patient_uuid']
     list_per_page = 15
 
 
@@ -42,7 +43,7 @@ class PrescriptionAdmin(admin.ModelAdmin):
     'dosage', 'no_of_days', 'medicine_type', 'qty', 'status']
     fields = ['medicines', 'user_uuid', 'uuid', 'patient_uuid', 'treatment_uuid',
     'dosage', 'no_of_days', 'medicine_type', 'qty', 'status']
-    search_fields = ['medicines__name']
+    search_fields = ['medicines__name','uuid', 'user_uuid', 'patient_uuid', 'treatment_uuid']
     list_per_page = 15
 
 @admin.register(Diagnosis)
@@ -51,7 +52,7 @@ class DiagnosisAdmin(admin.ModelAdmin):
     'years', 'status']
     fields = ['ndc', 'uuid', 'user_uuid', 'treatment_uuid', 'detected_by', 'source_treatment',
     'years', 'status']
-    search_fields = ['ndc__name']
+    search_fields = ['ndc__name', 'uuid', 'user_uuid', 'treatment_uuid']
     list_per_page = 15
 
     def formfield_for_foreignkey(self, db_field, request, **kwargs):
@@ -62,11 +63,11 @@ class DiagnosisAdmin(admin.ModelAdmin):
 
 @admin.register(Scanned_Report)
 class Scanned_ReportAdmin(admin.ModelAdmin):
-    list_display = ['title', 'uuid', 'patient_uuid', 'image_path',
+    list_display = ['title', 'uuid', 'user_uuid', 'patient_uuid', 'image_path',
     'captured_date', 'status']
-    fields = ['title', 'uuid', 'patient_uuid', 'image_path',
+    fields = ['title', 'uuid', 'user_uuid', 'patient_uuid', 'image_path',
     'captured_date', 'status']
-    search_fields = ['title']
+    search_fields = ['title', 'uuid', 'user_uuid', 'patient_uuid']
     list_per_page = 15
 
 @admin.register(UserProfile)
@@ -75,7 +76,7 @@ class UserProfileAdmin(admin.ModelAdmin):
     'user_type', 'status')
     fields = ['uuid', 'user', 'village', 'phone_no',
     'user_type', 'status']
-    search_fields = ['name', 'user__username', 'village__name']
+    search_fields = ['name', 'user__username', 'village__name', 'uuid']
     list_per_page = 15
 
     def villages(self, instance):
@@ -89,6 +90,7 @@ class HomeVisitAdmin(admin.ModelAdmin):
     'home_vist', 'image_location', 'response_location', 'response_datetime', 'image', 'status']
     fields = ['uuid', 'image_location', 'patient_uuid', 'user_uuid',
     'home_vist', 'response_location', 'response_datetime',  'image', 'status']
+    search_fields = ['uuid', 'patient_uuid', 'user_uuid']
     list_per_page = 15
 
 
