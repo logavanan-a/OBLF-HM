@@ -877,14 +877,23 @@ class LoginAPIView(APIView):
         user = None
         username = data.get('username')
         password = data.get('password')
-        try:
-            findUser = UserProfile._default_manager.get(
-                user__username__iexact=username)            
-        except UserProfile.DoesNotExist:
-            findUser = None
-        if findUser is not None:
-            username = findUser.user.get_username()
-            user = authenticate(request, username=username, password=password)
+        email = data.get('email')
+        if email:
+            try:
+                findUser = UserProfile._default_manager.get(
+                    user__email__iexact=email) 
+                user = findUser.user
+            except UserProfile.DoesNotExist:
+                findUser = None
+        elif username:
+            try:
+                findUser = UserProfile._default_manager.get(
+                    user__username__iexact=username)  
+            except UserProfile.DoesNotExist:
+                findUser = None
+            if findUser is not None:
+                username = findUser.user.get_username()
+                user = authenticate(request, username=username, password=password)
         if user is not None:
             userprofileserialize=UserProfileSerializers(findUser)
             return JsonResponse({
