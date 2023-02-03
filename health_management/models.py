@@ -81,11 +81,6 @@ class Patients(BaseContent):
     
 
 
-
-
-
-
-
 class Treatments(BaseContent):
     SMOKER_CHOICES = (
     (0, 'No'),
@@ -118,9 +113,6 @@ class Treatments(BaseContent):
 
     class Meta:
         verbose_name_plural = "Treatments"
-
-
-
 
 
 
@@ -157,27 +149,6 @@ class Prescription(BaseContent):
             treatments_list = None
         return treatments_list
     
-    # def get_qty(self):
-    #     from django.db.models import Sum
-    #     medicine = MedicineStock.objects.filter(medicine=self.medicines)
-    #     medicine_stock_totals = medicine.aggregate(sum=Sum('no_of_units')).get('sum')
-    #     drug_dispensation = DrugDispensation.objects.filter(medicine=self.medicines)
-    #     drug_dispensation_total = drug_dispensation.aggregate(sum=Sum('units_dispensed')).get('sum')
-    #     prescription_total=self.qty
-    #     if drug_dispensation_total == None:
-    #         drug_dispensation_total = 0
-    #     if medicine_stock_totals == None:
-    #         medicine_stock_totals = 0
-    #     if prescription_total == None:
-    #         prescription_total = 0
-            
-    #     opening_stock_total = abs(int(medicine_stock_totals) - int(drug_dispensation_total)) - int(prescription_total)
-    #     return opening_stock_total
-        
-
-
-    
-
 
 class Diagnosis(BaseContent):
     uuid = models.CharField(max_length=150, null=True, blank=True)
@@ -192,6 +163,21 @@ class Diagnosis(BaseContent):
 
     class Meta:
         verbose_name_plural = "Diagnosis"
+    
+    def get_patients_uuid(self):
+        try:
+            treatments_list=Treatments.objects.get(uuid=self.treatment_uuid)
+            patients_list=Patients.objects.get(uuid=treatments_list.patient_uuid)
+        except ObjectDoesNotExist:
+            patients_list = None
+        return patients_list
+    
+    def get_health_worker(self):
+        try:
+            health_worker = UserProfile.objects.get(uuid=self.user_uuid, user_type=1)
+        except ObjectDoesNotExist:
+            health_worker = None
+        return health_worker
 
 
 

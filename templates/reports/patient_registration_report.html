@@ -27,7 +27,8 @@
                                 <th>Village</th>                                   
                                 <th>Patient Name</th>
                                 <th>Patient Code</th>
-                                <th>Age</th>
+                                <th>DOB</th>
+                                <th>Age(today)</th>
                                 <th>Gender</th>
                                 {% comment %}<th>SBP</th>
                                 <th>DBP</th>
@@ -47,6 +48,7 @@
                                 <th>{{prr.village}}</th>
                                 <th>{{prr.name}}</th>
                                 <th>{{prr.patient_id}}</th>
+                                <th>{{prr.dob}}</th>
                                 <th>{{prr.calculate_age}}</th>
                                 <th>{{prr.get_gender_display}}</th>
                                 <th>{{prr.get_prescription_uuid.dosage}}</th>

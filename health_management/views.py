@@ -119,6 +119,17 @@ def distribution_village_wise_csv(request):
     return response 
 
 
+def verified_diagnosis_report(request):
+    heading="VERFIED DIAGNOSIS"
+    verified_diagnosis_list = Diagnosis.objects.filter(status=2)
+    return render(request, 'reports/verified_diagnosis.html', locals())
+
+def verified_home_visit_report(request):
+    heading="VERFIED HEALTH WORKERS HOME VISITS"
+    verified_home_visit = HomeVisit.objects.filter(status=2)
+    return render(request, 'reports/verified_home_visit.html', locals())
+
+
 def home_visit_report(request):
     heading="HEALTH WORKERS HOME VISITS"
     filter_values = request.POST.dict()

@@ -1,0 +1,52 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block contents %}
+
+<div class="row">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-body">
+                <div class="table-rep-plugin">
+                    <table id="datatable-buttons" class="table  table-bordered dt-responsive w-100 ">
+                        <thead>
+                            <tr>
+                                <th>PHC Name</th>
+                                <th>Sub Centre</th>
+                                <th>Village</th>                                   
+                                <th>Patient Name</th>
+                                <th>Patient Code</th>
+                                <th>NCD</th>
+                                <th>Source of treatment</th>
+                                <th>Health Worker</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for vd in verified_diagnosis_list %}
+                            <tr>
+                                <th>{{vd.get_patients_uuid.village.subcenter.phc}}</th>
+                                <th>{{vd.get_patients_uuid.village.subcenter}}</th>
+                                <th>{{vd.get_patients_uuid.village}}</th>
+                                <th>{{vd.get_patients_uuid.name}}</th>
+                                <th>{{vd.get_patients_uuid.patient_id}}</th>
+                                <th>{{vd.ndc}}</th>
+                                {% if vd.source_treatment == 1 %}
+                                    <th>Clinic</th>
+                                {% elif vd.source_treatment == 2 %}
+                                    <th>Outside</th>
+                                {% elif vd.source_treatment == 3 %}
+                                    <th>C & O</th>
+                                {% else %}
+                                    <th>-</th>
+                                {% endif %}
+                                <th>{{vd.get_health_worker.user.first_name}}</th>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div> 
+</div> 
+{% endblock %}
+

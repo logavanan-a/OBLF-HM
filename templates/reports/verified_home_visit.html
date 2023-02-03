@@ -1,0 +1,44 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block contents %}
+
+<div class="row">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-body">
+                <div class="table-rep-plugin">
+                    <table id="datatable-buttons" class="table  table-bordered dt-responsive w-100 ">
+                        <thead>
+                            <tr>
+                                <th>PHC Name</th>
+                                <th>Sub Centre</th>
+                                <th>Village</th>                                   
+                                <th>Patient Name</th>
+                                <th>Patient Code</th>
+                                <th>Home visit</th>
+                                <th>Last date of visit</th>
+                                <th>Health Worker</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for vhv in verified_home_visit %}
+                            <tr>
+                                <th>{{vhv.get_patient_uuid.village.subcenter.phc}}</th>
+                                <th>{{vhv.get_patient_uuid.village.subcenter}}</th>
+                                <th>{{vhv.get_patient_uuid.village}}</th>
+                                <th>{{vhv.get_patient_uuid.name}}</th>
+                                <th>{{vhv.get_patient_uuid.patient_id}}</th>
+                                <th>{{vhv.get_home_vist_display}}</th>
+                                <th>{{vhv.response_datetime}}</th>
+                                <th>{{vhv.get_health_worker.user.first_name}}</th>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div> 
+</div> 
+{% endblock %}
+
