@@ -19,8 +19,8 @@
                          </button>  
                     </div>
                 </form>
-                <div class="table-rep-plugin">
-                    <table id="datatable-buttons" class="table  table-bordered dt-responsive w-100 ">
+                <div class="table-responsive mb-3" data-pattern="priority-columns">
+                    <table id="tech-companies-1" class="table table-bordered dt-responsive mb-0">
                         <thead>
                             <tr>
                                 <th>PHC Name</th>
@@ -33,22 +33,36 @@
                                 <th>&gt;50 Men NCD</th>
                                 <th>&gt;50 women NCD</th>
                                 <th>Total NCD</th>
+                                <th>&lt;30 Men New NCD</th>
+                                <th>&lt;30 women New NCD</th>
+                                <th>&gt;=30 and &lt;=50 New Men NCD</th>
+                                <th>&gt;=30 and &lt;=50 New women NCD</th>
+                                <th>&gt;50 Men New NCD</th>
+                                <th>&gt;50 women New NCD</th>
+                                <th>Total New NCD</th>
                             </tr>
                         </thead>
                         <tbody>
                             {% for prr in data %}
                             <tr>
                                 
-                                <th>{{prr.0}}</th>
-                                <th>{{prr.1}}</th>
-                                <th>{{prr.2}}</th>
-                                <th>{{prr.3}}</th>
-                                <th>{{prr.4}}</th>
-                                <th>{{prr.5}}</th>
-                                <th>{{prr.6}}</th>
-                                <th>{{prr.7}}</th>
-                                <th>{{prr.8}}</th>
-                                <th>{{prr.9}}</th>
+                                <td>{{prr.0}}</td>
+                                <td>{{prr.1}}</td>
+                                <td>{{prr.2}}</td>
+                                <td>{{prr.3}}</td>
+                                <td>{{prr.4}}</td>
+                                <td>{{prr.5}}</td>
+                                <td>{{prr.6}}</td>
+                                <td>{{prr.7}}</td>
+                                <td>{{prr.8}}</td>
+                                <td>{{prr.9}}</td>
+                                <td>{{prr.10}}</td>
+                                <td>{{prr.11}}</td>
+                                <td>{{prr.12}}</td>
+                                <td>{{prr.13}}</td>
+                                <td>{{prr.14}}</td>
+                                <td>{{prr.15}}</td>
+                                <td>{{prr.16}}</td>
                             </tr>
                             {% endfor %}
                         </tbody>

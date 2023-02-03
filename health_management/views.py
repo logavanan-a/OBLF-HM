@@ -164,7 +164,7 @@ def home_visit_report(request):
     inner join health_management_patients pt on hv.patient_uuid = pt.uuid inner join application_masters_village vlg on pt.village_id=vlg.id 
     inner join application_masters_subcenter sbc on vlg.subcenter_id = sbc.id inner join application_masters_phc phc on sbc.phc_id = phc.id 
     inner join health_management_userprofile upf on hv.user_uuid=upf.uuid inner join auth_user hwn on upf.user_id = hwn.id
-    where 1=1 '''+phc_id+sbc_ids+village_id+between_date+''' group by phc_name, sbc_name, village_name, patient_name, patient_code, health_worker_name''')
+    where 1=1 '''+phc_id+sbc_ids+village_id+between_date+''' group by phc_name, sbc_name, village_name, patient_name, patient_code, health_worker_name order by vlg.name''')
     data = cursor.fetchall()
     export_flag = True if request.POST.get('export') and request.POST.get( 'export').lower() == 'true' else False
     if export_flag:
@@ -197,25 +197,21 @@ def home_visit_report(request):
 
 
 def clinic_level_statistics_list(request):
-    heading="DISTRIBUTION OF MEDICINE - VILLAGE-WISE REPORT"
-    medicine_obj=Medicines.objects.filter(status=2)
+    heading="CLINIC LEVEL STATISTICS"
     filter_values = request.POST.dict()
     from dateutil.relativedelta import relativedelta
     phc_obj = PHC.objects.filter(status=2)
     phc = request.POST.get('phc', '')
     sub_center = request.POST.get('sub_center', '')
     village = request.POST.get('village', '')
-    medicine = request.POST.get('medicine', '')
     phc_ids = int(phc) if phc != '' else ''
     sub_center_ids = int(sub_center) if sub_center != '' else ''
     village_ids = int(village) if village != '' else ''
-    medicine_ids = int(medicine) if medicine != '' else ''
     start_filter = request.POST.get('start_filter', '')
     end_filter = request.POST.get('end_filter', '')
     s_date=''
     e_date=''
-    medicine_list = True
-    distribution_list=Prescription.objects.filter(status=2)
+    between_date = ""
     if start_filter != '':
         start_date = start_filter+'-01'
         end_date = end_filter+'-01'
@@ -224,28 +220,54 @@ def clinic_level_statistics_list(request):
         ed_date = ed_date + relativedelta(months=1)
         s_date = sd_date.strftime("%Y-%m-%d")
         e_date = ed_date.strftime("%Y-%m-%d")
-        distribution_list=distribution_list.filter(status=2, server_created_on__range=[s_date,e_date])
-    if phc_ids:
-        sub_center_obj = Subcenter.objects.filter(status=2, phc__id=phc_ids)
-        pateint_registration_report = Patients.objects.filter(village__subcenter__phc__id=phc_ids).values_list('uuid')
-        distribution_list = distribution_list.filter(patient_uuid__in=pateint_registration_report)
-    if sub_center_ids:
-        village_obj = Village.objects.filter(status=2, subcenter__id=sub_center_ids)
-        pateint_registration_report = Patients.objects.filter(village__subcenter__id=sub_center_ids).values_list('uuid')
-        distribution_list = distribution_list.filter(patient_uuid__in=pateint_registration_report)
-    if village_ids:
-        pateint_registration_report = Patients.objects.filter(village__id=village_ids).values_list('uuid')
-        distribution_list = distribution_list.filter(patient_uuid__in=pateint_registration_report)
-    if medicine_ids:
-        distribution_list = distribution_list.filter(medicines__id=medicine_ids)
+        between_date = """and to_char(pt.server_created_on,'YYYY-MM-DD') >= '"""+s_date + \
+            """' and to_char(pt.server_created_on,'YYYY-MM-DD') <= '""" + \
+            e_date+"""' """
+    phc_id= ""
+    if phc:
+        sub_center_obj = Subcenter.objects.filter(status=2, phc__id=phc)
+        phc_id = '''and phc.id='''+phc
+    sbc_ids= ""
+    if sub_center:
+        sbc_ids = '''and sbc.id='''+sub_center
+    village_id=""
+    if village:
+        village_obj = Village.objects.filter(status=2, subcenter__id=village)
+        village_id = '''and vlg.id='''+village
+    
+    cursor = connection.cursor()
+    cursor.execute('''select phc.name, sbc.name, vlg.name, date(pt.registered_date), count(pt.name) as total
+    from health_management_patients pt
+    inner join application_masters_village vlg on pt.village_id = vlg.id 
+    inner join application_masters_subcenter sbc on vlg.subcenter_id = sbc.id 
+    inner join application_masters_phc phc on sbc.phc_id = phc.id
+    where 1=1 '''+phc_id+sbc_ids+village_id+between_date+''' 
+    group by phc.name, sbc.name, vlg.name, date(pt.registered_date)
+    order by vlg.name''')
 
+    data = cursor.fetchall()
+    export_flag = True if request.POST.get('export') and request.POST.get( 'export').lower() == 'true' else False
+    if export_flag:
+        response = HttpResponse(content_type='text/csv',)
+        response['Content-Disposition'] = 'attachment; filename="clinic level statistics'+ str(localtime(timezone.now()).strftime("%m/%d/%Y %I:%M %p")) +'.csv"'
+        writer = csv.writer(response)
+        writer.writerow([
+            'PHC Name',
+            'Sub Centre',
+            'Village', 
+            'Dates of clinics',
+            'Total no of consultations'
+            ])
+        for data in data:
+            writer.writerow([
+                data[0],
+                data[1],
+                data[2],
+                data[3],
+                data[4]
+            ])
+        return response
 
-    data = pagination_function(request, distribution_list)
-    current_page = request.GET.get('page', 1)
-    page_number_start = int(current_page) - 2 if int(current_page) > 2 else 1
-    page_number_end = page_number_start + 5 if page_number_start + \
-        5 < data.paginator.num_pages else data.paginator.num_pages+1
-    display_page_range = range(page_number_start, page_number_end)
     return render(request, 'reports/clinic_level_statistics.html', locals())
 
 def village_wise_drugs_list(request):
@@ -572,6 +594,9 @@ def prevelance_of_ncd_list(request):
     phc = request.POST.get('phc', '')
     sub_center = request.POST.get('sub_center', '')
     village = request.POST.get('village', '')
+    phc_ids = int(phc) if phc != '' else ''
+    sub_center_ids = int(sub_center) if sub_center != '' else ''
+    village_ids = int(village) if village != '' else ''
     start_filter = request.POST.get('start_filter', '')
     end_filter = request.POST.get('end_filter', '')
     s_date=''
@@ -585,59 +610,78 @@ def prevelance_of_ncd_list(request):
         ed_date = ed_date + relativedelta(months=1)
         s_date = sd_date.strftime("%Y-%m-%d")
         e_date = ed_date.strftime("%Y-%m-%d")
-        between_date = """and to_char(health_management_patients.server_created_on,'YYYY-MM-DD') >= '"""+s_date + \
-            """' and to_char(health_management_patients.server_created_on,'YYYY-MM-DD') <= '""" + \
+        between_date = """and to_char(pt.server_created_on,'YYYY-MM-DD') >= '"""+s_date + \
+            """' and to_char(pt.server_created_on,'YYYY-MM-DD') <= '""" + \
             e_date+"""' """
-    phc_ids= ""
+    phc_id= ""
     if phc:
         sub_center_obj = Subcenter.objects.filter(status=2, phc__id=phc)
-        phc_id = sub_center_obj.values_list('id', flat=True)
-        phc_ids = '''and phc.id='''+phc
+        phc_id = '''and phc.id='''+phc
     sbc_ids= ""
     if sub_center:
         sbc_ids = '''and sbc.id='''+sub_center
-    village_ids=""
+    village_id=""
     if village:
         village_obj = Village.objects.filter(status=2, subcenter__id=village)
-        village_ids = '''and vlg.id='''+village
+        village_id = '''and vlg.id='''+village
     
     cursor = connection.cursor()
     cursor.execute('''with a as (select phc.name as phc_name, sbc.name as sbc_name, vlg.name as vlg_name,
-    coalesce(sum(case when date_part('year',age(dob))<30 and gender=1 then 1 else 0 end),0) as men_greater_30,
-    coalesce(sum(case when date_part('year',age(dob))<30 and gender=2 then 1 else 0 end),0) as female_greater_30,
-    coalesce(sum(case when date_part('year',age(dob))>=30 and date_part('year',age(dob))<=50 and gender=1 then 1 else 0 end),0) as men_between_30_50_age, 
-    coalesce(sum(case when date_part('year',age(dob))>=30 and date_part('year',age(dob))<=50 and gender=2 then 1 else 0 end),0) as female_between_30_50_age, 
-    coalesce(sum(case when date_part('year',age(dob))>50 and gender=1 then 1 else 0 end),0) as men_above_50, 
-    coalesce(sum(case when date_part('year',age(dob))>50 and gender=2 then 1 else 0 end),0) as female_above_50
+    coalesce(sum(case when date_part('year',age(dob))<30 and gender=1 then 1 else 0 end),0) as men_less_30,
+    coalesce(sum(case when date_part('year',age(dob))<30 and gender=2 then 1 else 0 end),0) as female_less_30,
+    coalesce(sum(case when date_part('year',age(dob))>=30 and date_part('year',age(dob))<=50 and gender=1 then 1 else 0 end),0) as men_30_between_50_age, 
+    coalesce(sum(case when date_part('year',age(dob))>=30 and date_part('year',age(dob))<=50 and gender=2 then 1 else 0 end),0) as female_30_between_50_age, 
+    coalesce(sum(case when date_part('year',age(dob))>50 and gender=1 then 1 else 0 end),0) as men_greater_50, 
+    coalesce(sum(case when date_part('year',age(dob))>50 and gender=2 then 1 else 0 end),0) as female_greater_50,
+    coalesce(sum(case when date_part('year',age(dob))<30 and gender=1 and to_char(date(registered_date), 'YYYY-MM')=to_char(now(), 'YYYY-MM') then 1 else 0 end),0) as new_men_less_30,
+    coalesce(sum(case when date_part('year',age(dob))<30 and gender=2 and to_char(date(registered_date), 'YYYY-MM')=to_char(now(), 'YYYY-MM') then 1 else 0 end),0) as new_female_less_30,
+    coalesce(sum(case when date_part('year',age(dob))>=30 and date_part('year',age(dob))<=50 and gender=1 and to_char(date(registered_date), 'YYYY-MM')=to_char(now(), 'YYYY-MM') then 1 else 0 end),0) as new_men_30_between_50_age,
+    coalesce(sum(case when date_part('year',age(dob))>=30 and date_part('year',age(dob))<=50 and gender=2 and to_char(date(registered_date), 'YYYY-MM')=to_char(now(), 'YYYY-MM') then 1 else 0 end),0) as new_female_30_between_50_age,
+    coalesce(sum(case when date_part('year',age(dob))>50 and gender=1 and to_char(date(registered_date), 'YYYY-MM')=to_char(now(), 'YYYY-MM') then 1 else 0 end),0) as new_men_greater_50, 
+    coalesce(sum(case when date_part('year',age(dob))>50 and gender=2 and to_char(date(registered_date), 'YYYY-MM')=to_char(now(), 'YYYY-MM') then 1 else 0 end),0) as new_female_greater_50
     from health_management_patients pt 
     inner join application_masters_village vlg on pt.village_id = vlg.id 
     inner join application_masters_subcenter sbc on vlg.subcenter_id = sbc.id 
     inner join application_masters_phc phc on sbc.phc_id = phc.id 
     inner join health_management_treatments as trmt on pt.uuid = trmt.patient_uuid 
     inner join health_management_diagnosis as dgn on trmt.uuid = dgn.treatment_uuid 
-    inner join application_masters_masterlookup mtk on dgn.ndc_id = mtk.id 
-    group by village_id, phc.name, sbc.name, vlg.name) select phc_name, sbc_name, vlg_name, men_greater_30,
-    female_greater_30, men_between_30_50_age, female_between_30_50_age, men_above_50, female_above_50, 
-    (men_greater_30 + female_greater_30 + men_between_30_50_age + female_between_30_50_age + men_above_50 + female_above_50)
-    as total from a''')
+    inner join application_masters_masterlookup mtk on dgn.ndc_id = mtk.id
+    where 1=1 '''+phc_id+sbc_ids+village_id+between_date+'''
+    group by village_id, phc.name, sbc.name, vlg.name order by vlg.name) select phc_name, sbc_name, vlg_name, men_less_30,
+    female_less_30, men_30_between_50_age, female_30_between_50_age, men_greater_50, female_greater_50, 
+    (men_less_30 + female_less_30 + men_30_between_50_age + female_30_between_50_age + men_greater_50 + female_greater_50)
+    as ncd_total, new_men_less_30, new_female_less_30, new_men_30_between_50_age, new_female_30_between_50_age, new_men_greater_50, new_female_greater_50, (new_men_less_30 + new_female_less_30 + new_men_30_between_50_age + new_female_30_between_50_age + new_men_greater_50 + new_female_greater_50) as new_ncd_total from a''')
     data = cursor.fetchall()
     export_flag = True if request.POST.get('export') and request.POST.get( 'export').lower() == 'true' else False
     if export_flag:
         response = HttpResponse(content_type='text/csv',)
-        response['Content-Disposition'] = 'attachment; filename="distribution village wise medicine'+ str(localtime(timezone.now()).strftime("%m/%d/%Y %I:%M %p")) +'.csv"'
+        response['Content-Disposition'] = 'attachment; filename="prevelance of ncd'+ str(localtime(timezone.now()).strftime("%m/%d/%Y %I:%M %p")) +'.csv"'
         writer = csv.writer(response)
         writer.writerow([
             'PHC Name',
             'Sub Centre',
             'Village', 
-            'Consultation <30 Men',
-            'Consultation <30 women',
-            'Consultation >=30 and <=50 Men',
-            'Consultation >=30 and <=50 women',
-            'Consultation >50 Men',
-            'Consultation >50 women',
-            'Consultation Total',
+            '<30 Men NCD',
+            '<30 women NCD',
+            '>=30 and <=50 Men NCD',
+            '>=30 and <=50 women NCD',
+            '>50 Men NCD',
+            '>50 women NCD',
+            'Total NCD',
+            '<30 Men New NCD',
+            '<30 women New NCD',
+            '>=30 and <=50 Men New NCD',
+            '>=30 and <=50 women New NCD',
+            '>50 Men New NCD',
+            '>50 women New NCD',
+            'Total New NCD',
             ])
+        for data in data:
+            writer.writerow([
+                data[0],data[1],data[2],data[3],data[4],data[5],data[6],data[7],data[8],data[9],
+                data[10],data[11],data[12],data[13],data[14],data[15],data[16]
+                ])
+        return response
     return render(request, 'reports/prevelance_of_ncd.html', locals())
 
 def get_sub_center(request, subcenter_id):

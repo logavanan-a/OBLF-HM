@@ -7,6 +7,17 @@
     <div class="col-12">
         <div class="card">
             <div class="card-body">
+                <form action=""  method="POST" >
+                    {% csrf_token %}
+                    <div class="d-flex justify-content-end mb-3"> 
+                        {% for key, values in filter_values.items %}
+                            <input type="hidden" id="__hd1__{{key}}" name='{{key}}' value="{{values}}"/>
+                        {% endfor %}
+                        <button type="submit" name='export'  class="btn btn-primary waves-effect justify-content-start" value="True">
+                             Export
+                         </button>  
+                    </div>
+                </form>
                 <div class="table-rep-plugin">
                     <table id="datatable-buttons" class="table  table-bordered dt-responsive w-100 ">
                         <thead>
@@ -14,18 +25,18 @@
                                 <th>PHC Name</th>
                                 <th>Sub Centre</th>
                                 <th>Village</th>
-                                <th>Medicine</th>
-                                <th>Quantity</th>
+                                <th>Dates of clinics</th>
+                                <th>Total no of consultations</th>
                             </tr>
                         </thead>
                         <tbody>
                             {% for dl in data %}
                             <tr>
-                                <td>{{dl.get_user_uuid.village.subcenter.phc|default_if_none:'-'}}</td>
-                                <td>{{dl.get_user_uuid.village.subcenter|default_if_none:'-'}}</td>
-                                <td>{{dl.get_user_uuid.village|default_if_none:'-'}}</td>
-                                <th>{{dl.medicines|default_if_none:'-'}}</th>
-                                <th>{{dl.get_qty}}</th>
+                                <td>{{dl.0}}</td>
+                                <td>{{dl.1}}</td>
+                                <td>{{dl.2}}</td>
+                                <th>{{dl.3}}</th>
+                                <th>{{dl.4}}</th>
                             </tr>
                             {% endfor %}
                         </tbody>
