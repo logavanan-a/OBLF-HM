@@ -17,7 +17,7 @@ urlpatterns = [
     #verfied report
     path('verified-diagnosis-report/', verified_diagnosis_report, name='verified_diagnosis'),
     path('verified-home-visit-report/', verified_home_visit_report, name='verified_home_visit_report'),
-    path('verified-home-treatments-report/', verified_home_treatments_report, name='verified_home_treatments_report'),
+    path('verified-treatments-report/', verified_treatments_report, name='verified_treatments_report'),
 
 
     path('prevelance-of-ncd/report/', prevelance_of_ncd_list, name='prevelance_of_ncd_list'),
