@@ -68,13 +68,16 @@ class Patients(BaseContent):
 
     def calculate_age(self):
         from datetime import date
-        today = date.today()
-        return today.year - self.dob.year - ((today.month, today.day) < (self.dob.month, self.dob.day))
+        try: 
+            today = date.today()
+            today_dob = today.year - self.dob.year - ((today.month, today.day) < (self.dob.month, self.dob.day))
+        except:
+            today_dob = None
+        return today_dob
 
     def get_prescription_uuid(self):
         try:
-            patient_ids=Treatments.objects.get(patient_uuid=self.uuid)
-            prescription_values=Prescription.objects.get(treatment_uuid=patient_ids.uuid)
+            prescription_values=Prescription.objects.filter(patient_uuid=self.uuid).first()
         except ObjectDoesNotExist:
             prescription_values=None
         return prescription_values
@@ -114,6 +117,12 @@ class Treatments(BaseContent):
     class Meta:
         verbose_name_plural = "Treatments"
 
+    def get_patients_uuid(self):
+        try:
+            patients_list=Patients.objects.get(uuid=self.patient_uuid)
+        except ObjectDoesNotExist:
+            patients_list = None
+        return patients_list
 
 
 class Prescription(BaseContent):

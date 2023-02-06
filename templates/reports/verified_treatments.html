@@ -1,0 +1,44 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block contents %}
+
+<div class="row">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-body">
+                <div class="table-rep-plugin">
+                    <table id="datatable-buttons" class="table  table-bordered dt-responsive w-100 ">
+                        <thead>
+                            <tr>
+                                <th>PHC Name</th>
+                                <th>Sub Centre</th>
+                                <th>Village</th>                                   
+                                <th>Patient Name</th>
+                                <th>Patient Code</th>
+                                <th>DOB</th>
+                                <th>Age(today)</th>
+                                <th>Gender</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for vt in verified_treatments %}
+                            <tr>
+                                <th>{{vt.get_patients_uuid.village.subcenter.phc}}</th>
+                                <th>{{vt.get_patients_uuid.village.subcenter}}</th>
+                                <th>{{vt.get_patients_uuid.village}}</th>
+                                <th>{{vt.get_patients_uuid.name}}</th>
+                                <th>{{vt.get_patients_uuid.patient_id}}</th>
+                                <th>{{vt.get_patients_uuid.dob}}</th>
+                                <th>{{vt.get_patients_uuid.age}}</th>
+                                <th>{{vt.get_patients_uuid.get_gender_display}}</th>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div> 
+</div> 
+{% endblock %}
+

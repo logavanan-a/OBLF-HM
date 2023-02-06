@@ -129,6 +129,11 @@ def verified_home_visit_report(request):
     verified_home_visit = HomeVisit.objects.filter(status=2)
     return render(request, 'reports/verified_home_visit.html', locals())
 
+def verified_home_treatments_report(request):
+    heading="VERFIED TREATMENTS"
+    verified_treatments = Treatments.objects.filter(status=2)
+    return render(request, 'reports/verified_treatments.html', locals())
+
 
 def home_visit_report(request):
     heading="HEALTH WORKERS HOME VISITS"

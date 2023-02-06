@@ -43,15 +43,15 @@
                         <tbody>
                             {% for prr in data %}
                             <tr>
-                                <th>{{prr.village.subcenter.phc}}</th>
-                                <th>{{prr.village.subcenter}}</th>
-                                <th>{{prr.village}}</th>
-                                <th>{{prr.name}}</th>
-                                <th>{{prr.patient_id}}</th>
-                                <th>{{prr.dob}}</th>
-                                <th>{{prr.calculate_age}}</th>
-                                <th>{{prr.get_gender_display}}</th>
-                                <th>{{prr.get_prescription_uuid.dosage}}</th>
+                                <th>{{prr.village.subcenter.phc|default_if_none:'-'}}</th>
+                                <th>{{prr.village.subcenter|default_if_none:'-'}}</th>
+                                <th>{{prr.village|default_if_none:'-'}}</th>
+                                <th>{{prr.name|default_if_none:'-'}}</th>
+                                <th>{{prr.patient_id|default_if_none:'-'}}</th>
+                                <th>{{prr.dob|default_if_none:'-'}}</th>
+                                <th>{{prr.calculate_age|default_if_none:'-'}}</th>
+                                <th>{{prr.get_gender_display|default_if_none:'-'}}</th>
+                                <th>{{prr.get_prescription_uuid.dosage|default_if_none:'-'}}</th>
                                 {% if prr.get_diagnosis_id.source_treatment == 1 %}
                                     <th>Clinic</th>
                                 {% elif prr.get_diagnosis_id.source_treatment == 2 %}
@@ -61,9 +61,9 @@
                                 {% else %}
                                     <th>-</th>
                                 {% endif %}
-                                <th>{{prr.get_prescription_uuid.medicines}}</th>
-                                <th>{{prr.get_health_worker.user.first_name}}</th>
-                                <th>{{prr.server_created_on|date:"d-m-Y h:i a"}}</th>
+                                <th>{{prr.get_prescription_uuid.medicines|default_if_none:'-'}}</th>
+                                <th>{{prr.get_health_worker.user.first_name|default_if_none:'-'}}</th>
+                                <th>{{prr.server_created_on|date:"d-m-Y h:i a"|default_if_none:'-'}}</th>
                             </tr>
                             {% endfor %}
                         </tbody>
