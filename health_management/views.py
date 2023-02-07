@@ -477,7 +477,7 @@ def patient_registration_report(request):
     case when pt.gender=1 then 'Male' when pt.gender=2 then 'Female' end as gender,
     case when trmt.bp_sys3 is not null then trmt.bp_sys3 when trmt.bp_sys2 is not null then trmt.bp_sys2 when trmt.bp_sys1 is not null then trmt.bp_sys1 end as sbp,
     case when trmt.bp_non_sys3 is not null then trmt.bp_non_sys3 when trmt.bp_non_sys2 is not null then trmt.bp_non_sys2 when trmt.bp_non_sys1 is not null then trmt.bp_non_sys1 end as dbp,
-    case when trmt.random is not null then trmt.random when trmt.pp is not null then trmt.pp when trmt.fbs is not null then trmt.fbs end as blood_sugar, ndc.name as diagnosis,
+    trmt.fbs as fbs, trmt.pp as pp, trmt.random as random, ndc.name as diagnosis,
     case when dgs.source_treatment=1 then 'CLINIC' when dgs.source_treatment=2 then 'OUTSIDE' when dgs.source_treatment=3 then 'C&O' end as source_of_tretement,string_agg(md.name, ', ')
     from health_management_patients pt 
     inner join application_masters_village vlg on pt.village_id = vlg.id 
@@ -490,7 +490,7 @@ def patient_registration_report(request):
     left join application_masters_masterlookup ndc on dgs.ndc_id=ndc.id
     where 1=1 '''+phc_id+sbc_ids+village_id+between_date+''' 
     group by phc.name, sbc.name, vlg.name, pt.name, pt.patient_id, pt.dob, age, 
-    source_of_tretement, ndc.name, gender, sbp, dbp, blood_sugar''')
+    source_of_tretement, ndc.name, gender, sbp, dbp, trmt.fbs, trmt.pp, trmt.random''')
     patient_data = cursor.fetchall()
     export_flag = True if request.POST.get('export') and request.POST.get( 'export').lower() == 'true' else False
     if export_flag:
@@ -508,7 +508,9 @@ def patient_registration_report(request):
             'Gender', 
             'SBP', 
             'DBP', 
-            'Blood sugar', 
+            'Blood sugar Fasting', 
+            'Blood sugar pp', 
+            'Blood sugar random', 
             'Diagnosis',
             'Source of treatment',
             'Treatment',
@@ -528,7 +530,9 @@ def patient_registration_report(request):
                 patient[10],
                 patient[11],
                 patient[12],
-                patient[13]
+                patient[13],
+                patient[14],
+                patient[15]
                 ])
         return response
     data = pagination_function(request, patient_data)
