@@ -64,7 +64,7 @@ def logout_view(request):
 
 def drug_prescription_csv_export(request):
     response = HttpResponse(content_type='text/csv',)
-    response['Content-Disposition'] = 'attachment; filename="Drug prescription'+ str(localtime(timezone.now()).strftime("%m/%d/%Y %I:%M %p")) +'.csv"'
+    response['Content-Disposition'] = 'attachment; filename="Drug prescription'+ str(localtime(timezone.now()).strftime("%m-%d-%Y %I-%M %p")) +'.csv"'
     writer = csv.writer(response)
     writer.writerow([
         'PHC Name',
@@ -96,7 +96,7 @@ def drug_prescription_csv_export(request):
 
 def distribution_village_wise_csv(request):
     response = HttpResponse(content_type='text/csv',)
-    response['Content-Disposition'] = 'attachment; filename="distribution village wise medicine'+ str(localtime(timezone.now()).strftime("%m/%d/%Y %I:%M %p")) +'.csv"'
+    response['Content-Disposition'] = 'attachment; filename="distribution village wise medicine'+ str(localtime(timezone.now()).strftime("%m-%d-%Y %I-%M %p")) +'.csv"'
     writer = csv.writer(response)
     writer.writerow([
         'PHC Name',
@@ -160,22 +160,27 @@ def home_visit_report(request):
         end_date = end_filter+'-01'
         sd_date= datetime.strptime(start_date, "%Y-%m-%d")
         ed_date= datetime.strptime(end_date, "%Y-%m-%d")
+        get_emy = ed_date.strftime("%B-%Y")
         ed_date = ed_date + relativedelta(months=1)
         s_date = sd_date.strftime("%Y-%m-%d")
         e_date = ed_date.strftime("%Y-%m-%d")
+        get_smy = sd_date.strftime("%B-%Y")
         between_date = """and to_char(hv.response_datetime,'YYYY-MM-DD') >= '"""+s_date + \
             """' and to_char(hv.response_datetime,'YYYY-MM-DD') <= '""" + \
             e_date+"""' """
     phc_id=""
     if phc_ids:
         sub_center_obj = Subcenter.objects.filter(status=2, phc__id=phc_ids)
+        get_phc_name = PHC.objects.get(id=phc_ids)
         phc_id = '''and phc.id='''+phc
     sbc_ids= ""
     if sub_center_ids:
+        get_sbc_name = Subcenter.objects.get(id=sub_center_ids)
         village_obj = Village.objects.filter(status=2, subcenter__id=sub_center_ids)
         sbc_ids = '''and sbc.id='''+sub_center
     village_id=""
     if village_ids:
+        get_village_name = Village.objects.get(id=village_ids)
         village_id = '''and vlg.id='''+village
     hwk_id=""
     if health_worker_ids:
@@ -191,8 +196,9 @@ def home_visit_report(request):
     export_flag = True if request.POST.get('export') and request.POST.get( 'export').lower() == 'true' else False
     if export_flag:
         response = HttpResponse(content_type='text/csv',)
-        response['Content-Disposition'] = 'attachment; filename="Health worker home visit'+ str(localtime(timezone.now()).strftime("%m/%d/%Y %I:%M %p")) +'.csv"'
+        response['Content-Disposition'] = 'attachment; filename="Health worker home visit '+ str(localtime(timezone.now()).strftime("%m-%d-%Y %I-%M %p")) +'.csv"'
         writer = csv.writer(response)
+        writer.writerow(['HEALTH WORKER HOME VISIT'])
         writer.writerow([
             'PHC Name',
             'Sub Centre',
@@ -239,22 +245,27 @@ def clinic_level_statistics_list(request):
         end_date = end_filter+'-01'
         sd_date= datetime.strptime(start_date, "%Y-%m-%d")
         ed_date= datetime.strptime(end_date, "%Y-%m-%d")
+        get_emy = ed_date.strftime("%B-%Y")
         ed_date = ed_date + relativedelta(months=1)
         s_date = sd_date.strftime("%Y-%m-%d")
         e_date = ed_date.strftime("%Y-%m-%d")
+        get_smy = sd_date.strftime("%B-%Y")
         between_date = """and to_char(pt.server_created_on,'YYYY-MM-DD') >= '"""+s_date + \
             """' and to_char(pt.server_created_on,'YYYY-MM-DD') <= '""" + \
             e_date+"""' """
     phc_id= ""
     if phc:
+        get_phc_name = PHC.objects.get(id=phc_ids)
         sub_center_obj = Subcenter.objects.filter(status=2, phc__id=phc)
         phc_id = '''and phc.id='''+phc
     sbc_ids= ""
     if sub_center:
+        get_sbc_name = Subcenter.objects.get(id=sub_center_ids)
+        village_obj = Village.objects.filter(status=2, subcenter__id=sub_center_ids)
         sbc_ids = '''and sbc.id='''+sub_center
     village_id=""
     if village:
-        village_obj = Village.objects.filter(status=2, subcenter__id=village)
+        get_village_name = Village.objects.get(id=village_ids)
         village_id = '''and vlg.id='''+village
     
     cursor = connection.cursor()
@@ -272,8 +283,9 @@ def clinic_level_statistics_list(request):
     export_flag = True if request.POST.get('export') and request.POST.get( 'export').lower() == 'true' else False
     if export_flag:
         response = HttpResponse(content_type='text/csv',)
-        response['Content-Disposition'] = 'attachment; filename="clinic level statistics'+ str(localtime(timezone.now()).strftime("%m/%d/%Y %I:%M %p")) +'.csv"'
+        response['Content-Disposition'] = 'attachment; filename="clinic level statistics'+ str(localtime(timezone.now()).strftime("%m-%d-%Y %I-%M %p")) +'.csv"'
         writer = csv.writer(response)
+        writer.writerow(['CLININ LEVEL STATISTICS'])
         writer.writerow([
             'PHC Name',
             'Sub Centre',
@@ -362,19 +374,24 @@ def drug_dispensation_stock_list(request):
         end_date = end_filter+'-01'
         sd_date= datetime.strptime(start_date, "%Y-%m-%d")
         ed_date= datetime.strptime(end_date, "%Y-%m-%d")
+        get_emy = ed_date.strftime("%B-%Y")
         ed_date = ed_date + relativedelta(months=1)
         s_date = sd_date.strftime("%Y-%m-%d")
         e_date = ed_date.strftime("%Y-%m-%d")
+        get_smy = sd_date.strftime("%B-%Y")
         prescription_list=prescription_list.filter(status=2, server_created_on__range=[s_date,e_date])
     if phc_ids:
+        get_phc_name = PHC.objects.get(id=phc_ids)
         sub_center_obj = Subcenter.objects.filter(status=2, phc__id=phc_ids)
         pateint_registration_report = Patients.objects.filter(village__subcenter__phc__id=phc_ids).values_list('uuid')
         prescription_list = prescription_list.filter(patient_uuid__in=pateint_registration_report)
     if sub_center_ids:
+        get_sbc_name = Subcenter.objects.get(id=sub_center_ids)
         village_obj = Village.objects.filter(status=2, subcenter__id=sub_center_ids)
         pateint_registration_report = Patients.objects.filter(village__subcenter__id=sub_center_ids).values_list('uuid')
         prescription_list = prescription_list.filter(patient_uuid__in=pateint_registration_report)
     if village_ids:
+        get_village_name = Village.objects.get(id=village_ids)
         pateint_registration_report = Patients.objects.filter(village__id=village_ids).values_list('uuid')
         prescription_list = prescription_list.filter(patient_uuid__in=pateint_registration_report)
     if medicine_ids:
@@ -382,8 +399,9 @@ def drug_dispensation_stock_list(request):
     export_flag = True if request.POST.get('export') and request.POST.get( 'export').lower() == 'true' else False
     if export_flag:
         response = HttpResponse(content_type='text/csv',)
-        response['Content-Disposition'] = 'attachment; filename="Drug prescription'+ str(localtime(timezone.now()).strftime("%m/%d/%Y %I:%M %p")) +'.csv"'
+        response['Content-Disposition'] = 'attachment; filename="Drug prescription'+ str(localtime(timezone.now()).strftime("%m-%d-%Y %I-%M %p")) +'.csv"'
         writer = csv.writer(response)
+        writer.writerow(['DRUG PRESCRIPTION'])
         writer.writerow([
             'PHC Name',
             'Sub Centre',
@@ -436,7 +454,6 @@ def patient_registration_report(request):
     heading="Patient Registration Report"
     filter_values = request.POST.dict()
     from dateutil.relativedelta import relativedelta
-    health_worker_obj = UserProfile.objects.filter(status=2)
     phc_obj = PHC.objects.filter(status=2)
     phc = request.POST.get('phc', '0')
     sub_center = request.POST.get('sub_center', '')
@@ -454,22 +471,27 @@ def patient_registration_report(request):
         end_date = end_filter+'-01'
         sd_date= datetime.strptime(start_date, "%Y-%m-%d")
         ed_date= datetime.strptime(end_date, "%Y-%m-%d")
+        get_emy = ed_date.strftime("%B-%Y")
         ed_date = ed_date + relativedelta(months=1)
         s_date = sd_date.strftime("%Y-%m-%d")
         e_date = ed_date.strftime("%Y-%m-%d")
+        get_smy = sd_date.strftime("%B-%Y")
         between_date = """and to_char(pt.server_created_on,'YYYY-MM-DD') >= '"""+s_date + \
             """' and to_char(pt.server_created_on,'YYYY-MM-DD') <= '""" + \
             e_date+"""' """
     phc_id=""
     if phc_ids:
+        get_phc_name = PHC.objects.get(id=phc_ids)
         sub_center_obj = Subcenter.objects.filter(status=2, phc__id=phc_ids)
         phc_id = '''and phc.id='''+phc
     sbc_ids= ""
     if sub_center_ids:
+        get_sbc_name = Subcenter.objects.get(id=sub_center_ids)
         village_obj = Village.objects.filter(status=2, subcenter__id=sub_center_ids)
         sbc_ids = '''and sbc.id='''+sub_center
     village_id=""
     if village_ids:
+        get_village_name = Village.objects.get(id=village_ids)
         village_id = '''and vlg.id='''+village
     cursor = connection.cursor()
     cursor.execute('''select phc.name as phc_name, sbc.name as sbc_name, vlg.name as village_name, 
@@ -495,8 +517,9 @@ def patient_registration_report(request):
     export_flag = True if request.POST.get('export') and request.POST.get( 'export').lower() == 'true' else False
     if export_flag:
         response = HttpResponse(content_type='text/csv',)
-        response['Content-Disposition'] = 'attachment; filename="patient registeration'+ str(localtime(timezone.now()).strftime("%m/%d/%Y %I:%M %p")) +'.csv"'
+        response['Content-Disposition'] = 'attachment; filename="patient report '+ str(localtime(timezone.now()).strftime("%m-%d-%Y %I-%M %p")) +'.csv"'
         writer = csv.writer(response)
+        writer.writerow(['PATIENT REPORT'])
         writer.writerow([
             'PHC Name',
             'Sub Centre',
@@ -565,22 +588,27 @@ def utilisation_of_services_list(request):
         end_date = end_filter+'-01'
         sd_date= datetime.strptime(start_date, "%Y-%m-%d")
         ed_date= datetime.strptime(end_date, "%Y-%m-%d")
+        get_emy = ed_date.strftime("%B-%Y")
         ed_date = ed_date + relativedelta(months=1)
         s_date = sd_date.strftime("%Y-%m-%d")
         e_date = ed_date.strftime("%Y-%m-%d")
+        get_smy = sd_date.strftime("%B-%Y")
         between_date = """and to_char(health_management_patients.server_created_on,'YYYY-MM-DD') >= '"""+s_date + \
             """' and to_char(health_management_patients.server_created_on,'YYYY-MM-DD') <= '""" + \
             e_date+"""' """
     phc_id=""
     if phc_ids:
         sub_center_obj = Subcenter.objects.filter(status=2, phc__id=phc_ids)
+        get_phc_name = PHC.objects.get(id=phc_ids)
         phc_id = '''and phc.id='''+phc
     sbc_ids= ""
     if sub_center_ids:
+        get_sbc_name = Subcenter.objects.get(id=sub_center_ids)
         village_obj = Village.objects.filter(status=2, subcenter__id=sub_center_ids)
         sbc_ids = '''and sbc.id='''+sub_center
     village_id=""
     if village_ids:
+        get_village_name = Village.objects.get(id=village_ids)
         village_id = '''and vlg.id='''+village
     cursor = connection.cursor()
     cursor.execute('''select phc.name, sbc.name, vlg.name, 
@@ -610,8 +638,9 @@ def utilisation_of_services_list(request):
     export_flag = True if request.POST.get('export') and request.POST.get( 'export').lower() == 'true' else False
     if export_flag:
         response = HttpResponse(content_type='text/csv',)
-        response['Content-Disposition'] = 'attachment; filename="distribution village wise medicine'+ str(localtime(timezone.now()).strftime("%m/%d/%Y %I:%M %p")) +'.csv"'
+        response['Content-Disposition'] = 'attachment; filename="Utilisation of services '+ str(localtime(timezone.now()).strftime("%m-%d-%Y %I-%M %p")) +'.csv"'
         writer = csv.writer(response)
+        writer.writerow(['UTILISATION OF SERVICES AT OBLF CLINICS'])
         writer.writerow([
             'PHC Name',
             'Sub Centre',
@@ -662,22 +691,27 @@ def prevelance_of_ncd_list(request):
         end_date = end_filter+'-01'
         sd_date= datetime.strptime(start_date, "%Y-%m-%d")
         ed_date= datetime.strptime(end_date, "%Y-%m-%d")
+        get_emy = ed_date.strftime("%B-%Y")
         ed_date = ed_date + relativedelta(months=1)
         s_date = sd_date.strftime("%Y-%m-%d")
         e_date = ed_date.strftime("%Y-%m-%d")
+        get_smy = sd_date.strftime("%B-%Y")
         between_date = """and to_char(pt.server_created_on,'YYYY-MM-DD') >= '"""+s_date + \
             """' and to_char(pt.server_created_on,'YYYY-MM-DD') <= '""" + \
             e_date+"""' """
     phc_id= ""
     if phc:
+        get_phc_name = PHC.objects.get(id=phc_ids)
         sub_center_obj = Subcenter.objects.filter(status=2, phc__id=phc)
         phc_id = '''and phc.id='''+phc
     sbc_ids= ""
     if sub_center:
+        get_sbc_name = Subcenter.objects.get(id=sub_center_ids)
+        village_obj = Village.objects.filter(status=2, subcenter__id=sub_center_ids)
         sbc_ids = '''and sbc.id='''+sub_center
     village_id=""
-    if village:
-        village_obj = Village.objects.filter(status=2, subcenter__id=village)
+    if village_ids:
+        get_village_name = Village.objects.get(id=village_ids)
         village_id = '''and vlg.id='''+village
     
     cursor = connection.cursor()
@@ -710,8 +744,9 @@ def prevelance_of_ncd_list(request):
     export_flag = True if request.POST.get('export') and request.POST.get( 'export').lower() == 'true' else False
     if export_flag:
         response = HttpResponse(content_type='text/csv',)
-        response['Content-Disposition'] = 'attachment; filename="prevelance of ncd'+ str(localtime(timezone.now()).strftime("%m/%d/%Y %I:%M %p")) +'.csv"'
+        response['Content-Disposition'] = 'attachment; filename="prevelance of ncd '+ str(localtime(timezone.now()).strftime("%m-%d-%Y %I-%M %p")) +'.csv"'
         writer = csv.writer(response)
+        writer.writerow(['PREVELANCE OF NCD'])
         writer.writerow([
             'PHC Name',
             'Sub Centre',
