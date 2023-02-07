@@ -1,0 +1,94 @@
+{% extends 'base.html' %}
+
+
+{% load static %}
+
+
+{% block contents %}
+
+<!--************Chart Script Part*********-->
+{% include "dashboard/chart_script.html" %}
+<!--**************************************-->
+<div class="row align-items-center">
+    <div class="col-xl-12 mx-auto">
+        <div class="card">
+            <div class="card-body">
+                <form class="needs-validation form-horizontal" enctype="multipart/form-data" novalidate  method="POST" id="filters">
+                    {%csrf_token%}
+                    <div class="row mb-3">
+                        <div class="col-md-4">
+                            <label for="floatingnameInput">Start date:</label>
+                            <input type="date" class="form-control" name='start_filter' value="{{req_list.start_filter}}" id="start_filter" onchange='onselected_start_month(this)'>
+                            <div class="invalid-feedback">
+                                Please provide a valid both date field.
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <label for="floatingnameInput">End date:</label>
+                            <input type="date" class="form-control" name='end_filter' value="{{req_list.end_filter}}" id="end_filter" onchange='onselected_start_month(this)'>
+                            <div class="invalid-feedback">
+                                Please provide a valid both date field and Start date should be greater than or equal to end date.
+                            </div>
+                        </div>
+                        <div class="col-auto mt-4 ">
+                            <button type="submit" class="btn btn-success waves-effect btn-xs float-right">Filter</button>
+                        </div>
+                        <div class="col-auto mt-4 ">
+                            <button type="reset" id="filter_reset"  class="form-control btn btn-warning waves-effect btn-xs float-right" value="True">Reset Filters</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-12">
+        <div class="row">
+            {% for ct in data_html.chart %}
+                <div class="{{ct.div}}" >
+                    <div class="card">
+                        <div class="card-body">
+                            <div class="card-title">
+				                <h5>{{ct.chart_title}} {% if ct.tooltip %}<i class="fa fa-info-circle"data-bs-toggle="tooltip" data-bs-placement="top" title="" data-bs-original-title="{{ct.tooltip}}" ></i>{% endif %}</h5>
+                            </div>
+                            <div class="row">
+				                <div class="col-12 {%if ct.chart_type == 'TABLECHART'%}justify-content-bottom mt-5{%endif%}" >
+                                    <div id="{{ct.chart_name}}"style="width:95%;height:{{ct.chart_height}};"></div>
+                                </div>
+				                <div style="display:inline-block;margin-left: 10px;{%if ct.chart_type == 'TABLECHART' %}margin-top:10px;{%endif%}">{{ct.chart_note|safe}}</div>
+                            </div>
+                        </div>
+                    </div>	
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+
+{% endblock %}
+{% block extra_javascript %}
+<script type="text/javascript">
+    $("#start_filter").on("change", function(event){
+        document.getElementById("end_filter").min=$("#start_filter").val()
+    });
+    $("#filter_reset").click(function() {
+        $('#start_filter').val('');
+        $('#end_filter').val('');
+        this.form.submit();
+    });
+    function onselected_start_month(){
+       var start_month = document.getElementById("start_filter");
+       var end_month = document.getElementById("end_filter");
+       if (start_month != '' && end_month != ''){
+           document.querySelector('#start_filter').required = true;
+           document.querySelector('#end_filter').required = true;
+       }
+       else{
+           document.querySelector('#start_filter').required = false;
+           document.querySelector('#end_filter').required = false;
+       }  
+   }
+ </script>
+{% endblock %}

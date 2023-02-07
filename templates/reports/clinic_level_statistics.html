@@ -27,6 +27,8 @@
                                 <th>Village</th>
                                 <th>Dates of clinics</th>
                                 <th>Total no of consultations</th>
+                                <th>New registration</th>
+                               
                             </tr>
                         </thead>
                         <tbody>
@@ -35,8 +37,9 @@
                                 <td>{{dl.0}}</td>
                                 <td>{{dl.1}}</td>
                                 <td>{{dl.2}}</td>
-                                <th>{{dl.3}}</th>
+                                <th>{{dl.3|date:"d-m-Y"}}</th>
                                 <th>{{dl.4}}</th>
+                                <th>{{dl.5}}</th>
                             </tr>
                             {% endfor %}
                         </tbody>

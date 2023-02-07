@@ -27,5 +27,5 @@ urlpatterns = [
         {'document_root': settings.STATIC_ROOT}),
     path('admin/', admin.site.urls),
     path('', include('health_management.urls', namespace='health_management')),
-        
+    path('', include('dashboard.urls', namespace='dashboard'))
 ]

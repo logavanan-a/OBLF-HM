@@ -30,9 +30,9 @@
                                 <th>DOB</th>
                                 <th>Age(today)</th>
                                 <th>Gender</th>
-                                {% comment %}<th>SBP</th>
+                                <th>SBP</th>
                                 <th>DBP</th>
-                                <th>Blood Sugar</th>{% endcomment %}
+                                <th>Blood Sugar</th>
                                 <th>Diagnosis</th>
                                 <th>Source of treatment</th>
                                 <th>Treatment</th>
@@ -43,27 +43,22 @@
                         <tbody>
                             {% for prr in data %}
                             <tr>
-                                <th>{{prr.village.subcenter.phc|default_if_none:'-'}}</th>
-                                <th>{{prr.village.subcenter|default_if_none:'-'}}</th>
-                                <th>{{prr.village|default_if_none:'-'}}</th>
-                                <th>{{prr.name|default_if_none:'-'}}</th>
-                                <th>{{prr.patient_id|default_if_none:'-'}}</th>
-                                <th>{{prr.dob|default_if_none:'-'}}</th>
-                                <th>{{prr.calculate_age|default_if_none:'-'}}</th>
-                                <th>{{prr.get_gender_display|default_if_none:'-'}}</th>
-                                <th>{{prr.get_prescription_uuid.dosage|default_if_none:'-'}}</th>
-                                {% if prr.get_diagnosis_id.source_treatment == 1 %}
-                                    <th>Clinic</th>
-                                {% elif prr.get_diagnosis_id.source_treatment == 2 %}
-                                    <th>Outside</th>
-                                {% elif prr.get_diagnosis_id.source_treatment == 3 %}
-                                    <th>C & O</th>
-                                {% else %}
-                                    <th>-</th>
-                                {% endif %}
-                                <th>{{prr.get_prescription_uuid.medicines|default_if_none:'-'}}</th>
-                                <th>{{prr.get_health_worker.user.first_name|default_if_none:'-'}}</th>
-                                <th>{{prr.server_created_on|date:"d-m-Y h:i a"|default_if_none:'-'}}</th>
+                                <th>{{prr.0}}</th>
+                                <th>{{prr.1}}</th>
+                                <th>{{prr.2|default_if_none:'-'}}</th>
+                                <th>{{prr.3}}</th>
+                                <th>{{prr.4|default_if_none:'-'}}</th>
+                                <th>{{prr.5|default_if_none:'-'}}</th>
+                                <th>{{prr.6|default_if_none:'-'}}</th>
+                                <th>{{prr.7|default_if_none:'-'}}</th>
+                                <th>{{prr.8|default_if_none:'-'}}</th>
+                                <th>{{prr.9|default_if_none:'-'}}</th>
+                                <th>{{prr.10|default_if_none:'-'}}</th>
+                                <th>{{prr.11|default_if_none:'-'}}</th>
+                                <th>{{prr.12|default_if_none:'-'}}</th>
+                                <th>{{prr.13|default_if_none:'-'}}</th>
+                                <th>{{prr.14|default_if_none:'-'}}</th>
+                                <th>{{prr.15|default_if_none:'-'}}</th>
                             </tr>
                             {% endfor %}
                         </tbody>
