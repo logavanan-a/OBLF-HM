@@ -139,15 +139,19 @@ def home_visit_report(request):
     heading="HEALTH WORKERS HOME VISITS"
     filter_values = request.POST.dict()
     from dateutil.relativedelta import relativedelta
+    health_worker_obj = UserProfile.objects.filter(status=2)
     phc_obj = PHC.objects.filter(status=2)
     phc = request.POST.get('phc', '0')
     sub_center = request.POST.get('sub_center', '')
     village = request.POST.get('village', '')
+    health_worker = request.POST.get('health_worker', '')
     phc_ids = int(phc) if phc != '' else ''
     sub_center_ids = int(sub_center) if sub_center != '' else ''
     village_ids = int(village) if village != '' else ''
+    health_worker_ids = int(health_worker) if health_worker != '' else ''
     start_filter = request.POST.get('start_filter', '')
     end_filter = request.POST.get('end_filter', '')
+    health_worker_in_patient = True
     s_date=''
     e_date=''
     between_date = ""
@@ -173,14 +177,16 @@ def home_visit_report(request):
     village_id=""
     if village_ids:
         village_id = '''and vlg.id='''+village
-
+    hwk_id=""
+    if health_worker_ids:
+        hwk_id = '''and upf.user_id='''+health_worker
     cursor = connection.cursor()
-    cursor.execute('''select date(pt.registered_date), phc.name as phc_name, sbc.name as sbc_name, vlg.name as village_name, pt.name as patient_name, pt.patient_id as patient_code, 
+    cursor.execute('''select phc.name as phc_name, sbc.name as sbc_name, vlg.name as village_name, pt.name as patient_name, pt.patient_id as patient_code, 
     count(pt.patient_id) as no_of_visits, max(hv.response_datetime) as last_date_of_visit, hwn.first_name as health_worker_name from health_management_homevisit hv 
     inner join health_management_patients pt on hv.patient_uuid = pt.uuid inner join application_masters_village vlg on pt.village_id=vlg.id 
     inner join application_masters_subcenter sbc on vlg.subcenter_id = sbc.id inner join application_masters_phc phc on sbc.phc_id = phc.id 
     inner join health_management_userprofile upf on hv.user_uuid=upf.uuid inner join auth_user hwn on upf.user_id = hwn.id
-    where 1=1 '''+phc_id+sbc_ids+village_id+between_date+''' group by phc_name, sbc_name, village_name, date(pt.registered_date), patient_name, patient_code, health_worker_name order by vlg.name''')
+    where 1=1 '''+phc_id+sbc_ids+village_id+hwk_id+between_date+''' group by phc_name, sbc_name, village_name, patient_name, patient_code, health_worker_name order by vlg.name''')
     data = cursor.fetchall()
     export_flag = True if request.POST.get('export') and request.POST.get( 'export').lower() == 'true' else False
     if export_flag:
@@ -188,7 +194,6 @@ def home_visit_report(request):
         response['Content-Disposition'] = 'attachment; filename="Health worker home visit'+ str(localtime(timezone.now()).strftime("%m/%d/%Y %I:%M %p")) +'.csv"'
         writer = csv.writer(response)
         writer.writerow([
-            'Date',
             'PHC Name',
             'Sub Centre',
             'Village', 
@@ -207,8 +212,7 @@ def home_visit_report(request):
                 data[4],
                 data[5],
                 data[6],
-                data[7],
-                data[8]
+                data[7]
             ])
         return response
     return render(request, 'reports/home_visit.html', locals())
@@ -432,6 +436,7 @@ def patient_registration_report(request):
     heading="Patient Registration Report"
     filter_values = request.POST.dict()
     from dateutil.relativedelta import relativedelta
+    health_worker_obj = UserProfile.objects.filter(status=2)
     phc_obj = PHC.objects.filter(status=2)
     phc = request.POST.get('phc', '0')
     sub_center = request.POST.get('sub_center', '')
@@ -473,7 +478,7 @@ def patient_registration_report(request):
     case when trmt.bp_sys3 is not null then trmt.bp_sys3 when trmt.bp_sys2 is not null then trmt.bp_sys2 when trmt.bp_sys1 is not null then trmt.bp_sys1 end as sbp,
     case when trmt.bp_non_sys3 is not null then trmt.bp_non_sys3 when trmt.bp_non_sys2 is not null then trmt.bp_non_sys2 when trmt.bp_non_sys1 is not null then trmt.bp_non_sys1 end as dbp,
     case when trmt.random is not null then trmt.random when trmt.pp is not null then trmt.pp when trmt.fbs is not null then trmt.fbs end as blood_sugar, ndc.name as diagnosis,
-    case when dgs.source_treatment=1 then 'CLINIC' when dgs.source_treatment=2 then 'OUTSIDE' when dgs.source_treatment=3 then 'C&O' end as source_of_tretement,string_agg(md.name, ', '), au.first_name, date(pt.server_created_on)
+    case when dgs.source_treatment=1 then 'CLINIC' when dgs.source_treatment=2 then 'OUTSIDE' when dgs.source_treatment=3 then 'C&O' end as source_of_tretement,string_agg(md.name, ', ')
     from health_management_patients pt 
     inner join application_masters_village vlg on pt.village_id = vlg.id 
     inner join application_masters_subcenter sbc on vlg.subcenter_id = sbc.id 
@@ -482,12 +487,10 @@ def patient_registration_report(request):
     left join health_management_prescription pst on trmt.patient_uuid=pst.patient_uuid
     left join application_masters_medicines md on pst.medicines_id=md.id
     left join health_management_diagnosis dgs on trmt.uuid=dgs.treatment_uuid
-    left join health_management_userprofile up on pt.user_uuid=up.uuid 
-    left join auth_user au on up.user_id=au.id
     left join application_masters_masterlookup ndc on dgs.ndc_id=ndc.id
     where 1=1 '''+phc_id+sbc_ids+village_id+between_date+''' 
     group by phc.name, sbc.name, vlg.name, pt.name, pt.patient_id, pt.dob, age, 
-    source_of_tretement, ndc.name, date(pt.server_created_on), gender, au.first_name, sbp, dbp, blood_sugar''')
+    source_of_tretement, ndc.name, gender, sbp, dbp, blood_sugar''')
     patient_data = cursor.fetchall()
     export_flag = True if request.POST.get('export') and request.POST.get( 'export').lower() == 'true' else False
     if export_flag:
@@ -509,8 +512,6 @@ def patient_registration_report(request):
             'Diagnosis',
             'Source of treatment',
             'Treatment',
-            'Health Worker', 
-            'Created On', 
             ])
         for patient in patient_data:
             writer.writerow([
@@ -527,9 +528,7 @@ def patient_registration_report(request):
                 patient[10],
                 patient[11],
                 patient[12],
-                patient[13],
-                patient[14],
-                patient[15]
+                patient[13]
                 ])
         return response
     data = pagination_function(request, patient_data)
@@ -580,7 +579,7 @@ def utilisation_of_services_list(request):
     if village_ids:
         village_id = '''and vlg.id='''+village
     cursor = connection.cursor()
-    cursor.execute('''select vst_date, phc.name, sbc.name, vlg.name, 
+    cursor.execute('''select phc.name, sbc.name, vlg.name, 
     consultation_men_less_30,consultation_men_less_30,consultation_men_30_between_50_age,consultation_female_30_between_50_age,
     consultation_men_greater_50,consultation_female_greater_50, consultation_men_less_30 + consultation_men_less_30 + 
     consultation_men_30_between_50_age + consultation_female_30_between_50_age + consultation_men_greater_50 + 
@@ -588,12 +587,12 @@ def utilisation_of_services_list(request):
     treatment_female_less_30,treatment_men_30_between_50_age,treatment_female_30_between_50_age,
     treatment_men_greater_50,treatment_female_greater_50, treatment_men_less_30 + treatment_female_less_30 + 
     treatment_men_30_between_50_age + treatment_female_30_between_50_age + treatment_men_greater_50 + treatment_female_greater_50 as treatment_total 
-    from (select date(visit_date) as vst_date, village_id, coalesce(sum(case when date_part('year',age(dob))<30 and gender=1 then 1 else 0 end),0) as consultation_men_less_30, 
+    from (select village_id, coalesce(sum(case when date_part('year',age(dob))<30 and gender=1 then 1 else 0 end),0) as consultation_men_less_30, 
     coalesce(sum(case when date_part('year',age(dob))<30 and gender=2 then 1 else 0 end),0) as consultation_female_less_30, 
     coalesce(sum(case when date_part('year',age(dob))>=30 and date_part('year',age(dob))<=50 and gender=1 then 1 else 0 end),0) as consultation_men_30_between_50_age, 
     coalesce(sum(case when date_part('year',age(dob))>=30 and date_part('year',age(dob))<=50 and gender=2 then 1 else 0 end),0) as consultation_female_30_between_50_age, 
     coalesce(sum(case when date_part('year',age(dob))>50 and gender=1 then 1 else 0 end),0) as consultation_men_greater_50, coalesce(sum(case when date_part('year',age(dob))>50 and gender=2 then 1 else 0 end),0) as consultation_female_greater_50 
-    from health_management_treatments trmt inner join health_management_patients as pt on trmt.patient_uuid=pt.uuid where 1=1 '''+between_date+''' group by village_id, date(visit_date)) a full outer join (select village_id, coalesce(sum(case when date_part('year',age(dob))<30 and gender=1 then 1 else 0 end),0) as treatment_men_less_30, 
+    from health_management_treatments trmt inner join health_management_patients as pt on trmt.patient_uuid=pt.uuid where 1=1 '''+between_date+''' group by village_id) a full outer join (select village_id, coalesce(sum(case when date_part('year',age(dob))<30 and gender=1 then 1 else 0 end),0) as treatment_men_less_30, 
     coalesce(sum(case when date_part('year',age(dob))<30 and gender=2 then 1 else 0 end),0) as treatment_female_less_30, 
     coalesce(sum(case when date_part('year',age(dob))>=30 and date_part('year',age(dob))<=50 and gender=1 then 1 else 0 end),0) as treatment_men_30_between_50_age, 
     coalesce(sum(case when date_part('year',age(dob))>=30 and date_part('year',age(dob))<=50 and gender=2 then 1 else 0 end),0) as treatment_female_30_between_50_age, 
@@ -678,7 +677,7 @@ def prevelance_of_ncd_list(request):
         village_id = '''and vlg.id='''+village
     
     cursor = connection.cursor()
-    cursor.execute('''with a as (select date(trmt.visit_date) as vst_date, phc.name as phc_name, sbc.name as sbc_name, vlg.name as vlg_name,
+    cursor.execute('''with a as (select phc.name as phc_name, sbc.name as sbc_name, vlg.name as vlg_name,
     coalesce(sum(case when date_part('year',age(dob))<30 and gender=1 then 1 else 0 end),0) as men_less_30,
     coalesce(sum(case when date_part('year',age(dob))<30 and gender=2 then 1 else 0 end),0) as female_less_30,
     coalesce(sum(case when date_part('year',age(dob))>=30 and date_part('year',age(dob))<=50 and gender=1 then 1 else 0 end),0) as men_30_between_50_age, 
@@ -699,7 +698,7 @@ def prevelance_of_ncd_list(request):
     inner join health_management_diagnosis as dgn on trmt.uuid = dgn.treatment_uuid 
     inner join application_masters_masterlookup mtk on dgn.ndc_id = mtk.id
     where 1=1 '''+phc_id+sbc_ids+village_id+between_date+'''
-    group by date(trmt.visit_date), village_id, phc.name, sbc.name, vlg.name order by vlg.name) select vst_date, phc_name, sbc_name, vlg_name, men_less_30,
+    group by phc.name, sbc.name, vlg.name order by vlg.name) select phc_name, sbc_name, vlg_name, men_less_30,
     female_less_30, men_30_between_50_age, female_30_between_50_age, men_greater_50, female_greater_50, 
     (men_less_30 + female_less_30 + men_30_between_50_age + female_30_between_50_age + men_greater_50 + female_greater_50)
     as ncd_total, new_men_less_30, new_female_less_30, new_men_30_between_50_age, new_female_30_between_50_age, new_men_greater_50, new_female_greater_50, (new_men_less_30 + new_female_less_30 + new_men_30_between_50_age + new_female_30_between_50_age + new_men_greater_50 + new_female_greater_50) as new_ncd_total from a''')
@@ -710,7 +709,6 @@ def prevelance_of_ncd_list(request):
         response['Content-Disposition'] = 'attachment; filename="prevelance of ncd'+ str(localtime(timezone.now()).strftime("%m/%d/%Y %I:%M %p")) +'.csv"'
         writer = csv.writer(response)
         writer.writerow([
-            'Date',
             'PHC Name',
             'Sub Centre',
             'Village', 
@@ -732,7 +730,7 @@ def prevelance_of_ncd_list(request):
         for data in data:
             writer.writerow([
                 data[0],data[1],data[2],data[3],data[4],data[5],data[6],data[7],data[8],data[9],
-                data[10],data[11],data[12],data[13],data[14],data[15],data[16],data[17]
+                data[10],data[11],data[12],data[13],data[14],data[15],data[16]
                 ])
         return response
     return render(request, 'reports/prevelance_of_ncd.html', locals())

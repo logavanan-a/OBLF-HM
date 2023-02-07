@@ -23,7 +23,6 @@
                         <table id="tech-companies-1" class="table table-bordered dt-responsive mb-0">
                             <thead>
                                 <tr>
-                                    <th>Date</th>
                                     <th>PHC Name</th>
                                     <th>Sub Centre</th>
                                     <th>Village</th>                                   
@@ -57,14 +56,13 @@
                                     <th>{{prr.7}}</th>
                                     <th>{{prr.8}}</th>
                                     <th>{{prr.9}}</th>
-                                    <th>{{prr.10|default_if_none:'-'}}</th>
+                                    <th>{{prr.10|default_if_none:'0'}}</th>
                                     <th>{{prr.11|default_if_none:'0'}}</th>
                                     <th>{{prr.12|default_if_none:'0'}}</th>
                                     <th>{{prr.13|default_if_none:'0'}}</th>
                                     <th>{{prr.14|default_if_none:'0'}}</th>
                                     <th>{{prr.15|default_if_none:'0'}}</th>
                                     <th>{{prr.16|default_if_none:'0'}}</th>
-                                    <th>{{prr.17|default_if_none:'0'}}</th>
                                 </tr>
                                 {% endfor %}
                             </tbody>
