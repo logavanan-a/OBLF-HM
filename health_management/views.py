@@ -30,7 +30,7 @@ import csv
 
 
 def pagination_function(request, data):
-    records_per_page = 10
+    records_per_page = 2
     paginator = Paginator(data, records_per_page)
     page = request.GET.get('page', 1)
     try: 
@@ -137,20 +137,20 @@ def verified_treatments_report(request):
 
 def home_visit_report(request):
     heading="HEALTH WORKERS HOME VISITS"
-    filter_values = request.POST.dict()
+    filter_values = request.GET.dict()
     from dateutil.relativedelta import relativedelta
     health_worker_obj = UserProfile.objects.filter(status=2)
     phc_obj = PHC.objects.filter(status=2)
-    phc = request.POST.get('phc', '0')
-    sub_center = request.POST.get('sub_center', '')
-    village = request.POST.get('village', '')
-    health_worker = request.POST.get('health_worker', '')
+    phc = request.GET.get('phc', '0')
+    sub_center = request.GET.get('sub_center', '')
+    village = request.GET.get('village', '')
+    health_worker = request.GET.get('health_worker', '')
     phc_ids = int(phc) if phc != '' else ''
     sub_center_ids = int(sub_center) if sub_center != '' else ''
     village_ids = int(village) if village != '' else ''
     health_worker_ids = int(health_worker) if health_worker != '' else ''
-    start_filter = request.POST.get('start_filter', '')
-    end_filter = request.POST.get('end_filter', '')
+    start_filter = request.GET.get('start_filter', '')
+    end_filter = request.GET.get('end_filter', '')
     health_worker_in_patient = True
     s_date=''
     e_date=''
@@ -184,6 +184,7 @@ def home_visit_report(request):
         village_id = '''and vlg.id='''+village
     hwk_id=""
     if health_worker_ids:
+        get_health_worker_name = User.objects.get(id=health_worker_ids)
         hwk_id = '''and upf.user_id='''+health_worker
     cursor = connection.cursor()
     cursor.execute('''select phc.name as phc_name, sbc.name as sbc_name, vlg.name as village_name, pt.name as patient_name, pt.patient_id as patient_code, 
@@ -226,17 +227,17 @@ def home_visit_report(request):
 
 def clinic_level_statistics_list(request):
     heading="CLINIC LEVEL STATISTICS"
-    filter_values = request.POST.dict()
+    filter_values = request.GET.dict()
     from dateutil.relativedelta import relativedelta
     phc_obj = PHC.objects.filter(status=2)
-    phc = request.POST.get('phc', '')
-    sub_center = request.POST.get('sub_center', '')
-    village = request.POST.get('village', '')
+    phc = request.GET.get('phc', '')
+    sub_center = request.GET.get('sub_center', '')
+    village = request.GET.get('village', '')
     phc_ids = int(phc) if phc != '' else ''
     sub_center_ids = int(sub_center) if sub_center != '' else ''
     village_ids = int(village) if village != '' else ''
-    start_filter = request.POST.get('start_filter', '')
-    end_filter = request.POST.get('end_filter', '')
+    start_filter = request.GET.get('start_filter', '')
+    end_filter = request.GET.get('end_filter', '')
     s_date=''
     e_date=''
     between_date = ""
@@ -351,20 +352,20 @@ def add_village_wise_drugs(request):
 
 def drug_dispensation_stock_list(request):
     heading="Drugs Dispensation reports"
-    filter_values = request.POST.dict()
+    filter_values = request.GET.dict()
     medicine_obj=Medicines.objects.filter(status=2)
     from dateutil.relativedelta import relativedelta
     phc_obj = PHC.objects.filter(status=2)
-    phc = request.POST.get('phc', '')
-    sub_center = request.POST.get('sub_center', '')
-    village = request.POST.get('village', '')
-    medicine = request.POST.get('medicine', '')
+    phc = request.GET.get('phc', '')
+    sub_center = request.GET.get('sub_center', '')
+    village = request.GET.get('village', '')
+    medicine = request.GET.get('medicine', '')
     phc_ids = int(phc) if phc != '' else ''
     sub_center_ids = int(sub_center) if sub_center != '' else ''
     village_ids = int(village) if village != '' else ''
     medicine_ids = int(medicine) if medicine != '' else ''
-    start_filter = request.POST.get('start_filter', '')
-    end_filter = request.POST.get('end_filter', '')
+    start_filter = request.GET.get('start_filter', '')
+    end_filter = request.GET.get('end_filter', '')
     s_date=''
     e_date=''
     medicine_list = True
@@ -395,6 +396,7 @@ def drug_dispensation_stock_list(request):
         pateint_registration_report = Patients.objects.filter(village__id=village_ids).values_list('uuid')
         prescription_list = prescription_list.filter(patient_uuid__in=pateint_registration_report)
     if medicine_ids:
+        get_medicine_name = Medicines.objects.get(id=medicine_ids)
         prescription_list = prescription_list.filter(medicines__id=medicine_ids)
     export_flag = True if request.POST.get('export') and request.POST.get( 'export').lower() == 'true' else False
     if export_flag:
@@ -452,17 +454,17 @@ def medicine_stock_list(request):
 
 def patient_registration_report(request):
     heading="Patient Registration Report"
-    filter_values = request.POST.dict()
+    filter_values = request.GET.dict()
     from dateutil.relativedelta import relativedelta
     phc_obj = PHC.objects.filter(status=2)
-    phc = request.POST.get('phc', '0')
-    sub_center = request.POST.get('sub_center', '')
-    village = request.POST.get('village', '')
+    phc = request.GET.get('phc', '0')
+    sub_center = request.GET.get('sub_center', '')
+    village = request.GET.get('village', '')
     phc_ids = int(phc) if phc != '' else ''
     sub_center_ids = int(sub_center) if sub_center != '' else ''
     village_ids = int(village) if village != '' else ''
-    start_filter = request.POST.get('start_filter', '')
-    end_filter = request.POST.get('end_filter', '')
+    start_filter = request.GET.get('start_filter', '')
+    end_filter = request.GET.get('end_filter', '')
     s_date=''
     e_date=''
     between_date = ""
@@ -570,16 +572,16 @@ def patient_registration_report(request):
 def utilisation_of_services_list(request):
     heading="UTILISATION OF SERVICES AT OBLF CLINICS"
     from dateutil.relativedelta import relativedelta
-    filter_values = request.POST.dict()
+    filter_values = request.GET.dict()
     phc_obj = PHC.objects.filter(status=2)
-    phc = request.POST.get('phc', '0')
-    sub_center = request.POST.get('sub_center', '')
-    village = request.POST.get('village', '')
+    phc = request.GET.get('phc', '0')
+    sub_center = request.GET.get('sub_center', '')
+    village = request.GET.get('village', '')
     phc_ids = int(phc) if phc != '' else ''
     sub_center_ids = int(sub_center) if sub_center != '' else ''
     village_ids = int(village) if village != '' else ''
-    start_filter = request.POST.get('start_filter', '')
-    end_filter = request.POST.get('end_filter', '')
+    start_filter = request.GET.get('start_filter', '')
+    end_filter = request.GET.get('end_filter', '')
     s_date=''
     e_date=''
     between_date = ""
@@ -672,17 +674,17 @@ def utilisation_of_services_list(request):
 
 def prevelance_of_ncd_list(request):
     heading="Prevelance of NCD"
-    filter_values = request.POST.dict()
+    filter_values = request.GET.dict()
     from dateutil.relativedelta import relativedelta
     phc_obj = PHC.objects.filter(status=2)
-    phc = request.POST.get('phc', '')
-    sub_center = request.POST.get('sub_center', '')
-    village = request.POST.get('village', '')
+    phc = request.GET.get('phc', '')
+    sub_center = request.GET.get('sub_center', '')
+    village = request.GET.get('village', '')
     phc_ids = int(phc) if phc != '' else ''
     sub_center_ids = int(sub_center) if sub_center != '' else ''
     village_ids = int(village) if village != '' else ''
-    start_filter = request.POST.get('start_filter', '')
-    end_filter = request.POST.get('end_filter', '')
+    start_filter = request.GET.get('start_filter', '')
+    end_filter = request.GET.get('end_filter', '')
     s_date=''
     e_date=''
     between_date = ""
