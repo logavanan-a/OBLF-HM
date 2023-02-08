@@ -30,7 +30,7 @@ import csv
 
 
 def pagination_function(request, data):
-    records_per_page = 2
+    records_per_page = 10
     paginator = Paginator(data, records_per_page)
     page = request.GET.get('page', 1)
     try: 
