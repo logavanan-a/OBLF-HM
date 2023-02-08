@@ -6,8 +6,19 @@
     <div class="col-12">
         <div class="card">
             <div class="card-body">
-                <div class="table-rep-plugin">
-                    <table id="datatable-buttons" class="table  table-bordered dt-responsive w-100 ">
+                <form action=""  method="POST" >
+                    {% csrf_token %}
+                    <div class="d-flex justify-content-end mb-3"> 
+                        {% for key, values in filter_values.items %}
+                            <input type="hidden" id="__hd1__{{key}}" name='{{key}}' value="{{values}}"/>
+                        {% endfor %}
+                        <button type="submit" name='export'  class="btn btn-primary waves-effect justify-content-start" value="True">
+                             Export
+                         </button>  
+                    </div>
+                </form>
+                <div class="table-responsive mb-3" data-pattern="priority-columns">
+                    <table id="tech-companies-1" class="table table-bordered dt-responsive mb-0">
                         <thead>
                             <tr>
                                 <th>PHC Name</th>
@@ -18,6 +29,15 @@
                                 <th>DOB</th>
                                 <th>Age(today)</th>
                                 <th>Gender</th>
+                                <th>SBP1</th>
+                                <th>SBP2</th>
+                                <th>SBP3</th>
+                                <th>DBP1</th>
+                                <th>DBP2</th>
+                                <th>DBP3</th>
+                                <th>Blood Sugar Fasting</th>
+                                <th>Blood Sugar PP</th>
+                                <th>Blood Sugar Random</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -31,6 +51,15 @@
                                 <th>{{vt.get_patients_uuid.dob}}</th>
                                 <th>{{vt.get_patients_uuid.calculate_age}}</th>
                                 <th>{{vt.get_patients_uuid.get_gender_display}}</th>
+                                <th>{{vt.bp_sys1|default_if_none:''}}</th>
+                                <th>{{vt.bp_sys2|default_if_none:''}}</th>
+                                <th>{{vt.bp_sys3|default_if_none:''}}</th>
+                                <th>{{vt.bp_non_sys1|default_if_none:''}}</th>
+                                <th>{{vt.bp_non_sys2|default_if_none:''}}</th>
+                                <th>{{vt.bp_non_sys3|default_if_none:''}}</th>
+                                <th>{{vt.fbs|default_if_none:''}}</th>
+                                <th>{{vt.pp|default_if_none:''}}</th>
+                                <th>{{vt.random|default_if_none:''}}</th>
                             </tr>
                             {% endfor %}
                         </tbody>

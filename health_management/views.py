@@ -122,16 +122,126 @@ def distribution_village_wise_csv(request):
 def verified_diagnosis_report(request):
     heading="VERFIED DIAGNOSIS"
     verified_diagnosis_list = Diagnosis.objects.filter(status=2)
+    filter_values = request.GET.dict()
+    export_flag = True if request.POST.get('export') and request.POST.get( 'export').lower() == 'true' else False
+    if export_flag:
+        response = HttpResponse(content_type='text/csv',)
+        response['Content-Disposition'] = 'attachment; filename="distribution village wise medicine'+ str(localtime(timezone.now()).strftime("%m-%d-%Y %I-%M %p")) +'.csv"'
+        writer = csv.writer(response)
+        writer.writerow([
+            'PHC Name',
+            'Sub Centre',
+            'Village',                                   
+            'Patient Name',
+            'Patient Code',
+            'NCD',
+            'Source of treatment',
+            'Health Worker'
+            ])
+        for diagnosis in verified_diagnosis_list:
+            patient = diagnosis.get_patients_uuid()
+            health_worker = diagnosis.get_health_worker()
+            writer.writerow([
+                patient.village.subcenter.phc if patient else '',
+                patient.village.subcenter if patient else '',
+                patient.village if patient else '',
+                patient.name if patient else '',
+                patient.patient_id if patient else '',
+                diagnosis.ndc,
+                diagnosis.source_treatment,
+                health_worker.user.first_name if health_worker else ''
+                ])
+        return response 
     return render(request, 'reports/verified_diagnosis.html', locals())
 
 def verified_home_visit_report(request):
     heading="VERFIED HEALTH WORKERS HOME VISITS"
     verified_home_visit = HomeVisit.objects.filter(status=2)
+    filter_values = request.GET.dict()
+    export_flag = True if request.POST.get('export') and request.POST.get( 'export').lower() == 'true' else False
+    if export_flag:
+        response = HttpResponse(content_type='text/csv',)
+        response['Content-Disposition'] = 'attachment; filename="home visit '+ str(localtime(timezone.now()).strftime("%m-%d-%Y %I-%M %p")) +'.csv"'
+        writer = csv.writer(response)
+        writer.writerow([
+            'PHC Name',
+            'Sub Centre',
+            'Village',                                   
+            'Patient Name',
+            'Patient Code',
+            'Home visit',
+            'Last date of visit',
+            'Health Worker'
+            ])
+        for home_visit in verified_home_visit:
+            patient = home_visit.get_patient_uuid()
+            health_worker = home_visit.get_health_worker()
+            writer.writerow([
+                patient.village.subcenter.phc if patient else '',
+                patient.village.subcenter if patient else '',
+                patient.village if patient else '',
+                patient.name if patient else '',
+                patient.patient_id if patient else '',
+                home_visit.get_home_vist_display(),
+                home_visit.response_datetime,
+                health_worker.user.first_name if health_worker else ''
+                ])
+        return response 
     return render(request, 'reports/verified_home_visit.html', locals())
+
+
+
 
 def verified_treatments_report(request):
     heading="VERFIED TREATMENTS"
     verified_treatments = Treatments.objects.filter(status=2)
+    filter_values = request.GET.dict()
+    export_flag = True if request.POST.get('export') and request.POST.get( 'export').lower() == 'true' else False
+    if export_flag:
+        response = HttpResponse(content_type='text/csv',)
+        response['Content-Disposition'] = 'attachment; filename="home visit '+ str(localtime(timezone.now()).strftime("%m-%d-%Y %I-%M %p")) +'.csv"'
+        writer = csv.writer(response)
+        writer.writerow([
+            'PHC Name',
+            'Sub Centre',
+            'Village',                                   
+            'Patient Name',
+            'Patient Code',
+            'DOB',
+            'Age(today)',
+            'Gender',
+            'SBP1',
+            'SBP2',
+            'SBP3',
+            'DBP1',
+            'DBP2',
+            'DBP3',
+            'Blood Sugar Fasting',
+            'Blood Sugar PP',
+            'Blood Sugar Random',
+            ])
+        for treatments in verified_treatments:
+            patient = treatments.get_patients_uuid()
+            writer.writerow([
+                patient.village.subcenter.phc if patient else '',
+                patient.village.subcenter if patient else '',
+                patient.village if patient else '',
+                patient.name if patient else '',
+                patient.patient_id if patient else '',
+                patient.dob if patient else '',
+                patient.calculate_age() if patient else '',
+                patient.get_gender_display() if patient else '',
+                treatments.bp_sys1,
+                treatments.bp_sys2,
+                treatments.bp_sys3,
+                treatments.bp_non_sys1,
+                treatments.bp_non_sys2,
+                treatments.bp_non_sys3,
+                treatments.fbs,
+                treatments.pp,
+                treatments.random,
+                ])
+        return response
     return render(request, 'reports/verified_treatments.html', locals())
 
 
@@ -409,6 +519,7 @@ def drug_dispensation_stock_list(request):
             'Sub Centre',
             'Village',
             'Patient Name',
+            'Patient Code',
             'Medicine', 
             'Quantity', 
             'Visit Date', 
@@ -422,6 +533,7 @@ def drug_dispensation_stock_list(request):
                 patient.village.subcenter if patient else '',
                 patient.village if patient else '',
                 patient.name if patient else '',
+                patient.patient_id if patient else '',
                 prescription.medicines,
                 prescription.qty,
                 treatment.visit_date.strftime("%m/%d/%Y %I:%M %p") if treatment else '', 
