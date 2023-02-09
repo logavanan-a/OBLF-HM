@@ -1245,9 +1245,9 @@ class Phc_push(APIView):
         home_visit_success =[]
         try:
             data = request.build_absolute_uri()
-            create_post_log(request,data)
+            # create_post_log(request,data)
             data = request.data
-            create_post_log(request,data)
+            # create_post_log(request,data)
             # import ipdb
             # ipdb.set_trace()
             patient_response = {'data':[]}
@@ -1362,9 +1362,9 @@ class Phc_push(APIView):
     
 def patient_details(self):
     objlist =[]
-    # import ipdb
-    # ipdb.set_trace()
-    for data in json.loads(self.data.get('patients')):
+    datas = json.loads(self.data.get('patients'))
+    create_post_log(self,datas)
+    for data in datas:
         obj, created = Patients.objects.update_or_create(
             uuid = data.get('uuid'),
             user_uuid = data.get('user_uuid'),
@@ -1400,8 +1400,9 @@ def patient_details(self):
 
 def treatment_details(self):
     objlist = []
-
-    for data in json.loads(self.get('treatment')):
+    datas = json.loads(self.get('treatment'))
+    create_post_log(self,datas)
+    for data in datas:
         obj,created = Treatments.objects.update_or_create(
             uuid = data.get('uuid'),
             user_uuid = data.get('user_uuid'),
@@ -1437,7 +1438,9 @@ def treatment_details(self):
 
 def prescription_details(self):
     objlist = []
-    for data in json.loads(self.get('prescription')):
+    datas = json.loads(self.get('prescription'))
+    create_post_log(self,datas)
+    for data in datas:
         obj,created = Prescription.objects.update_or_create(
             uuid = data.get('uuid'),
             user_uuid = data.get('user_uuid'),
@@ -1458,7 +1461,9 @@ def prescription_details(self):
 
 def diagnosis_details(self):
     objlist = []
-    for data in json.loads(self.get('diagnosis')):
+    datas = json.loads(self.get('diagnosis'))
+    create_post_log(self,datas)
+    for data in datas:
         obj,created = Diagnosis.objects.update_or_create(
             uuid = data.get('uuid'),
             user_uuid = data.get('user_uuid'),
@@ -1477,7 +1482,9 @@ def diagnosis_details(self):
 
 def scanned_report_details(self):
     objlist = []
-    for data in json.loads(self.get('scanned_report')):
+    datas = json.loads(self.get('scanned_report'))
+    create_post_log(self,datas)
+    for data in datas:
         obj,created = Scanned_Report.objects.update_or_create(
             uuid = data.get('uuid'),
             user_uuid = data.get('user_uuid'),
@@ -1495,7 +1502,9 @@ def scanned_report_details(self):
 
 def home_visit_details(self):
     objlist = []
-    for data in json.loads(self.data.get('home_visit')):
+    datas = json.loads(self.data.get('home_visit'))
+    create_post_log(self,datas)
+    for data in datas:
         obj,created = HomeVisit.objects.update_or_create(
             uuid = data.get('uuid'),
             user_uuid = data.get('user_uuid'),
