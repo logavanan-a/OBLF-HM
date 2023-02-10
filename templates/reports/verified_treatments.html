@@ -38,6 +38,7 @@
                                 <th>Blood Sugar Fasting</th>
                                 <th>Blood Sugar PP</th>
                                 <th>Blood Sugar Random</th>
+                                <th>Visit Date</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -60,6 +61,7 @@
                                 <th>{{vt.fbs|default_if_none:''}}</th>
                                 <th>{{vt.pp|default_if_none:''}}</th>
                                 <th>{{vt.random|default_if_none:''}}</th>
+                                <th>{{vt.visit_date|date:"d-m-Y h:i a"|default_if_none:''}}</th>
                             </tr>
                             {% endfor %}
                         </tbody>

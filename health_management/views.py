@@ -219,6 +219,7 @@ def verified_treatments_report(request):
             'Blood Sugar Fasting',
             'Blood Sugar PP',
             'Blood Sugar Random',
+            'Visit Date',
             ])
         for treatments in verified_treatments:
             patient = treatments.get_patients_uuid()
@@ -240,6 +241,7 @@ def verified_treatments_report(request):
                 treatments.fbs,
                 treatments.pp,
                 treatments.random,
+                treatments.visit_date.strftime("%m/%d/%Y %I:%M %p"),
                 ])
         return response
     return render(request, 'reports/verified_treatments.html', locals())
