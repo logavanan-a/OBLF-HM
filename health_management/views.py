@@ -305,7 +305,7 @@ def home_visit_report(request):
     inner join application_masters_subcenter sbc on vlg.subcenter_id = sbc.id inner join application_masters_phc phc on sbc.phc_id = phc.id 
     inner join health_management_userprofile upf on hv.user_uuid=upf.uuid inner join auth_user hwn on upf.user_id = hwn.id
     where 1=1 '''+phc_id+sbc_ids+village_id+hwk_id+between_date+''' group by phc_name, sbc_name, village_name, patient_name, patient_code, health_worker_name order by vlg.name''')
-    data = cursor.fetchall()
+    home_visit_data = cursor.fetchall()
     export_flag = True if request.POST.get('export') and request.POST.get( 'export').lower() == 'true' else False
     if export_flag:
         response = HttpResponse(content_type='text/csv',)
@@ -334,6 +334,12 @@ def home_visit_report(request):
                 data[7]
             ])
         return response
+    data = pagination_function(request, home_visit_data)
+    current_page = request.GET.get('page', 1)
+    page_number_start = int(current_page) - 2 if int(current_page) > 2 else 1
+    page_number_end = page_number_start + 5 if page_number_start + \
+        5 < data.paginator.num_pages else data.paginator.num_pages+1
+    display_page_range = range(page_number_start, page_number_end)
     return render(request, 'reports/home_visit.html', locals())
 
 
@@ -392,7 +398,7 @@ def clinic_level_statistics_list(request):
     group by phc.name, sbc.name, vlg.name, date(trmt.visit_date)
     order by vlg.name''')
 
-    data = cursor.fetchall()
+    clinic_level_data = cursor.fetchall()
     export_flag = True if request.POST.get('export') and request.POST.get( 'export').lower() == 'true' else False
     if export_flag:
         response = HttpResponse(content_type='text/csv',)
@@ -417,7 +423,12 @@ def clinic_level_statistics_list(request):
                 data[5]
             ])
         return response
-
+    data = pagination_function(request, clinic_level_data)
+    current_page = request.GET.get('page', 1)
+    page_number_start = int(current_page) - 2 if int(current_page) > 2 else 1
+    page_number_end = page_number_start + 5 if page_number_start + \
+        5 < data.paginator.num_pages else data.paginator.num_pages+1
+    display_page_range = range(page_number_start, page_number_end)
     return render(request, 'reports/clinic_level_statistics.html', locals())
 
 def village_wise_drugs_list(request):
@@ -571,7 +582,7 @@ def patient_registration_report(request):
     filter_values = request.GET.dict()
     from dateutil.relativedelta import relativedelta
     phc_obj = PHC.objects.filter(status=2)
-    phc = request.GET.get('phc', '0')
+    phc = request.GET.get('phc', '')
     sub_center = request.GET.get('sub_center', '')
     village = request.GET.get('village', '')
     phc_ids = int(phc) if phc != '' else ''
@@ -750,7 +761,7 @@ def utilisation_of_services_list(request):
     b on a.village_id = b.village_id inner join application_masters_village vlg on a.village_id = vlg.id inner join application_masters_subcenter sbc on vlg.subcenter_id = sbc.id 
     inner join application_masters_phc phc on sbc.phc_id = phc.id where 1=1 '''+phc_id+sbc_ids+village_id+''' order by vlg.name''')
   
-    data = cursor.fetchall()
+    utilisation_of_services_data = cursor.fetchall()
     export_flag = True if request.POST.get('export') and request.POST.get( 'export').lower() == 'true' else False
     if export_flag:
         response = HttpResponse(content_type='text/csv',)
@@ -776,12 +787,18 @@ def utilisation_of_services_list(request):
             'Treatment >50 women',
             'Treatment Total',
             ])
-        for data in data:
+        for data in utilisation_of_services_data:
             writer.writerow([
                 data[0],data[1],data[2],data[3],data[4],data[5],data[6],data[7],data[8],data[9],
                 data[10],data[11],data[12],data[13],data[14],data[15],data[16]
                 ])
         return response 
+    data = pagination_function(request, utilisation_of_services_data)
+    current_page = request.GET.get('page', 1)
+    page_number_start = int(current_page) - 2 if int(current_page) > 2 else 1
+    page_number_end = page_number_start + 5 if page_number_start + \
+        5 < data.paginator.num_pages else data.paginator.num_pages+1
+    display_page_range = range(page_number_start, page_number_end)
     return render(request, 'reports/utilisation_of_services.html', locals())
 
 
@@ -856,7 +873,7 @@ def prevelance_of_ncd_list(request):
     female_less_30, men_30_between_50_age, female_30_between_50_age, men_greater_50, female_greater_50, 
     (men_less_30 + female_less_30 + men_30_between_50_age + female_30_between_50_age + men_greater_50 + female_greater_50)
     as ncd_total, new_men_less_30, new_female_less_30, new_men_30_between_50_age, new_female_30_between_50_age, new_men_greater_50, new_female_greater_50, (new_men_less_30 + new_female_less_30 + new_men_30_between_50_age + new_female_30_between_50_age + new_men_greater_50 + new_female_greater_50) as new_ncd_total from a''')
-    data = cursor.fetchall()
+    prevelance_of_ncd_data = cursor.fetchall()
     export_flag = True if request.POST.get('export') and request.POST.get( 'export').lower() == 'true' else False
     if export_flag:
         response = HttpResponse(content_type='text/csv',)
@@ -882,12 +899,18 @@ def prevelance_of_ncd_list(request):
             '>50 women New NCD',
             'Total New NCD',
             ])
-        for data in data:
+        for data in prevelance_of_ncd_data:
             writer.writerow([
                 data[0],data[1],data[2],data[3],data[4],data[5],data[6],data[7],data[8],data[9],
                 data[10],data[11],data[12],data[13],data[14],data[15],data[16]
                 ])
         return response
+    data = pagination_function(request, prevelance_of_ncd_data  )
+    current_page = request.GET.get('page', 1)
+    page_number_start = int(current_page) - 2 if int(current_page) > 2 else 1
+    page_number_end = page_number_start + 5 if page_number_start + \
+        5 < data.paginator.num_pages else data.paginator.num_pages+1
+    display_page_range = range(page_number_start, page_number_end)
     return render(request, 'reports/prevelance_of_ncd.html', locals())
 
 def get_sub_center(request, subcenter_id):
