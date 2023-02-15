@@ -34,7 +34,7 @@
                             </tr>
                         </thead>
                         <tbody>
-                            {% for m in patient_adherence_data %}
+                            {% for m in data %}
                             <tr>
                                 <th>{{m.0}}</th>
                                 <th>{{m.1}}</th>
@@ -43,8 +43,8 @@
                                 <th>{{m.4}}</th>
                                 <th>{{m.5}}</th>
                                 <th>{{m.6}}</th>
-                                <th>{{m.8}}</th>
                                 <th>{{m.7}}</th>
+                                <th>{{m.8}}</th>
                             </tr>
                             {% endfor %}
                         </tbody>

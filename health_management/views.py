@@ -702,38 +702,41 @@ def patient_adherence_list(request):
     end_filter = request.GET.get('end_filter', '')
     now = datetime.now()
     ed_filter = now.strftime("%Y-%m")
+    edm_filter = now + relativedelta(months=1)
+    edm_filter = edm_filter.strftime("%Y-%m")
     sd_filter = now - relativedelta(months=2)
     sd_filter = sd_filter.strftime("%Y-%m")
+    sdm_filter = now - relativedelta(months=3)
+    sdm_filter = sdm_filter.strftime("%Y-%m")
     s_date=sd_filter+'-01'
-    e_date=ed_filter+'-01'
-    between_date = ""
+    e_date=edm_filter+'-01'
     if start_filter != '':
         start_date = start_filter+'-01'
         end_date = end_filter+'-01'
         sd_date= datetime.strptime(start_date, "%Y-%m-%d")
         ed_date= datetime.strptime(end_date, "%Y-%m-%d")
         get_emy = ed_date.strftime("%B-%Y")
-        # ed_date = ed_date + relativedelta(months=1)
+        ed_date = ed_date + relativedelta(months=1)
         s_date = sd_date.strftime("%Y-%m-%d")
         e_date = ed_date.strftime("%Y-%m-%d")
         get_smy = sd_date.strftime("%B-%Y")
-        between_date = """and to_char(pt.server_created_on,'YYYY-MM-DD') >= '"""+s_date + \
-            """' and to_char(pt.server_created_on,'YYYY-MM-DD') <= '""" + \
-            e_date+"""' """
+    between_date = """and to_char(trmt.server_created_on,'YYYY-MM-DD') >= '"""+s_date + \
+        """' and to_char(trmt.server_created_on,'YYYY-MM-DD') <= '""" + \
+        e_date+"""' """
+    # (extract(year from age('"""+e_date+"""','"""+s_date+"""'))*12 + extract(month from age('"""+e_date+"""','"""+s_date+"""')) + 1)::int as native_month
     cursor = connection.cursor()
-    sql_query = """with a as (select phc.name as phc_name, sbc.name as sbc_name, vlg.name as village_name, pt.name as patient_name, pt.patient_id as patient_code, 
-    count(trmt.uuid) as no_of_time_clinics_held, (extract(year from age('"""+e_date+"""','"""+s_date+"""'))*12 + extract(month from age('"""+e_date+"""','"""+s_date+"""')) + 1)::int as native_month
-    from health_management_treatments trmt inner join health_management_patients pt on trmt.patient_uuid = pt.uuid
+    sql_query = """with a as (select phc.name as phc_name, sbc.name as sbc_name, vlg.name as village_name, pt.name as patient_name, pt.patient_id as patient_code, pt.uuid as pt_uuid, count(trmt.uuid) as no_of_time_clinics_held, 
+    (extract(year from age('"""+e_date+"""','"""+s_date+"""'))*12 + extract(month from age('"""+e_date+"""','"""+s_date+"""')))::int as native_month 
+    from health_management_treatments trmt 
+    inner join health_management_patients pt on trmt.patient_uuid = pt.uuid 
     inner join application_masters_village vlg on pt.village_id=vlg.id 
     inner join application_masters_subcenter sbc on vlg.subcenter_id = sbc.id 
-    inner join application_masters_phc phc on sbc.phc_id = phc.id 
-    where 1=1 """+between_date+"""
-    group by phc_name, sbc_name, village_name, patient_name, patient_code
-    order by vlg.name) select phc_name, sbc_name, village_name, patient_name, patient_code, 
-    no_of_time_clinics_held, native_month, (case when native_month = 0 then 0 else round((no_of_time_clinics_held/native_month::numeric)*100,0)end)::integer as per from a"""
-    print(sql_query)
-    # coalesce(sum(case when to_char(trmt.visit_date, 'YYYY-MM')='2022-10' then 1 else 0 end),0) as patient_month_wise_attendance,
-    # coalesce(sum(case when to_char(trmt.visit_date, 'YYYY-MM')='2022-10' then 1 else 0 end),0)/(extract(year from age('"""+e_date+"""','"""+s_date+"""'))*12 + extract(month from age('"""+e_date+"""','"""+s_date+"""')) + 1)::int * 100 as per
+    inner join application_masters_phc phc on sbc.phc_id = phc.id where 1=1 """+between_date+""" group by phc_name, sbc_name, village_name, patient_name, patient_code, 
+    pt.uuid order by vlg.name), b as 
+    (select distinct(to_char(visit_date, 'YYYY-MM')) as date,patient_uuid as p_uuid from health_management_treatments trmt where 1=1 """+between_date+""" group by patient_uuid,visit_date)
+    select phc_name, sbc_name, village_name, patient_name, patient_code, no_of_time_clinics_held, native_month, count(b.p_uuid) as month_count, 
+    (case when native_month = 0 then 0 else round((count(b.p_uuid)/native_month::numeric)*100,0)end)::integer as per from a left join b on a.pt_uuid=b.p_uuid 
+    group by phc_name, sbc_name, village_name, patient_name, patient_code, no_of_time_clinics_held, native_month, b.p_uuid"""
     cursor.execute(sql_query)
     patient_adherence_data = cursor.fetchall()
     data = pagination_function(request, patient_adherence_data)
