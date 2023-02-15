@@ -686,7 +686,6 @@ def patient_registration_report(request):
                 ])
         return response
     data = pagination_function(request, patient_data)
-    print(data, 'hivjd')
     current_page = request.GET.get('page', 1)
     page_number_start = int(current_page) - 2 if int(current_page) > 2 else 1
     page_number_end = page_number_start + 5 if page_number_start + \
@@ -698,6 +697,13 @@ def patient_registration_report(request):
 def patient_adherence_list(request):
     heading="PATIENTS ADHERENCE REPORT"
     from dateutil.relativedelta import relativedelta
+    phc_obj = PHC.objects.filter(status=2)
+    phc = request.GET.get('phc', '')
+    sub_center = request.GET.get('sub_center', '')
+    village = request.GET.get('village', '')
+    phc_ids = int(phc) if phc != '' else ''
+    sub_center_ids = int(sub_center) if sub_center != '' else ''
+    village_ids = int(village) if village != '' else ''
     start_filter = request.GET.get('start_filter', '')
     end_filter = request.GET.get('end_filter', '')
     now = datetime.now()
@@ -723,6 +729,20 @@ def patient_adherence_list(request):
     between_date = """and to_char(trmt.server_created_on,'YYYY-MM-DD') >= '"""+s_date + \
         """' and to_char(trmt.server_created_on,'YYYY-MM-DD') <= '""" + \
         e_date+"""' """
+    phc_id=""
+    if phc_ids:
+        get_phc_name = PHC.objects.get(id=phc_ids)
+        sub_center_obj = Subcenter.objects.filter(status=2, phc__id=phc_ids)
+        phc_id = '''and phc.id='''+phc
+    sbc_ids= ""
+    if sub_center_ids:
+        get_sbc_name = Subcenter.objects.get(id=sub_center_ids)
+        village_obj = Village.objects.filter(status=2, subcenter__id=sub_center_ids)
+        sbc_ids = '''and sbc.id='''+sub_center
+    village_id=""
+    if village_ids:
+        get_village_name = Village.objects.get(id=village_ids)
+        village_id = '''and vlg.id='''+village
     # (extract(year from age('"""+e_date+"""','"""+s_date+"""'))*12 + extract(month from age('"""+e_date+"""','"""+s_date+"""')) + 1)::int as native_month
     cursor = connection.cursor()
     sql_query = """with a as (select phc.name as phc_name, sbc.name as sbc_name, vlg.name as village_name, pt.name as patient_name, pt.patient_id as patient_code, pt.uuid as pt_uuid, count(trmt.uuid) as no_of_time_clinics_held, 
@@ -731,7 +751,7 @@ def patient_adherence_list(request):
     inner join health_management_patients pt on trmt.patient_uuid = pt.uuid 
     inner join application_masters_village vlg on pt.village_id=vlg.id 
     inner join application_masters_subcenter sbc on vlg.subcenter_id = sbc.id 
-    inner join application_masters_phc phc on sbc.phc_id = phc.id where 1=1 """+between_date+""" group by phc_name, sbc_name, village_name, patient_name, patient_code, 
+    inner join application_masters_phc phc on sbc.phc_id = phc.id where 1=1 """+phc_id+sbc_ids+village_id+between_date+""" group by phc_name, sbc_name, village_name, patient_name, patient_code, 
     pt.uuid order by vlg.name), b as 
     (select distinct(to_char(visit_date, 'YYYY-MM')) as date,patient_uuid as p_uuid from health_management_treatments trmt where 1=1 """+between_date+""" group by patient_uuid,visit_date)
     select phc_name, sbc_name, village_name, patient_name, patient_code, no_of_time_clinics_held, native_month, count(b.p_uuid) as month_count, 
@@ -739,6 +759,36 @@ def patient_adherence_list(request):
     group by phc_name, sbc_name, village_name, patient_name, patient_code, no_of_time_clinics_held, native_month, b.p_uuid"""
     cursor.execute(sql_query)
     patient_adherence_data = cursor.fetchall()
+    export_flag = True if request.POST.get('export') and request.POST.get( 'export').lower() == 'true' else False
+    if export_flag:
+        response = HttpResponse(content_type='text/csv',)
+        response['Content-Disposition'] = 'attachment; filename="patient adherence report '+ str(localtime(timezone.now()).strftime("%m-%d-%Y %I-%M %p")) +'.csv"'
+        writer = csv.writer(response)
+        writer.writerow(['PATIENT ADHERENCE REPORT'])
+        writer.writerow([
+            'PHC Name',
+            'Sub Centre',
+            'Village', 
+            'Patient names', 
+            'Patient code', 
+            'Number of time clinics held',
+            "Expected number of days of Patient's attendance (A)",
+            "Actual number of days of Patient's attendance (B)",
+            '% of Patients adherence (B/A)%',
+            ])
+        for patient in patient_adherence_data:
+            writer.writerow([
+                patient[0],
+                patient[1],
+                patient[2],
+                patient[3],
+                patient[4],
+                patient[5],
+                patient[6],
+                patient[7],
+                patient[8]
+                ])
+        return response
     data = pagination_function(request, patient_adherence_data)
     current_page = request.GET.get('page', 1)
     page_number_start = int(current_page) - 2 if int(current_page) > 2 else 1
