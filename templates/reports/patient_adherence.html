@@ -3,7 +3,6 @@
 {% block contents %}
 {% include 'partials/filter_report.html' %}
 
-
 <div class="row">
     <div class="col-12">
         <div class="card">
@@ -19,49 +18,33 @@
                          </button>  
                     </div>
                 </form>
-                <div class="table-responsive mb-3" data-pattern="priority-columns">
-                    <table id="tech-companies-1" class="table table-bordered dt-responsive mb-0">
+                <div class="table-rep-plugin">
+                    <table id="datatable-buttons" class="table  table-bordered dt-responsive w-100 ">
                         <thead>
                             <tr>
                                 <th>PHC Name</th>
                                 <th>Sub Centre</th>
                                 <th>Village</th>                                   
-                                <th>&lt;30 Men NCD</th>
-                                <th>&lt;30 women NCD</th>
-                                <th>&gt;=30 and &lt;=50 Men NCD</th>
-                                <th>&gt;=30 and &lt;=50 women NCD</th>
-                                <th>&gt;50 Men NCD</th>
-                                <th>&gt;50 women NCD</th>
-                                <th class="total-clr">Total NCD</th>
-                                <th>&lt;30 Men New NCD</th>
-                                <th>&lt;30 women New NCD</th>
-                                <th>&gt;=30 and &lt;=50 New Men NCD</th>
-                                <th>&gt;=30 and &lt;=50 New women NCD</th>
-                                <th>&gt;50 Men New NCD</th>
-                                <th>&gt;50 women New NCD</th>
-                                <th class="total-clr">Total New NCD</th>
+                                <th>Patient Name</th>
+                                <th>Patient Code</th>
+                                <th>Number of time clinics held</th>
+                                <th>Expected number of days of Patient's attendance (A)</th>
+                                <th>Actual number of days of Patient's attendance (B)</th>
+                                <th>% of Patient's adherence (B/A)%</th>
                             </tr>
                         </thead>
                         <tbody>
-                            {% for prr in data %}
+                            {% for m in patient_adherence_data %}
                             <tr>
-                                <td>{{prr.0}}</td>
-                                <td>{{prr.1}}</td>
-                                <td>{{prr.2}}</td>
-                                <td>{{prr.3}}</td>
-                                <td>{{prr.4}}</td>
-                                <td>{{prr.5}}</td>
-                                <td>{{prr.6}}</td>
-                                <td>{{prr.7}}</td>
-                                <td>{{prr.8}}</td>
-                                <td class="total-clr">{{prr.9}}</td>
-                                <td>{{prr.10}}</td>
-                                <td>{{prr.11}}</td>
-                                <td>{{prr.12}}</td>
-                                <td>{{prr.13}}</td>
-                                <td>{{prr.14}}</td>
-                                <td>{{prr.15}}</td>
-                                <td class="total-clr">{{prr.16}}</td>
+                                <th>{{m.0}}</th>
+                                <th>{{m.1}}</th>
+                                <th>{{m.2}}</th>
+                                <th>{{m.3}}</th>
+                                <th>{{m.4}}</th>
+                                <th>{{m.5}}</th>
+                                <th>{{m.6}}</th>
+                                <th>{{m.8}}</th>
+                                <th>{{m.7}}</th>
                             </tr>
                             {% endfor %}
                         </tbody>
@@ -73,10 +56,27 @@
     </div> 
 </div> 
 {% endblock %}
+
 {% block extra_javascript %}
 <script src="{% static 'js/pages/form-validation.init.js' %}"></script>
-
 <script type="text/javascript">
+
+    function onselected_start_month(){
+        var start_month = document.getElementById("start_filter");
+        var end_month = document.getElementById("end_filter");
+        if (start_month != '' && end_month != ''){
+            document.querySelector('#start_filter').required = true;
+            document.querySelector('#end_filter').required = true;
+        }
+        else{
+            document.querySelector('#start_filter').required = false;
+            document.querySelector('#end_filter').required = false;
+            
+        }  
+    }
+     $("#start_filter").on("change", function(event){
+           document.getElementById("end_filter").min=$("#start_filter").val()
+    });
     $("#filter_reset").click(function() {
         $('#phc').prop('selectedIndex', 0).change();
         $('#sub_center').prop('selectedIndex', 0).change();
@@ -142,3 +142,4 @@
     })
 </script> 
 {% endblock %}
+

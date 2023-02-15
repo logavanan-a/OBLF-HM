@@ -686,12 +686,62 @@ def patient_registration_report(request):
                 ])
         return response
     data = pagination_function(request, patient_data)
+    print(data, 'hivjd')
     current_page = request.GET.get('page', 1)
     page_number_start = int(current_page) - 2 if int(current_page) > 2 else 1
     page_number_end = page_number_start + 5 if page_number_start + \
         5 < data.paginator.num_pages else data.paginator.num_pages+1
     display_page_range = range(page_number_start, page_number_end)
     return render(request, 'reports/patient_registration_report.html', locals())
+
+
+def patient_adherence_list(request):
+    heading="PATIENTS ADHERENCE REPORT"
+    from dateutil.relativedelta import relativedelta
+    start_filter = request.GET.get('start_filter', '')
+    end_filter = request.GET.get('end_filter', '')
+    now = datetime.now()
+    ed_filter = now.strftime("%Y-%m")
+    sd_filter = now - relativedelta(months=2)
+    sd_filter = sd_filter.strftime("%Y-%m")
+    s_date=sd_filter+'-01'
+    e_date=ed_filter+'-01'
+    between_date = ""
+    if start_filter != '':
+        start_date = start_filter+'-01'
+        end_date = end_filter+'-01'
+        sd_date= datetime.strptime(start_date, "%Y-%m-%d")
+        ed_date= datetime.strptime(end_date, "%Y-%m-%d")
+        get_emy = ed_date.strftime("%B-%Y")
+        # ed_date = ed_date + relativedelta(months=1)
+        s_date = sd_date.strftime("%Y-%m-%d")
+        e_date = ed_date.strftime("%Y-%m-%d")
+        get_smy = sd_date.strftime("%B-%Y")
+        between_date = """and to_char(pt.server_created_on,'YYYY-MM-DD') >= '"""+s_date + \
+            """' and to_char(pt.server_created_on,'YYYY-MM-DD') <= '""" + \
+            e_date+"""' """
+    cursor = connection.cursor()
+    sql_query = """with a as (select phc.name as phc_name, sbc.name as sbc_name, vlg.name as village_name, pt.name as patient_name, pt.patient_id as patient_code, 
+    count(trmt.uuid) as no_of_time_clinics_held, (extract(year from age('"""+e_date+"""','"""+s_date+"""'))*12 + extract(month from age('"""+e_date+"""','"""+s_date+"""')) + 1)::int as native_month
+    from health_management_treatments trmt inner join health_management_patients pt on trmt.patient_uuid = pt.uuid
+    inner join application_masters_village vlg on pt.village_id=vlg.id 
+    inner join application_masters_subcenter sbc on vlg.subcenter_id = sbc.id 
+    inner join application_masters_phc phc on sbc.phc_id = phc.id 
+    group by phc_name, sbc_name, village_name, patient_name, patient_code
+    order by vlg.name) select phc_name, sbc_name, village_name, patient_name, patient_code, 
+    no_of_time_clinics_held, native_month, (case when native_month = 0 then 0 else round((no_of_time_clinics_held/native_month::numeric)*100,0)end)::integer as per from a"""
+    print(sql_query)
+    # coalesce(sum(case when to_char(trmt.visit_date, 'YYYY-MM')='2022-10' then 1 else 0 end),0) as patient_month_wise_attendance,
+    # coalesce(sum(case when to_char(trmt.visit_date, 'YYYY-MM')='2022-10' then 1 else 0 end),0)/(extract(year from age('"""+e_date+"""','"""+s_date+"""'))*12 + extract(month from age('"""+e_date+"""','"""+s_date+"""')) + 1)::int * 100 as per
+    cursor.execute(sql_query)
+    patient_adherence_data = cursor.fetchall()
+    data = pagination_function(request, patient_adherence_data)
+    current_page = request.GET.get('page', 1)
+    page_number_start = int(current_page) - 2 if int(current_page) > 2 else 1
+    page_number_end = page_number_start + 5 if page_number_start + \
+        5 < data.paginator.num_pages else data.paginator.num_pages+1
+    display_page_range = range(page_number_start, page_number_end)
+    return render(request, 'reports/patient_adherence.html', locals())
 
 
 def utilisation_of_services_list(request):
@@ -738,28 +788,33 @@ def utilisation_of_services_list(request):
         get_village_name = Village.objects.get(id=village_ids)
         village_id = '''and vlg.id='''+village
     cursor = connection.cursor()
-    cursor.execute('''select phc.name, sbc.name, vlg.name, 
-    consultation_men_less_30,consultation_men_less_30,consultation_men_30_between_50_age,consultation_female_30_between_50_age,
-    consultation_men_greater_50,consultation_female_greater_50, consultation_men_less_30 + consultation_men_less_30 + 
-    consultation_men_30_between_50_age + consultation_female_30_between_50_age + consultation_men_greater_50 + 
-    consultation_female_greater_50 as consultation_total, treatment_men_less_30, 
-    treatment_female_less_30,treatment_men_30_between_50_age,treatment_female_30_between_50_age,
-    treatment_men_greater_50,treatment_female_greater_50, treatment_men_less_30 + treatment_female_less_30 + 
-    treatment_men_30_between_50_age + treatment_female_30_between_50_age + treatment_men_greater_50 + treatment_female_greater_50 as treatment_total 
-    from (select village_id, coalesce(sum(case when date_part('year',age(dob))<30 and gender=1 then 1 else 0 end),0) as consultation_men_less_30, 
+    cursor.execute('''with a as (select date(trmt.visit_date) as trmt_date, phc.name as phc_name, sbc.name as subcenter_name, vlg.name as village_name, 
+    coalesce(sum(case when date_part('year',age(dob))<30 and gender=1 then 1 else 0 end),0) as consultation_men_less_30, 
     coalesce(sum(case when date_part('year',age(dob))<30 and gender=2 then 1 else 0 end),0) as consultation_female_less_30, 
     coalesce(sum(case when date_part('year',age(dob))>=30 and date_part('year',age(dob))<=50 and gender=1 then 1 else 0 end),0) as consultation_men_30_between_50_age, 
     coalesce(sum(case when date_part('year',age(dob))>=30 and date_part('year',age(dob))<=50 and gender=2 then 1 else 0 end),0) as consultation_female_30_between_50_age, 
-    coalesce(sum(case when date_part('year',age(dob))>50 and gender=1 then 1 else 0 end),0) as consultation_men_greater_50, coalesce(sum(case when date_part('year',age(dob))>50 and gender=2 then 1 else 0 end),0) as consultation_female_greater_50 
-    from health_management_treatments trmt inner join health_management_patients as pt on trmt.patient_uuid=pt.uuid where 1=1 '''+between_date+''' group by village_id) a full outer join (select village_id, coalesce(sum(case when date_part('year',age(dob))<30 and gender=1 then 1 else 0 end),0) as treatment_men_less_30, 
-    coalesce(sum(case when date_part('year',age(dob))<30 and gender=2 then 1 else 0 end),0) as treatment_female_less_30, 
-    coalesce(sum(case when date_part('year',age(dob))>=30 and date_part('year',age(dob))<=50 and gender=1 then 1 else 0 end),0) as treatment_men_30_between_50_age, 
-    coalesce(sum(case when date_part('year',age(dob))>=30 and date_part('year',age(dob))<=50 and gender=2 then 1 else 0 end),0) as treatment_female_30_between_50_age, 
-    coalesce(sum(case when date_part('year',age(dob))>50 and gender=1 then 1 else 0 end),0) as treatment_men_greater_50, 
-    coalesce(sum(case when date_part('year',age(dob))>50 and gender=2 then 1 else 0 end),0) as treatment_female_greater_50 
-    from health_management_prescription prpt inner join health_management_treatments trmt on prpt.treatment_uuid=trmt.uuid inner join health_management_patients as pt on trmt.patient_uuid=pt.uuid group by village_id) 
-    b on a.village_id = b.village_id inner join application_masters_village vlg on a.village_id = vlg.id inner join application_masters_subcenter sbc on vlg.subcenter_id = sbc.id 
-    inner join application_masters_phc phc on sbc.phc_id = phc.id where 1=1 '''+phc_id+sbc_ids+village_id+''' order by vlg.name''')
+    coalesce(sum(case when date_part('year',age(dob))>50 and gender=1 then 1 else 0 end),0) as consultation_men_greater_50, 
+    coalesce(sum(case when date_part('year',age(dob))>50 and gender=2 then 1 else 0 end),0) as consultation_female_greater_50, 
+    coalesce(sum(case when date_part('year',age(dob))<30 and gender=1 and date(trmt.visit_date)=date(pt.registered_date) then 1 else 0 end),0) as treatment_men_less_30, 
+    coalesce(sum(case when date_part('year',age(dob))<30 and gender=2 and date(trmt.visit_date)=date(pt.registered_date) then 1 else 0 end),0) as treatment_female_less_30, 
+    coalesce(sum(case when date_part('year',age(dob))>=30 and date_part('year',age(dob))<=50 and gender=1 and date(trmt.visit_date)=date(pt.registered_date) then 1 else 0 end),0) as treatment_men_30_between_50_age, 
+    coalesce(sum(case when date_part('year',age(dob))>=30 and date_part('year',age(dob))<=50 and gender=2 and date(trmt.visit_date)=date(pt.registered_date) then 1 else 0 end),0) as treatment_female_30_between_50_age, 
+    coalesce(sum(case when date_part('year',age(dob))>50 and gender=1 and date(trmt.visit_date)=date(pt.registered_date) then 1 else 0 end),0) as treatment_men_greater_50, 
+    coalesce(sum(case when date_part('year',age(dob))>50 and gender=2 and date(trmt.visit_date)=date(pt.registered_date) then 1 else 0 end),0) as treatment_female_greater_50 
+    from health_management_treatments trmt 
+    inner join health_management_patients as pt on trmt.patient_uuid=pt.uuid 
+    inner join application_masters_village vlg on pt.village_id = vlg.id 
+    inner join application_masters_subcenter sbc on vlg.subcenter_id = sbc.id 
+    inner join application_masters_phc phc on sbc.phc_id = phc.id 
+    where 1=1 '''+phc_id+sbc_ids+village_id+between_date+''' 
+    group by phc.name, sbc.name, vlg.name, date(trmt.visit_date)) 
+    select date(trmt_date), phc_name, subcenter_name, village_name, consultation_men_less_30, consultation_female_less_30, 
+    consultation_men_30_between_50_age, consultation_female_30_between_50_age, consultation_men_greater_50, consultation_female_greater_50, 
+    (consultation_men_less_30 + consultation_female_less_30 + consultation_men_30_between_50_age + consultation_female_30_between_50_age + consultation_men_greater_50 + consultation_female_greater_50) as consultation_total,
+    treatment_men_less_30, treatment_female_less_30, 
+    treatment_men_30_between_50_age, treatment_female_30_between_50_age, treatment_men_greater_50, treatment_female_greater_50, 
+    (treatment_men_less_30 + treatment_female_less_30 + treatment_men_30_between_50_age + treatment_female_30_between_50_age + treatment_men_greater_50 + treatment_female_greater_50) as treatment_total
+    from a''')
   
     utilisation_of_services_data = cursor.fetchall()
     export_flag = True if request.POST.get('export') and request.POST.get( 'export').lower() == 'true' else False
@@ -769,6 +824,7 @@ def utilisation_of_services_list(request):
         writer = csv.writer(response)
         writer.writerow(['UTILISATION OF SERVICES AT OBLF CLINICS'])
         writer.writerow([
+            'Date',
             'PHC Name',
             'Sub Centre',
             'Village', 
@@ -790,7 +846,7 @@ def utilisation_of_services_list(request):
         for data in utilisation_of_services_data:
             writer.writerow([
                 data[0],data[1],data[2],data[3],data[4],data[5],data[6],data[7],data[8],data[9],
-                data[10],data[11],data[12],data[13],data[14],data[15],data[16]
+                data[10],data[11],data[12],data[13],data[14],data[15],data[16],data[17]
                 ])
         return response 
     data = pagination_function(request, utilisation_of_services_data)
