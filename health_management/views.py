@@ -726,8 +726,8 @@ def patient_adherence_list(request):
         s_date = sd_date.strftime("%Y-%m-%d")
         e_date = ed_date.strftime("%Y-%m-%d")
         get_smy = sd_date.strftime("%B-%Y")
-    between_date = """and to_char(trmt.server_created_on,'YYYY-MM-DD') >= '"""+s_date + \
-        """' and to_char(trmt.server_created_on,'YYYY-MM-DD') <= '""" + \
+    between_date = """and to_char(trmt.visit_date,'YYYY-MM-DD') >= '"""+s_date + \
+        """' and to_char(trmt.visit_date,'YYYY-MM-DD') <= '""" + \
         e_date+"""' """
     phc_id=""
     if phc_ids:
