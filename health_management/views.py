@@ -624,8 +624,8 @@ def patient_registration_report(request):
     cursor.execute('''select phc.name as phc_name, sbc.name as sbc_name, vlg.name as village_name, 
     pt.name as patient_name, pt.patient_id as patient_code, pt.dob, date_part('year',age(pt.dob))::int as age, 
     case when pt.gender=1 then 'Male' when pt.gender=2 then 'Female' end as gender,
-    case when trmt.bp_sys3 is not null then trmt.bp_sys3 when trmt.bp_sys2 is not null then trmt.bp_sys2 when trmt.bp_sys1 is not null then trmt.bp_sys1 end as sbp,
-    case when trmt.bp_non_sys3 is not null then trmt.bp_non_sys3 when trmt.bp_non_sys2 is not null then trmt.bp_non_sys2 when trmt.bp_non_sys1 is not null then trmt.bp_non_sys1 end as dbp,
+    case when trmt.bp_sys3!='' then trmt.bp_sys3 when trmt.bp_sys2!='' then trmt.bp_sys2 when trmt.bp_sys1!='' then trmt.bp_sys1 else '-' end as sbp,
+    case when trmt.bp_non_sys3!='' then trmt.bp_non_sys3 when trmt.bp_non_sys2!='' then trmt.bp_non_sys2 when trmt.bp_non_sys1!='' then trmt.bp_non_sys1 else '-' end as dbp,
     trmt.fbs as fbs, trmt.pp as pp, trmt.random as random, ndc.name as diagnosis,
     case when dgs.source_treatment=1 then 'CLINIC' when dgs.source_treatment=2 then 'OUTSIDE' when dgs.source_treatment=3 then 'C&O' end as source_of_tretement,string_agg(md.name, ', ')
     from health_management_patients pt 
@@ -727,6 +727,7 @@ def patient_adherence_list(request):
     inner join application_masters_village vlg on pt.village_id=vlg.id 
     inner join application_masters_subcenter sbc on vlg.subcenter_id = sbc.id 
     inner join application_masters_phc phc on sbc.phc_id = phc.id 
+    where 1=1 """+between_date+"""
     group by phc_name, sbc_name, village_name, patient_name, patient_code
     order by vlg.name) select phc_name, sbc_name, village_name, patient_name, patient_code, 
     no_of_time_clinics_held, native_month, (case when native_month = 0 then 0 else round((no_of_time_clinics_held/native_month::numeric)*100,0)end)::integer as per from a"""
