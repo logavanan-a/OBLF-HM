@@ -678,8 +678,6 @@ def patient_adherence_list(request):
     village_ids = int(village) if village != '' else ''
     start_filter = request.GET.get('start_filter', '')
     end_filter = request.GET.get('end_filter', '')
-    print(start_filter, 'start_filter')
-    print(end_filter, 'end_filter')
     from datetime import date, timedelta
     import calendar
     last_day = date.today().replace(day=calendar.monthrange(date.today().year, date.today().month)[1])
@@ -802,6 +800,7 @@ def utilisation_of_services_list(request):
         get_village_name = Village.objects.get(id=village_ids)
         village_id = '''and vlg.id='''+village
     cursor = connection.cursor()
+    
     cursor.execute('''with a as (select date(trmt.visit_date) as trmt_date, phc.name as phc_name, sbc.name as subcenter_name, vlg.name as village_name, 
     coalesce(sum(case when date_part('year',age(dob))<30 and gender=1 then 1 else 0 end),0) as consultation_men_less_30, 
     coalesce(sum(case when date_part('year',age(dob))<30 and gender=2 then 1 else 0 end),0) as consultation_female_less_30, 
@@ -944,6 +943,7 @@ def prevelance_of_ncd_list(request):
         writer = csv.writer(response)
         writer.writerow(['PREVELANCE OF NCD'])
         writer.writerow([
+            'Date Range',
             'PHC Name',
             'Sub Centre',
             'Village', 
@@ -964,7 +964,7 @@ def prevelance_of_ncd_list(request):
             ])
         for data in prevelance_of_ncd_data:
             writer.writerow([
-                data[0],data[1],data[2],data[3],data[4],data[5],data[6],data[7],data[8],data[9],
+                f'{s_date}/{e_date}',data[0],data[1],data[2],data[3],data[4],data[5],data[6],data[7],data[8],data[9],
                 data[10],data[11],data[12],data[13],data[14],data[15],data[16]
                 ])
         return response
