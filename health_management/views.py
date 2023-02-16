@@ -678,7 +678,8 @@ def patient_adherence_list(request):
     village_ids = int(village) if village != '' else ''
     start_filter = request.GET.get('start_filter', '')
     end_filter = request.GET.get('end_filter', '')
-    # date_st = datetime.today().replace(day=1)
+    print(start_filter, 'start_filter')
+    print(end_filter, 'end_filter')
     from datetime import date, timedelta
     import calendar
     last_day = date.today().replace(day=calendar.monthrange(date.today().year, date.today().month)[1])
