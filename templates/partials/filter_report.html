@@ -70,8 +70,8 @@
                         {% endif %}
                         <div class="col-md-4">  
                             <div class="mb-3">
-                                <label for="floatingnameInput">Start month & year:</label>
-                                <input type="month" class="form-control" name='start_filter'  value="{% if not start_filter %}{{sd_filter}}{% else %}{{start_filter}}{% endif %}" id="start_filter" onchange='onselected_start_month(this)'>
+                                <label for="floatingnameInput">Start Date:</label>
+                                <input type="date" class="form-control" name='start_filter'  value="{% if not start_filter %}{{sd_filter}}{% else %}{{start_filter}}{% endif %}" id="start_filter" onchange='onselected_start_month(this)'>
                                 <div class="invalid-feedback">
                                     Please provide a valid both date field.
                                 </div>
@@ -79,8 +79,8 @@
                         </div>
                         <div class="col-md-4">  
                             <div class="mb-3">
-                                <label for="floatingnameInput">End month & year:</label>
-                                <input type="month" class="form-control" name='end_filter'  value="{% if not end_filter %}{{ed_filter}}{% else %}{{end_filter}}{% endif %}" id="end_filter" onchange='onselected_start_month(this)' >
+                                <label for="floatingnameInput">End Date:</label>
+                                <input type="date" class="form-control" name='end_filter'  value="{% if not end_filter %}{{ed_filter}}{% else %}{{end_filter}}{% endif %}" id="end_filter" onchange='onselected_start_month(this)' >
                                 <div class="invalid-feedback">
                                     Please provide a valid both date field and Start date should be greater than or equal to end date.
                                 </div>
@@ -98,7 +98,7 @@
                 </form>
                 <div class="d-flex">
                    
-                    <p><b>Note:[</b><b>Phc:</b>{{get_phc_name}},<b>Sub Center:</b>{{get_sbc_name}}, <b>Village:</b> {{get_village_name}},{% if get_medicine_name %}<b>Medicine:</b>{{get_medicine_name}},{% endif %}{% if get_health_worker_name %}<b>Health Worker:</b>{{get_health_worker_name.first_name}},{% endif %}<b>Start month & year:</b> {{get_smy}}, <b>End month & year:</b> {{get_emy}}<b>]</b></p>
+                    <p><b>Note:[</b><b>Phc:</b>{{get_phc_name}},<b>Sub Center:</b>{{get_sbc_name}}, <b>Village:</b> {{get_village_name}},{% if get_medicine_name %}<b>Medicine:</b>{{get_medicine_name}},{% endif %}{% if get_health_worker_name %}<b>Health Worker:</b>{{get_health_worker_name.first_name}},{% endif %}<b>Start month & year:</b> {{s_date}}, <b>End month & year:</b> {{e_date}}<b>]</b></p>
                 </div>
             </div>
         </div>

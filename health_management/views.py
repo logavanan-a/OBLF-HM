@@ -126,7 +126,7 @@ def verified_diagnosis_report(request):
     export_flag = True if request.POST.get('export') and request.POST.get( 'export').lower() == 'true' else False
     if export_flag:
         response = HttpResponse(content_type='text/csv',)
-        response['Content-Disposition'] = 'attachment; filename="distribution village wise medicine'+ str(localtime(timezone.now()).strftime("%m-%d-%Y %I-%M %p")) +'.csv"'
+        response['Content-Disposition'] = 'attachment; filename="verified diagnosis'+ str(localtime(timezone.now()).strftime("%m-%d-%Y %I-%M %p")) +'.csv"'
         writer = csv.writer(response)
         writer.writerow([
             'PHC Name',
@@ -161,7 +161,7 @@ def verified_home_visit_report(request):
     export_flag = True if request.POST.get('export') and request.POST.get( 'export').lower() == 'true' else False
     if export_flag:
         response = HttpResponse(content_type='text/csv',)
-        response['Content-Disposition'] = 'attachment; filename="home visit '+ str(localtime(timezone.now()).strftime("%m-%d-%Y %I-%M %p")) +'.csv"'
+        response['Content-Disposition'] = 'attachment; filename="verified home visit '+ str(localtime(timezone.now()).strftime("%m-%d-%Y %I-%M %p")) +'.csv"'
         writer = csv.writer(response)
         writer.writerow([
             'PHC Name',
@@ -199,7 +199,7 @@ def verified_treatments_report(request):
     export_flag = True if request.POST.get('export') and request.POST.get( 'export').lower() == 'true' else False
     if export_flag:
         response = HttpResponse(content_type='text/csv',)
-        response['Content-Disposition'] = 'attachment; filename="home visit '+ str(localtime(timezone.now()).strftime("%m-%d-%Y %I-%M %p")) +'.csv"'
+        response['Content-Disposition'] = 'attachment; filename="verified treatment '+ str(localtime(timezone.now()).strftime("%m-%d-%Y %I-%M %p")) +'.csv"'
         writer = csv.writer(response)
         writer.writerow([
             'PHC Name',
@@ -268,15 +268,8 @@ def home_visit_report(request):
     e_date=''
     between_date = ""
     if start_filter != '':
-        start_date = start_filter+'-01'
-        end_date = end_filter+'-01'
-        sd_date= datetime.strptime(start_date, "%Y-%m-%d")
-        ed_date= datetime.strptime(end_date, "%Y-%m-%d")
-        get_emy = ed_date.strftime("%B-%Y")
-        ed_date = ed_date + relativedelta(months=1)
-        s_date = sd_date.strftime("%Y-%m-%d")
-        e_date = ed_date.strftime("%Y-%m-%d")
-        get_smy = sd_date.strftime("%B-%Y")
+        s_date = start_filter
+        e_date = end_filter
         between_date = """and to_char(hv.response_datetime,'YYYY-MM-DD') >= '"""+s_date + \
             """' and to_char(hv.response_datetime,'YYYY-MM-DD') <= '""" + \
             e_date+"""' """
@@ -360,15 +353,8 @@ def clinic_level_statistics_list(request):
     e_date=''
     between_date = ""
     if start_filter != '':
-        start_date = start_filter+'-01'
-        end_date = end_filter+'-01'
-        sd_date= datetime.strptime(start_date, "%Y-%m-%d")
-        ed_date= datetime.strptime(end_date, "%Y-%m-%d")
-        get_emy = ed_date.strftime("%B-%Y")
-        ed_date = ed_date + relativedelta(months=1)
-        s_date = sd_date.strftime("%Y-%m-%d")
-        e_date = ed_date.strftime("%Y-%m-%d")
-        get_smy = sd_date.strftime("%B-%Y")
+        s_date = start_filter
+        e_date = end_filter
         between_date = """and to_char(pt.server_created_on,'YYYY-MM-DD') >= '"""+s_date + \
             """' and to_char(pt.server_created_on,'YYYY-MM-DD') <= '""" + \
             e_date+"""' """
@@ -494,15 +480,8 @@ def drug_dispensation_stock_list(request):
     medicine_list = True
     prescription_list=Prescription.objects.filter(status=2)
     if start_filter != '':
-        start_date = start_filter+'-01'
-        end_date = end_filter+'-01'
-        sd_date= datetime.strptime(start_date, "%Y-%m-%d")
-        ed_date= datetime.strptime(end_date, "%Y-%m-%d")
-        get_emy = ed_date.strftime("%B-%Y")
-        ed_date = ed_date + relativedelta(months=1)
-        s_date = sd_date.strftime("%Y-%m-%d")
-        e_date = ed_date.strftime("%Y-%m-%d")
-        get_smy = sd_date.strftime("%B-%Y")
+        s_date = start_filter
+        e_date = end_filter
         prescription_list=prescription_list.filter(status=2, server_created_on__range=[s_date,e_date])
     if phc_ids:
         get_phc_name = PHC.objects.get(id=phc_ids)
@@ -594,15 +573,8 @@ def patient_registration_report(request):
     e_date=''
     between_date = ""
     if start_filter != '':
-        start_date = start_filter+'-01'
-        end_date = end_filter+'-01'
-        sd_date= datetime.strptime(start_date, "%Y-%m-%d")
-        ed_date= datetime.strptime(end_date, "%Y-%m-%d")
-        get_emy = ed_date.strftime("%B-%Y")
-        ed_date = ed_date + relativedelta(months=1)
-        s_date = sd_date.strftime("%Y-%m-%d")
-        e_date = ed_date.strftime("%Y-%m-%d")
-        get_smy = sd_date.strftime("%B-%Y")
+        s_date = start_filter
+        e_date = end_filter
         between_date = """and to_char(pt.server_created_on,'YYYY-MM-DD') >= '"""+s_date + \
             """' and to_char(pt.server_created_on,'YYYY-MM-DD') <= '""" + \
             e_date+"""' """
@@ -706,26 +678,20 @@ def patient_adherence_list(request):
     village_ids = int(village) if village != '' else ''
     start_filter = request.GET.get('start_filter', '')
     end_filter = request.GET.get('end_filter', '')
+    # date_st = datetime.today().replace(day=1)
+    from datetime import date, timedelta
+    import calendar
+    last_day = date.today().replace(day=calendar.monthrange(date.today().year, date.today().month)[1])
     now = datetime.now()
-    ed_filter = now.strftime("%Y-%m")
-    edm_filter = now + relativedelta(months=1)
-    edm_filter = edm_filter.strftime("%Y-%m")
+    ed_filter = datetime.strftime(last_day,"%Y-%m-%d")
     sd_filter = now - relativedelta(months=2)
     sd_filter = sd_filter.strftime("%Y-%m")
-    sdm_filter = now - relativedelta(months=3)
-    sdm_filter = sdm_filter.strftime("%Y-%m")
-    s_date=sd_filter+'-01'
-    e_date=edm_filter+'-01'
+    sd_filter = sd_filter+'-01'
+    s_date=sd_filter
+    e_date=ed_filter
     if start_filter != '':
-        start_date = start_filter+'-01'
-        end_date = end_filter+'-01'
-        sd_date= datetime.strptime(start_date, "%Y-%m-%d")
-        ed_date= datetime.strptime(end_date, "%Y-%m-%d")
-        get_emy = ed_date.strftime("%B-%Y")
-        ed_date = ed_date + relativedelta(months=1)
-        s_date = sd_date.strftime("%Y-%m-%d")
-        e_date = ed_date.strftime("%Y-%m-%d")
-        get_smy = sd_date.strftime("%B-%Y")
+        s_date = start_filter
+        e_date = end_filter
     between_date = """and to_char(trmt.visit_date,'YYYY-MM-DD') >= '"""+s_date + \
         """' and to_char(trmt.visit_date,'YYYY-MM-DD') <= '""" + \
         e_date+"""' """
@@ -746,7 +712,7 @@ def patient_adherence_list(request):
     # (extract(year from age('"""+e_date+"""','"""+s_date+"""'))*12 + extract(month from age('"""+e_date+"""','"""+s_date+"""')) + 1)::int as native_month
     cursor = connection.cursor()
     sql_query = """with a as (select phc.name as phc_name, sbc.name as sbc_name, vlg.name as village_name, pt.name as patient_name, pt.patient_id as patient_code, pt.uuid as pt_uuid, count(trmt.uuid) as no_of_time_clinics_held, 
-    (extract(year from age('"""+e_date+"""','"""+s_date+"""'))*12 + extract(month from age('"""+e_date+"""','"""+s_date+"""')))::int as native_month 
+    (extract(year from age('"""+e_date+"""','"""+s_date+"""'))*12 + extract(month from age('"""+e_date+"""','"""+s_date+"""'))+1)::int as native_month 
     from health_management_treatments trmt 
     inner join health_management_patients pt on trmt.patient_uuid = pt.uuid 
     inner join application_masters_village vlg on pt.village_id=vlg.id 
@@ -815,17 +781,10 @@ def utilisation_of_services_list(request):
     e_date=''
     between_date = ""
     if start_filter != '':
-        start_date = start_filter+'-01'
-        end_date = end_filter+'-01'
-        sd_date= datetime.strptime(start_date, "%Y-%m-%d")
-        ed_date= datetime.strptime(end_date, "%Y-%m-%d")
-        get_emy = ed_date.strftime("%B-%Y")
-        ed_date = ed_date + relativedelta(months=1)
-        s_date = sd_date.strftime("%Y-%m-%d")
-        e_date = ed_date.strftime("%Y-%m-%d")
-        get_smy = sd_date.strftime("%B-%Y")
-        between_date = """and to_char(health_management_patients.server_created_on,'YYYY-MM-DD') >= '"""+s_date + \
-            """' and to_char(health_management_patients.server_created_on,'YYYY-MM-DD') <= '""" + \
+        s_date = start_filter
+        e_date = end_filter
+        between_date = """and to_char(pt.server_created_on,'YYYY-MM-DD') >= '"""+s_date + \
+            """' and to_char(pt.server_created_on,'YYYY-MM-DD') <= '""" + \
             e_date+"""' """
     phc_id=""
     if phc_ids:
@@ -930,15 +889,8 @@ def prevelance_of_ncd_list(request):
     e_date=''
     between_date = ""
     if start_filter != '':
-        start_date = start_filter+'-01'
-        end_date = end_filter+'-01'
-        sd_date= datetime.strptime(start_date, "%Y-%m-%d")
-        ed_date= datetime.strptime(end_date, "%Y-%m-%d")
-        get_emy = ed_date.strftime("%B-%Y")
-        ed_date = ed_date + relativedelta(months=1)
-        s_date = sd_date.strftime("%Y-%m-%d")
-        e_date = ed_date.strftime("%Y-%m-%d")
-        get_smy = sd_date.strftime("%B-%Y")
+        s_date = start_filter
+        e_date = end_filter
         between_date = """and to_char(pt.server_created_on,'YYYY-MM-DD') >= '"""+s_date + \
             """' and to_char(pt.server_created_on,'YYYY-MM-DD') <= '""" + \
             e_date+"""' """
@@ -1589,7 +1541,6 @@ def prescription_details(self):
                     "qty" : data.get('qty'),
                     })
         objlist.append(obj)
-
     return objlist
 
 
