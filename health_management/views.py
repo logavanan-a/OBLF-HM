@@ -270,8 +270,8 @@ def home_visit_report(request):
     if start_filter != '':
         s_date = start_filter
         e_date = end_filter
-        between_date = """and to_char(hv.response_datetime,'YYYY-MM-DD') >= '"""+s_date + \
-            """' and to_char(hv.response_datetime,'YYYY-MM-DD') <= '""" + \
+        between_date = """and (hv.response_datetime at time zone 'Asia/Kolkata')::date >= '"""+s_date + \
+            """' and (hv.response_datetime at time zone 'Asia/Kolkata')::date <= '""" + \
             e_date+"""' """
     phc_id=""
     if phc_ids:
@@ -355,8 +355,8 @@ def clinic_level_statistics_list(request):
     if start_filter != '':
         s_date = start_filter
         e_date = end_filter
-        between_date = """and to_char(pt.server_created_on,'YYYY-MM-DD') >= '"""+s_date + \
-            """' and to_char(pt.server_created_on,'YYYY-MM-DD') <= '""" + \
+        between_date = """and (pt.server_created_on at time zone 'Asia/Kolkata')::date >= '"""+s_date + \
+            """' and (pt.server_created_on at time zone 'Asia/Kolkata')::date <= '""" + \
             e_date+"""' """
     phc_id= ""
     if phc:
@@ -375,13 +375,13 @@ def clinic_level_statistics_list(request):
     
     cursor = connection.cursor()
     cursor.execute('''select phc.name as phc_name, sbc.name as sbc_name , vlg.name as vlg_name, 
-    date(trmt.visit_date) as date_of_clinic, count(trmt.uuid) as total, coalesce(sum(case when trmt.visit_date=pt.registered_date then 1 else 0 end),0) as rg_date 
+    (trmt.visit_date at time zone 'Asia/Kolkata')::date as date_of_clinic, count(trmt.uuid) as total, coalesce(sum(case when trmt.visit_date=pt.registered_date then 1 else 0 end),0) as rg_date 
     from  health_management_treatments trmt left join health_management_patients as pt on trmt.patient_uuid=pt.uuid 
     inner join application_masters_village vlg on pt.village_id = vlg.id 
     inner join application_masters_subcenter sbc on vlg.subcenter_id = sbc.id 
     inner join application_masters_phc phc on sbc.phc_id = phc.id 
     where 1=1 '''+phc_id+sbc_ids+village_id+between_date+''' 
-    group by phc.name, sbc.name, vlg.name, date(trmt.visit_date)
+    group by phc.name, sbc.name, vlg.name, (trmt.visit_date at time zone 'Asia/Kolkata')::date
     order by vlg.name''')
 
     clinic_level_data = cursor.fetchall()
@@ -575,8 +575,8 @@ def patient_registration_report(request):
     if start_filter != '':
         s_date = start_filter
         e_date = end_filter
-        between_date = """and to_char(pt.server_created_on,'YYYY-MM-DD') >= '"""+s_date + \
-            """' and to_char(pt.server_created_on,'YYYY-MM-DD') <= '""" + \
+        between_date = """and (pt.server_created_on at time zone 'Asia/Kolkata')::date >= '"""+s_date + \
+            """' and (pt.server_created_on at time zone 'Asia/Kolkata')::date <= '""" + \
             e_date+"""' """
     phc_id=""
     if phc_ids:
@@ -691,8 +691,8 @@ def patient_adherence_list(request):
     if start_filter != '':
         s_date = start_filter
         e_date = end_filter
-    between_date = """and to_char(trmt.visit_date,'YYYY-MM-DD') >= '"""+s_date + \
-        """' and to_char(trmt.visit_date,'YYYY-MM-DD') <= '""" + \
+    between_date = """and (trmt.visit_date at time zone 'Asia/Kolkata')::date >= '"""+s_date + \
+        """' and (trmt.visit_date at time zone 'Asia/Kolkata')::date <= '""" + \
         e_date+"""' """
     phc_id=""
     if phc_ids:
@@ -782,8 +782,8 @@ def utilisation_of_services_list(request):
     if start_filter != '':
         s_date = start_filter
         e_date = end_filter
-        between_date = """and to_char(trmt.visit_date,'YYYY-MM-DD') >= '"""+s_date + \
-            """' and to_char(trmt.visit_date,'YYYY-MM-DD') <= '""" + \
+        between_date = """and (trmt.visit_date at time zone 'Asia/Kolkata')::date >= '"""+s_date + \
+            """' and (trmt.visit_date at time zone 'Asia/Kolkata')::date <= '""" + \
             e_date+"""' """
     phc_id=""
     if phc_ids:
@@ -801,26 +801,26 @@ def utilisation_of_services_list(request):
         village_id = '''and vlg.id='''+village
     cursor = connection.cursor()
     
-    cursor.execute('''with a as (select date(trmt.visit_date) as trmt_date, phc.name as phc_name, sbc.name as subcenter_name, vlg.name as village_name, 
+    cursor.execute('''with a as (select (trmt.visit_date at time zone 'Asia/Kolkata')::date as trmt_date, phc.name as phc_name, sbc.name as subcenter_name, vlg.name as village_name, 
     coalesce(sum(case when date_part('year',age(dob))<30 and gender=1 then 1 else 0 end),0) as consultation_men_less_30, 
     coalesce(sum(case when date_part('year',age(dob))<30 and gender=2 then 1 else 0 end),0) as consultation_female_less_30, 
     coalesce(sum(case when date_part('year',age(dob))>=30 and date_part('year',age(dob))<=50 and gender=1 then 1 else 0 end),0) as consultation_men_30_between_50_age, 
     coalesce(sum(case when date_part('year',age(dob))>=30 and date_part('year',age(dob))<=50 and gender=2 then 1 else 0 end),0) as consultation_female_30_between_50_age, 
     coalesce(sum(case when date_part('year',age(dob))>50 and gender=1 then 1 else 0 end),0) as consultation_men_greater_50, 
     coalesce(sum(case when date_part('year',age(dob))>50 and gender=2 then 1 else 0 end),0) as consultation_female_greater_50, 
-    coalesce(sum(case when date_part('year',age(dob))<30 and gender=1 and date(trmt.visit_date)=date(pt.registered_date) then 1 else 0 end),0) as treatment_men_less_30, 
-    coalesce(sum(case when date_part('year',age(dob))<30 and gender=2 and date(trmt.visit_date)=date(pt.registered_date) then 1 else 0 end),0) as treatment_female_less_30, 
-    coalesce(sum(case when date_part('year',age(dob))>=30 and date_part('year',age(dob))<=50 and gender=1 and date(trmt.visit_date)=date(pt.registered_date) then 1 else 0 end),0) as treatment_men_30_between_50_age, 
-    coalesce(sum(case when date_part('year',age(dob))>=30 and date_part('year',age(dob))<=50 and gender=2 and date(trmt.visit_date)=date(pt.registered_date) then 1 else 0 end),0) as treatment_female_30_between_50_age, 
-    coalesce(sum(case when date_part('year',age(dob))>50 and gender=1 and date(trmt.visit_date)=date(pt.registered_date) then 1 else 0 end),0) as treatment_men_greater_50, 
-    coalesce(sum(case when date_part('year',age(dob))>50 and gender=2 and date(trmt.visit_date)=date(pt.registered_date) then 1 else 0 end),0) as treatment_female_greater_50 
+    coalesce(sum(case when date_part('year',age(dob))<30 and gender=1 and (trmt.visit_date at time zone 'Asia/Kolkata')::date=(pt.registered_date at time zone 'Asia/Kolkata')::date then 1 else 0 end),0) as treatment_men_less_30, 
+    coalesce(sum(case when date_part('year',age(dob))<30 and gender=2 and (trmt.visit_date at time zone 'Asia/Kolkata')::date=(pt.registered_date at time zone 'Asia/Kolkata')::date then 1 else 0 end),0) as treatment_female_less_30, 
+    coalesce(sum(case when date_part('year',age(dob))>=30 and date_part('year',age(dob))<=50 and gender=1 and (trmt.visit_date at time zone 'Asia/Kolkata')::date=(pt.registered_date at time zone 'Asia/Kolkata')::date then 1 else 0 end),0) as treatment_men_30_between_50_age, 
+    coalesce(sum(case when date_part('year',age(dob))>=30 and date_part('year',age(dob))<=50 and gender=2 and (trmt.visit_date at time zone 'Asia/Kolkata')::date=(pt.registered_date at time zone 'Asia/Kolkata')::date then 1 else 0 end),0) as treatment_female_30_between_50_age, 
+    coalesce(sum(case when date_part('year',age(dob))>50 and gender=1 and (trmt.visit_date at time zone 'Asia/Kolkata')::date=(pt.registered_date at time zone 'Asia/Kolkata')::date then 1 else 0 end),0) as treatment_men_greater_50, 
+    coalesce(sum(case when date_part('year',age(dob))>50 and gender=2 and (trmt.visit_date at time zone 'Asia/Kolkata')::date=(pt.registered_date at time zone 'Asia/Kolkata')::date then 1 else 0 end),0) as treatment_female_greater_50 
     from health_management_treatments trmt 
     inner join health_management_patients as pt on trmt.patient_uuid=pt.uuid 
     inner join application_masters_village vlg on pt.village_id = vlg.id 
     inner join application_masters_subcenter sbc on vlg.subcenter_id = sbc.id 
     inner join application_masters_phc phc on sbc.phc_id = phc.id 
     where 1=1 '''+phc_id+sbc_ids+village_id+between_date+''' 
-    group by phc.name, sbc.name, vlg.name, date(trmt.visit_date)) 
+    group by phc.name, sbc.name, vlg.name, (trmt.visit_date at time zone 'Asia/Kolkata')::date) 
     select date(trmt_date), phc_name, subcenter_name, village_name, consultation_men_less_30, consultation_female_less_30, 
     consultation_men_30_between_50_age, consultation_female_30_between_50_age, consultation_men_greater_50, consultation_female_greater_50, 
     (consultation_men_less_30 + consultation_female_less_30 + consultation_men_30_between_50_age + consultation_female_30_between_50_age + consultation_men_greater_50 + consultation_female_greater_50) as consultation_total,
@@ -917,12 +917,12 @@ def prevelance_of_ncd_list(request):
     coalesce(sum(case when date_part('year',age(dob))>=30 and date_part('year',age(dob))<=50 and gender=2 then 1 else 0 end),0) as female_30_between_50_age, 
     coalesce(sum(case when date_part('year',age(dob))>50 and gender=1 then 1 else 0 end),0) as men_greater_50, 
     coalesce(sum(case when date_part('year',age(dob))>50 and gender=2 then 1 else 0 end),0) as female_greater_50,
-    coalesce(sum(case when date_part('year',age(dob))<30 and gender=1 and date(pt.registered_date)=date(trmt.visit_date) then 1 else 0 end),0) as new_men_less_30,
-    coalesce(sum(case when date_part('year',age(dob))<30 and gender=2 and date(pt.registered_date)=date(trmt.visit_date) then 1 else 0 end),0) as new_female_less_30,
-    coalesce(sum(case when date_part('year',age(dob))>=30 and date_part('year',age(dob))<=50 and gender=1 and date(pt.registered_date)=date(trmt.visit_date) then 1 else 0 end),0) as new_men_30_between_50_age,
-    coalesce(sum(case when date_part('year',age(dob))>=30 and date_part('year',age(dob))<=50 and gender=2 and date(pt.registered_date)=date(trmt.visit_date) then 1 else 0 end),0) as new_female_30_between_50_age,
-    coalesce(sum(case when date_part('year',age(dob))>50 and gender=1 and date(pt.registered_date)=date(trmt.visit_date) then 1 else 0 end),0) as new_men_greater_50, 
-    coalesce(sum(case when date_part('year',age(dob))>50 and gender=2 and date(pt.registered_date)=date(trmt.visit_date) then 1 else 0 end),0) as new_female_greater_50
+    coalesce(sum(case when date_part('year',age(dob))<30 and gender=1 and (pt.registered_date at time zone 'Asia/Kolkata')::date=(trmt.visit_date at time zone 'Asia/Kolkata')::date then 1 else 0 end),0) as new_men_less_30,
+    coalesce(sum(case when date_part('year',age(dob))<30 and gender=2 and (pt.registered_date at time zone 'Asia/Kolkata')::date=(trmt.visit_date at time zone 'Asia/Kolkata')::date then 1 else 0 end),0) as new_female_less_30,
+    coalesce(sum(case when date_part('year',age(dob))>=30 and date_part('year',age(dob))<=50 and gender=1 and (pt.registered_date at time zone 'Asia/Kolkata')::date=(trmt.visit_date at time zone 'Asia/Kolkata')::date then 1 else 0 end),0) as new_men_30_between_50_age,
+    coalesce(sum(case when date_part('year',age(dob))>=30 and date_part('year',age(dob))<=50 and gender=2 and (pt.registered_date at time zone 'Asia/Kolkata')::date=(trmt.visit_date at time zone 'Asia/Kolkata')::date then 1 else 0 end),0) as new_female_30_between_50_age,
+    coalesce(sum(case when date_part('year',age(dob))>50 and gender=1 and (pt.registered_date at time zone 'Asia/Kolkata')::date=(trmt.visit_date at time zone 'Asia/Kolkata')::date then 1 else 0 end),0) as new_men_greater_50, 
+    coalesce(sum(case when date_part('year',age(dob))>50 and gender=2 and (pt.registered_date at time zone 'Asia/Kolkata')::date=(trmt.visit_date at time zone 'Asia/Kolkata')::date then 1 else 0 end),0) as new_female_greater_50
     from health_management_patients pt 
     inner join application_masters_village vlg on pt.village_id = vlg.id 
     inner join application_masters_subcenter sbc on vlg.subcenter_id = sbc.id 
