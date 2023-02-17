@@ -375,7 +375,7 @@ def clinic_level_statistics_list(request):
     
     cursor = connection.cursor()
     cursor.execute('''select phc.name as phc_name, sbc.name as sbc_name , vlg.name as vlg_name, 
-    (trmt.visit_date at time zone 'Asia/Kolkata')::date as date_of_clinic, count(trmt.uuid) as total, coalesce(sum(case when trmt.visit_date=pt.registered_date then 1 else 0 end),0) as rg_date 
+    (trmt.visit_date at time zone 'Asia/Kolkata')::date as date_of_clinic, count(trmt.uuid) as total, coalesce(sum(case when (trmt.visit_date at time zone 'Asia/Kolkata')::date=(pt.registered_date at time zone 'Asia/Kolkata')::date then 1 else 0 end),0) as rg_date 
     from  health_management_treatments trmt left join health_management_patients as pt on trmt.patient_uuid=pt.uuid 
     inner join application_masters_village vlg on pt.village_id = vlg.id 
     inner join application_masters_subcenter sbc on vlg.subcenter_id = sbc.id 
@@ -891,8 +891,8 @@ def prevelance_of_ncd_list(request):
     if start_filter != '':
         s_date = start_filter
         e_date = end_filter
-        between_date = """and to_char(pt.server_created_on,'YYYY-MM-DD') >= '"""+s_date + \
-            """' and to_char(pt.server_created_on,'YYYY-MM-DD') <= '""" + \
+        between_date = """and (trmt.visit_date at time zone 'Asia/Kolkata')::date >= '"""+s_date + \
+            """' and (trmt.visit_date at time zone 'Asia/Kolkata')::date <= '""" + \
             e_date+"""' """
     phc_id= ""
     if phc:
