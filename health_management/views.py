@@ -355,8 +355,8 @@ def clinic_level_statistics_list(request):
     if start_filter != '':
         s_date = start_filter
         e_date = end_filter
-        between_date = """and (pt.server_created_on at time zone 'Asia/Kolkata')::date >= '"""+s_date + \
-            """' and (pt.server_created_on at time zone 'Asia/Kolkata')::date <= '""" + \
+        between_date = """and (trmt.visit_date at time zone 'Asia/Kolkata')::date >= '"""+s_date + \
+            """' and (trmt.visit_date at time zone 'Asia/Kolkata')::date <= '""" + \
             e_date+"""' """
     phc_id= ""
     if phc:
