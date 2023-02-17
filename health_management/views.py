@@ -782,8 +782,8 @@ def utilisation_of_services_list(request):
     if start_filter != '':
         s_date = start_filter
         e_date = end_filter
-        between_date = """and to_char(pt.server_created_on,'YYYY-MM-DD') >= '"""+s_date + \
-            """' and to_char(pt.server_created_on,'YYYY-MM-DD') <= '""" + \
+        between_date = """and to_char(trmt.visit_date,'YYYY-MM-DD') >= '"""+s_date + \
+            """' and to_char(trmt.visit_date,'YYYY-MM-DD') <= '""" + \
             e_date+"""' """
     phc_id=""
     if phc_ids:

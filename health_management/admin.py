@@ -34,6 +34,7 @@ class TreatmentsAdmin(ImportExportModelAdmin, ImportExportFormat):
      'bmi', 'symptoms', 'remarks', 'hyper_diabetic', 'co_morbid_ids', 'co_morbid_names',
      'is_alcoholic', 'is_tobacco', 'is_smoker', 'status']
     search_fields = ['uuid', 'user_uuid', 'patient_uuid']
+    date_hierarchy = 'visit_date'
     list_per_page = 15
 
 
