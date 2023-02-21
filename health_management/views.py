@@ -799,6 +799,7 @@ def utilisation_of_services_list(request):
     if village_ids:
         get_village_name = Village.objects.get(id=village_ids)
         village_id = '''and vlg.id='''+village
+    
     cursor = connection.cursor()
     
     cursor.execute('''with a as (select (trmt.visit_date at time zone 'Asia/Kolkata')::date as trmt_date, phc.name as phc_name, sbc.name as subcenter_name, vlg.name as village_name, 
@@ -808,17 +809,18 @@ def utilisation_of_services_list(request):
     coalesce(sum(case when date_part('year',age(dob))>=30 and date_part('year',age(dob))<=50 and gender=2 then 1 else 0 end),0) as consultation_female_30_between_50_age, 
     coalesce(sum(case when date_part('year',age(dob))>50 and gender=1 then 1 else 0 end),0) as consultation_men_greater_50, 
     coalesce(sum(case when date_part('year',age(dob))>50 and gender=2 then 1 else 0 end),0) as consultation_female_greater_50, 
-    coalesce(sum(case when date_part('year',age(dob))<30 and gender=1 and (trmt.visit_date at time zone 'Asia/Kolkata')::date=(pt.registered_date at time zone 'Asia/Kolkata')::date then 1 else 0 end),0) as treatment_men_less_30, 
-    coalesce(sum(case when date_part('year',age(dob))<30 and gender=2 and (trmt.visit_date at time zone 'Asia/Kolkata')::date=(pt.registered_date at time zone 'Asia/Kolkata')::date then 1 else 0 end),0) as treatment_female_less_30, 
-    coalesce(sum(case when date_part('year',age(dob))>=30 and date_part('year',age(dob))<=50 and gender=1 and (trmt.visit_date at time zone 'Asia/Kolkata')::date=(pt.registered_date at time zone 'Asia/Kolkata')::date then 1 else 0 end),0) as treatment_men_30_between_50_age, 
-    coalesce(sum(case when date_part('year',age(dob))>=30 and date_part('year',age(dob))<=50 and gender=2 and (trmt.visit_date at time zone 'Asia/Kolkata')::date=(pt.registered_date at time zone 'Asia/Kolkata')::date then 1 else 0 end),0) as treatment_female_30_between_50_age, 
-    coalesce(sum(case when date_part('year',age(dob))>50 and gender=1 and (trmt.visit_date at time zone 'Asia/Kolkata')::date=(pt.registered_date at time zone 'Asia/Kolkata')::date then 1 else 0 end),0) as treatment_men_greater_50, 
-    coalesce(sum(case when date_part('year',age(dob))>50 and gender=2 and (trmt.visit_date at time zone 'Asia/Kolkata')::date=(pt.registered_date at time zone 'Asia/Kolkata')::date then 1 else 0 end),0) as treatment_female_greater_50 
+    coalesce(sum(case when prsc.treatment_uuid is not null and date_part('year',age(dob))<30 and gender=1 then 1 else 0 end),0) as treatment_men_less_30, 
+    coalesce(sum(case when prsc.treatment_uuid is not null and date_part('year',age(dob))<30 and gender=2 then 1 else 0 end),0) as treatment_female_less_30, 
+    coalesce(sum(case when prsc.treatment_uuid is not null and date_part('year',age(dob))>=30 and date_part('year',age(dob))<=50 and gender=1 then 1 else 0 end),0) as treatment_men_30_between_50_age, 
+    coalesce(sum(case when prsc.treatment_uuid is not null and date_part('year',age(dob))>=30 and date_part('year',age(dob))<=50 and gender=2 then 1 else 0 end),0) as treatment_female_30_between_50_age, 
+    coalesce(sum(case when prsc.treatment_uuid is not null and date_part('year',age(dob))>50 and gender=1 then 1 else 0 end),0) as treatment_men_greater_50, 
+    coalesce(sum(case when prsc.treatment_uuid is not null and date_part('year',age(dob))>50 and gender=2 then 1 else 0 end),0) as treatment_female_greater_50 
     from health_management_treatments trmt 
     inner join health_management_patients as pt on trmt.patient_uuid=pt.uuid 
     inner join application_masters_village vlg on pt.village_id = vlg.id 
     inner join application_masters_subcenter sbc on vlg.subcenter_id = sbc.id 
     inner join application_masters_phc phc on sbc.phc_id = phc.id 
+    left outer join (select distinct treatment_uuid from health_management_prescription) as prsc on prsc.treatment_uuid = trmt.uuid
     where 1=1 '''+phc_id+sbc_ids+village_id+between_date+''' 
     group by phc.name, sbc.name, vlg.name, (trmt.visit_date at time zone 'Asia/Kolkata')::date) 
     select date(trmt_date), phc_name, subcenter_name, village_name, consultation_men_less_30, consultation_female_less_30, 

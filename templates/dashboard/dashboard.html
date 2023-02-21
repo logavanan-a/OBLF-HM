@@ -16,6 +16,18 @@
                 <form class="needs-validation form-horizontal" enctype="multipart/form-data" novalidate  method="POST" id="filters">
                     {%csrf_token%}
                     <div class="row mb-3">
+                        <div class="col-md-4">  
+                            <div class="mb-3">
+                                <label for="floatingnameInput">Village :</label>
+                                <select  class="form-select select2"  aria-label="Floating label select example" 
+                                placeholder="Choose Village" id="village" name='village' >  
+                                <option selected value="">Choose Village</option>
+                                {% for village in village_obj %}
+                                <option value="{{village.id}}" {% if village.id == village_ids %}selected{% endif %}>{{village.name}}</option>
+                                {% endfor %}
+                                </select>
+                            </div>   
+                        </div>
                         <div class="col-md-4">
                             <label for="floatingnameInput">Start date:</label>
                             <input type="date" class="form-control" name='start_filter' value="{{req_list.start_filter}}" id="start_filter" onchange='onselected_start_month(this)'>
@@ -30,10 +42,12 @@
                                 Please provide a valid both date field and Start date should be greater than or equal to end date.
                             </div>
                         </div>
-                        <div class="col-auto mt-4 ">
+                    </div>
+                    <div class="row justify-content-end my-3">
+                        <div class="col-auto">
                             <button type="submit" class="btn btn-success waves-effect btn-xs float-right">Filter</button>
                         </div>
-                        <div class="col-auto mt-4 ">
+                        <div class="col-auto">
                             <button type="reset" id="filter_reset"  class="form-control btn btn-warning waves-effect btn-xs float-right" value="True">Reset Filters</button>
                         </div>
                     </div>
