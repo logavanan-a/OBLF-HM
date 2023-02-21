@@ -53,6 +53,7 @@ var datas = {};
 function drawChart()
 {
 datas= {{ data|safe }};
+
 var chart;
 
 for (data in datas.chart)
@@ -88,7 +89,7 @@ for (data in datas.chart)
     if(chart_type == 'COLUMNCHART' )
     {
       // if all values are empty display "Data Not Available" instead of empty chart
-      /*var arrayColumn = (arr, n) => arr.map(x => x[n]);
+      var arrayColumn = (arr, n) => arr.map(x => x[n]);
       var second_column = arrayColumn(value.datas, 1);
       var slice_first_row = second_column.slice(1, second_column.length);
       var all_array_value = slice_first_row.filter(x => x > 0).length >= 1;
@@ -99,8 +100,9 @@ for (data in datas.chart)
       	all_array_value = slice_first_row.filter(x => x > 0).length >= 1;
       }
       if(all_array_value==true)
-      {*/
+      {
         var view = new google.visualization.DataView(data);
+        console.log(data, 'jhfkjvhd')
 
         /*view.setColumns([0, 1,
                 { calc: "stringify",
@@ -110,11 +112,11 @@ for (data in datas.chart)
         */
 	      chart = new google.visualization.ColumnChart(document.getElementById(containerID));
         chart.draw(view, options);
-      /*}
+      }
       else
       {
         document.getElementById(containerID).append("Data Not Available");
-      }*/
+      }
     }
     else if(chart_type == 'PIECHART')
     { 

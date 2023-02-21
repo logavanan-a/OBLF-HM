@@ -23,7 +23,7 @@
                                 placeholder="Choose Village" id="village" name='village' >  
                                 <option selected value="">Choose Village</option>
                                 {% for village in village_obj %}
-                                <option value="{{village.id}}" {% if village.id == village_ids %}selected{% endif %}>{{village.name}}</option>
+                                <option value="{{village.id}}" {% if village.id|slugify == req_list.village %}selected{% endif %}>{{village.name}}</option>
                                 {% endfor %}
                                 </select>
                             </div>   
@@ -88,6 +88,7 @@
         document.getElementById("end_filter").min=$("#start_filter").val()
     });
     $("#filter_reset").click(function() {
+        $('#village').prop('selectedIndex', 0).change();
         $('#start_filter').val('');
         $('#end_filter').val('');
         this.form.submit();

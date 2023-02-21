@@ -129,17 +129,19 @@ def set_table_chart_data(sql):
     
 def dashboard(request):
     heading = 'Dashboard'
+    village_obj = Village.objects.filter(status=2)
+    req_list = request.POST.dict()
     try:
         slug = 'dashboard'
         cht = ChartMeta.objects.filter(page_slug = slug,
-            status=1).order_by('display_order')
+            status=2).order_by('display_order')
         chart_list = []
         mat_view_last_updated = '' #DashboardWidgetSummaryLog.objects.get(status=2, log_key='mat_child_dashboard_view').last_successful_update
         logger.error("cht-len:"+ str(len(cht)))
         table_chart_addln_headers = {}
         filter_values = get_filter_values(request)
         for i in cht:
-            if current_site != 2 and i.chart_slug in ['geography-digital-literacy','geography-digital-literacy-tabular']:
+            if i.chart_slug in ['geography-digital-literacy','geography-digital-literacy-tabular']:
                 continue
             filtered_query = apply_filter(i.chart_query.get('sql_query'), i.filter_info, filter_values)
             if i.chart_type == 1: #column Chart
@@ -232,17 +234,24 @@ def dashboard(request):
 def get_filter_values(request):
     start_date = request.POST.get('start_filter', '')
     end_date = request.POST.get('end_filter', '')
+    village = request.POST.get('village', '')
+    if village:
+        village_ids=village
+    else:
+        village_obj = Village.objects.filter(status=2).values_list('id', flat=True)
+        village_ids = str(list(village_obj))[1:-1]
     s_date = ''
     e_date = ''
     if start_date != '':
         s_date = start_date
         e_date = end_date
-    filter_values = {"start_date":s_date, "end_date":e_date}
+    filter_values = {"start_date":s_date, "end_date":e_date, "village":village_ids}
     return filter_values
 
 
 def apply_filter(sql_query, filter_info, filter_values):
     filter_cond = filter_info['filter_cond']
+    print(filter_cond)
     start_date_filter_value = filter_values.get('start_date', None) 
     end_date_filter_value = filter_values.get('end_date', None) 
     for key in filter_cond.keys():
