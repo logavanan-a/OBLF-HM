@@ -144,6 +144,43 @@ def dashboard(request):
     heading = 'Dashboard'
     village_obj = Village.objects.filter(status=2)
     req_list = request.POST.dict()
+    start_date = req_list.get('start_filter', '')
+    end_date = req_list.get('end_filter', '')
+    village = req_list.get('village', '')
+    date_filter=""
+    if start_date != "":
+            date_filter = """and (trmt.visit_date at time zone 'Asia/Kolkata')::date >= '"""+start_date + \
+            """' and (trmt.visit_date at time zone 'Asia/Kolkata')::date <= '""" + \
+            end_date+"""' """
+    village_name=""
+    if village:
+        village_name =  '''and pt.village_id='''+village
+    count_sql = """with a as (select 'Number of clinics' as name, count(distinct((trmt.visit_date at time zone 'Asia/Kolkata')::date)) as count 
+    from health_management_treatments trmt inner join health_management_patients pt on trmt.patient_uuid=pt.uuid 
+    where 1=1 and trmt.status = 2 """+village_name+date_filter+"""), 
+    b as (select 'Number of NCD  Patients' as name, coalesce(sum(case when mtk.name='KHT' or mtk.name='KDM' or mtk.name='HT' or mtk.name='DM' then 1 else 0 end),0) as count 
+    from health_management_diagnosis dgs inner join application_masters_masterlookup mtk on dgs.ndc_id=mtk.id inner join health_management_treatments trmt on dgs.treatment_uuid=trmt.uuid 
+    inner join health_management_patients pt on trmt.patient_uuid=pt.uuid 
+    where 1=1 and dgs.status = 2 """+village_name+date_filter+"""), 
+    c as (select distinct((trmt.visit_date at time zone 'Asia/Kolkata')::date) as vst_date, pt.name as patient_name 
+    from health_management_treatments trmt inner join health_management_patients pt on trmt.patient_uuid=pt.uuid 
+    inner join health_management_prescription psp on trmt.uuid=psp.treatment_uuid inner join application_masters_medicines ms on psp.medicines_id=ms.id
+    where 1=1 and trmt.status = 2 """+village_name+date_filter+""") select a.name, a.count from a union all select b.name, b.count from b union all 
+    select 'Number of Treatment', count(c.vst_date) as count from c""" 
+    percentage_sql= """with a as (select coalesce(sum(case when dgs.source_treatment=1 or dgs.source_treatment=2 or dgs.source_treatment=3 then 1 else 0 end),0) as all_data, 
+    coalesce(sum(case when dgs.source_treatment=1 or dgs.source_treatment=3 then 1 else 0 end),0) as not_outside_data 
+    from health_management_diagnosis dgs inner join health_management_treatments trmt on dgs.treatment_uuid=trmt.uuid 
+    inner join health_management_patients pt on trmt.patient_uuid=pt.uuid where 1=1 and dgs.status = 2 """+village_name+date_filter+"""), 
+    b as (select count(*) as all_data, coalesce(sum(case when ms.medicine_id=2 then 1 else 0 end),0) as generation_2, 
+    coalesce(sum(case when ms.medicine_id=1 then 1 else 0 end),0) as generation_1 from health_management_diagnosis dgs 
+    inner join health_management_prescription psp on dgs.treatment_uuid=psp.treatment_uuid 
+    inner join application_masters_medicines ms on psp.medicines_id=ms.id inner join health_management_patients pt on psp.patient_uuid=pt.uuid
+    where 1=1 and dgs.status = 2 """+village_name+date_filter+""") 
+    select 'Proportion in treatment with OBLF', concat(ROUND((a.not_outside_data::DECIMAL/a.all_data)*100),'%') 
+    from a union all select 'Proportion of NCD patients on 1st generation drugs', concat(ROUND((b.generation_2::DECIMAL/b.all_data)*100),'%') 
+    from b union all select 'Proportion of NCD patients on 2nd generation drugs', concat(ROUND((b.generation_1::DECIMAL/b.all_data)*100),'%') from b""" 
+    count_data_for_top_indicator = set_table_chart_data(count_sql)
+    percentage_data_for_top_indicator = set_table_chart_data(percentage_sql)
     try:
         slug = 'dashboard'
         cht = ChartMeta.objects.filter(page_slug = slug,
@@ -181,7 +218,6 @@ def dashboard(request):
                 #     request, i.chart_query.get('sql_query'), i.filter_info)
                 labels = i.chart_query.get('labels')
                 chart_data = list(set_pie_chart_data(filtered_query, labels))
-                print(chart_data)
                 cht_info = {"chart_type": "PIECHART"}
                 cht_info["chart_title"] = i.chart_title
                 cht_info.update({"colours": [
