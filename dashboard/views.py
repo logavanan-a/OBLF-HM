@@ -37,6 +37,19 @@ def set_column_stack_chart_data(sql, headers):
     return newdata
 
 
+def set_pie_chart_data(sql, labels=None):
+    cursor = connection.cursor()
+    cursor.execute(sql)
+    descr = cursor.description
+    rows = cursor.fetchall()
+    data = []
+    if labels:
+        data = [dict(zip([column for column in labels], row))for row in rows]
+        return data[0].items()
+    else:
+        return rows
+
+
 # #****************************************************************************
 # # update column chart data  and labels to replace dummy data with actual values
 # # labels only for dynamic bars - last 6 months kind of charts
@@ -159,6 +172,28 @@ def dashboard(request):
                 cht_info.update({"chart_name": i.chart_slug})
                 cht_info["chart_height"] = i.chart_height
                 cht_info["addln_header"] = ""
+                cht_info.update({"div": i.div_class})
+                chart_list.append(cht_info)
+            elif i.chart_type == 2: #pie Chart
+                cht_info = {}
+                data = []
+                # filtered_query = filter_conditions(
+                #     request, i.chart_query.get('sql_query'), i.filter_info)
+                labels = i.chart_query.get('labels')
+                chart_data = list(set_pie_chart_data(filtered_query, labels))
+                print(chart_data)
+                cht_info = {"chart_type": "PIECHART"}
+                cht_info["chart_title"] = i.chart_title
+                cht_info.update({"colours": [
+                                {'role': 'style'}, '#FF3333', '#32B517', '#FFEA00', '#FFAA00', '#FF3333']})
+                
+                chart_data.insert(0, ('', ''))
+                cht_info["datas"] = chart_data
+                cht_info["options"] = i.chart_options
+                cht_info.update({"tooltip": i.chart_tooltip})
+                cht_info.update({"chart_note": i.chart_note})
+                cht_info.update({"chart_name": i.chart_slug})
+                cht_info["chart_height"] = i.chart_height
                 cht_info.update({"div": i.div_class})
                 chart_list.append(cht_info)
             elif i.chart_type == 3: #Table Chart

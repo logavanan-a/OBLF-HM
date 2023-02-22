@@ -73,7 +73,7 @@ for (data in datas.chart)
   var on_click_handler = value.on_click_handler;
   var chart_type = value.chart_type;
   var addln_header = value.addln_header;
-  var addln_function_name = "add_additional_header_" + value.chart_slug.replace(/-/g,'_');
+  // var addln_function_name = "add_additional_header_" + value.chart_slug.replace(/-/g,'_');
   var containerID = value.chart_name;
 
 
@@ -121,19 +121,19 @@ for (data in datas.chart)
     else if(chart_type == 'PIECHART')
     { 
       // if all values are empty display "Data Not Available" instead of empty chart
-      // var arrayColumn = (arr, n) => arr.map(x => x[n]);
-      // var second_column = arrayColumn(value.datas, 1);
-      // var slice_first_row = second_column.slice(1, second_column.length);
-      // var all_array_value = slice_first_row.filter(x => x > 0).length >= 1;
-      // if(all_array_value==true)
-      // {
+      var arrayColumn = (arr, n) => arr.map(x => x[n]);
+      var second_column = arrayColumn(value.datas, 1);
+      var slice_first_row = second_column.slice(1, second_column.length);
+      var all_array_value = slice_first_row.filter(x => x > 0).length >= 1;
+      if(all_array_value==true)
+      {
         var chart = new google.visualization.PieChart(document.getElementById(containerID));
         chart.draw(data, options);
-      // }
-      // else
-      // {
-      //   document.getElementById(containerID).append("Data Not Available");
-      // }
+      }
+      else
+      {
+        document.getElementById(containerID).append("Data Not Available");
+      }
     }
     else if(chart_type == 'TABLECHART')
     {
