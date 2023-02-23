@@ -27,6 +27,7 @@ urlpatterns = [
     path('clinic-level-statistics/report/', clinic_level_statistics_list, name='clinic_level_statistics_list'),
     path('drug-dispensation/report/', drug_dispensation_stock_list, name='drug_dispensation_stock_list'),
     path('patient-adherence/report/', patient_adherence_list, name='patient_adherence_list'),
+    path('village-profile/report/', village_profile_list, name='village_profile_list'),
 
     path('village-wise-drugs/list/', village_wise_drugs_list, name='village_wise_drug_list'),
     path('add/village-wise-drugs/', add_village_wise_drugs, name='add_village_wise_drugs'),

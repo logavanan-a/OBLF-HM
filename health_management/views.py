@@ -978,6 +978,200 @@ def prevelance_of_ncd_list(request):
     display_page_range = range(page_number_start, page_number_end)
     return render(request, 'reports/prevelance_of_ncd.html', locals())
 
+def village_profile_list(request):
+    heading="Village Profile"
+    filter_values = request.GET.dict()
+    from dateutil.relativedelta import relativedelta
+    phc_obj = PHC.objects.filter(status=2)
+    phc = request.GET.get('phc', '')
+    sub_center = request.GET.get('sub_center', '')
+    village = request.GET.get('village', '')
+    phc_ids = int(phc) if phc != '' else ''
+    sub_center_ids = int(sub_center) if sub_center != '' else ''
+    village_ids = int(village) if village != '' else ''
+    start_filter = request.GET.get('start_filter', '')
+    end_filter = request.GET.get('end_filter', '')
+    s_date=''
+    e_date=''
+    village_profile_list=VillageProfile.objects.filter(status=2)
+    if start_filter != '':
+        s_date = start_filter
+        e_date = end_filter
+        village_profile_list=village_profile_list.filter(status=2, server_created_on__range=[s_date,e_date])
+    if phc_ids:
+        get_phc_name = PHC.objects.get(id=phc_ids)
+        sub_center_obj = Subcenter.objects.filter(status=2, phc__id=phc_ids)
+        village_profile_list=village_profile_list.filter(status=2, village__subcenter__phc__id=phc_ids)
+    if sub_center_ids:
+        get_sbc_name = Subcenter.objects.get(id=sub_center_ids)
+        village_obj = Village.objects.filter(status=2, subcenter__id=sub_center_ids)
+        village_profile_list=village_profile_list.filter(status=2, village__subcenter__id=sub_center_ids)
+    if village_ids:
+        get_village_name = Village.objects.get(id=village_ids)
+        village_profile_list=village_profile_list.filter(status=2, village__id=village_ids)
+    
+    export_flag = True if request.POST.get('export') and request.POST.get( 'export').lower() == 'true' else False
+    if export_flag:
+        response = HttpResponse(content_type='text/csv',)
+        response['Content-Disposition'] = 'attachment; filename="village profile '+ str(localtime(timezone.now()).strftime("%m-%d-%Y %I-%M %p")) +'.csv"'
+        writer = csv.writer(response)
+        writer.writerow(['VILLAGE PROFILE'])
+        writer.writerow([
+            'PHC Name',
+            'Sub Centre',
+            'Village',
+            'Head of the family',
+            'Age',
+            'Gender',
+            'Phone No',
+            'Resident in the village since last 6 month',
+            'Name of the ASHA',
+            'Name of FLHW',
+            'Phone no of FLHW',
+            'Name of ANM',
+            'Phone no of ANM',
+            'Name of CHO',
+            'Phone no of CHO',
+            'Name of MO',
+            'Phone no of MO',
+            'Voter ID',
+            'Aadhar',
+            'Health card',
+            'Ayushman bharath card',
+            'Ayushman bharath card no',
+            'Ration card no',
+            'Ration card no type',
+            'HTN',
+            'DM',
+            'Both',
+            'Detected by',
+            'Detected since',
+            'On Treatment',
+            'Physician visit in last 6 months',
+            'Facility',
+            'Facility 1',
+            'Facility 2',
+            'Facility 3',
+            'Medicine charges',
+            'Consultation',
+            'Diagnostics',
+            'Informal fees',
+            'Total direct cost',
+            'Food',
+            'Travelling',
+            'Total indirect cost',
+            'Daily wage loss',
+            'Opportunity cost',
+            'BP MED 1',
+            'BP MED 2',
+            'BP MED_3',
+            'DM MED 1',
+            'DM MED 2',
+            'Statins',
+            'Tobacco',
+            'Alcohol',
+            'Smoking',
+            'Family history',
+            'Date',
+            'Source of treatment',
+            'Height',
+            'Weight',
+            'BMI',
+            'SBP',
+            'DBP',
+            'FBS',
+            'PPBS',
+            'RBS',
+            'Diagnosis',
+            'NCD treatment',
+            'Non NCD treatment',
+            'Past history',
+            'Remarks',
+            'Created On',
+            ])
+        for data in village_profile_list:
+            writer.writerow([
+                data.village.subcenter.phc,
+                data.village.subcenter,
+                data.village,
+                data.head_of_the_family,
+                data.age,
+                data.gender,
+                data.phone_no,
+                data.resident_in_the_village_since_last_6_month,
+                data.name_of_the_asha,
+                data.name_of_flhw,
+                data.phone_no_of_flhw,
+                data.name_of_anm,
+                data.phone_no_of_anm,
+                data.name_of_cho,
+                data.phone_no_of_cho,
+                data.name_of_mo,
+                data.phone_no_of_mo,
+                data.voter_id,
+                data.aadhar,
+                data.health_card,
+                data.ayushman_bharath_card,
+                data.ayushman_bharath_card_no,
+                data.ration_card_no,
+                data.ration_card_no_type,
+                data.htn,
+                data.dm,
+                data.both,
+                data.detected_by,
+                data.detected_since,
+                data.on_treatment,
+                data.physician_visit_in_last_6_months,
+                data.facility,
+                data.facility_1,
+                data.facility_2,
+                data.facility_3,
+                data.medicine_charges,
+                data.consultation,
+                data.diagnostics,
+                data.informal_fees,
+                data.total_direct_cost,
+                data.food,
+                data.travelling,
+                data.total_indirect_cost,
+                data.daily_wage_loss,
+                data.opportunity_cost,
+                data.bp_med_1,
+                data.bp_med_2,
+                data.bp_med_3,
+                data.dm_med_1,
+                data.dm_med_2,
+                data.statins,
+                data.tobacco,
+                data.alcohol,
+                data.smoking,
+                data.family_history,
+                data.date.strftime("%m/%d/%Y"),
+                data.source_of_treatment,
+                data.height,
+                data.weight,
+                data.bmi,
+                data.sbp,
+                data.dbp,
+                data.fbs,
+                data.ppbs,
+                data.rbs,
+                data.diagnosis,
+                data.ncd_treatment,
+                data.non_ncd_treatment,
+                data.past_history,
+                data.remarks,
+                data.server_created_on.strftime("%m/%d/%Y %I:%M %p"),
+                ])
+        return response
+    data = pagination_function(request, village_profile_list)
+    current_page = request.GET.get('page', 1)
+    page_number_start = int(current_page) - 2 if int(current_page) > 2 else 1
+    page_number_end = page_number_start + 5 if page_number_start + \
+        5 < data.paginator.num_pages else data.paginator.num_pages+1
+    display_page_range = range(page_number_start, page_number_end)
+    return render(request, 'reports/village_profile.html', locals())
+
 def get_sub_center(request, subcenter_id):
     if request.method == 'GET' and request.is_ajax():
         result_set = []
