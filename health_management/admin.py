@@ -114,6 +114,29 @@ class DrugDispensationAdmin(ImportExportModelAdmin, ImportExportFormat):
     search_fields = ['medicine__name', 'village__name']
     list_per_page = 15
 
+@admin.register(VillageProfile)
+class VillageProfileAdmin(ImportExportModelAdmin, ImportExportFormat):
+    list_display = ['village','head_of_the_family','age','gender','phone_no','resident_in_the_village_since_last_6_month','name_of_the_asha',
+    'name_of_flhw','phone_no_of_flhw','name_of_anm','phone_no_of_anm','name_of_cho','phone_no_of_cho','name_of_mo',
+    'phone_no_of_mo','voter_id','aadhar','health_card','ayushman_bharath_card','ayushman_bharath_card_no','ration_card_no',
+    'ration_card_no_type','htn','dm','both','detected_by','detected_since','on_treatment','physician_visit_in_last_6_months',
+    'facility','facility_1','facility_2','facility_3','medicine_charges','consultation','diagnostics','informal_fees',
+    'total_direct_cost','food','travelling','total_indirect_cost','daily_wage_loss','opportunity_cost','bp_med_1',
+    'bp_med_2','bp_med_3','dm_med_1','dm_med_2','statins','tobacco','alcohol','smoking','family_history',
+    'date','source_of_treatment','height','weight','bmi','sbp','dbp','fbs','ppbs','rbs','diagnosis','ncd_treatment',
+    'non_ncd_treatment','past_history','remarks', 'status']
+    fields = ['village','head_of_the_family','age','gender','phone_no','resident_in_the_village_since_last_6_month','name_of_the_asha',
+    'name_of_flhw','phone_no_of_flhw','name_of_anm','phone_no_of_anm','name_of_cho','phone_no_of_cho','name_of_mo',
+    'phone_no_of_mo','voter_id','aadhar','health_card','ayushman_bharath_card','ayushman_bharath_card_no','ration_card_no',
+    'ration_card_no_type','htn','dm','both','detected_by','detected_since','on_treatment','physician_visit_in_last_6_months',
+    'facility','facility_1','facility_2','facility_3','medicine_charges','consultation','diagnostics','informal_fees',
+    'total_direct_cost','food','travelling','total_indirect_cost','daily_wage_loss','opportunity_cost','bp_med_1',
+    'bp_med_2','bp_med_3','dm_med_1','dm_med_2','statins','tobacco','alcohol','smoking','family_history',
+    'date','source_of_treatment','height','weight','bmi','sbp','dbp','fbs','ppbs','rbs','diagnosis','ncd_treatment',
+    'non_ncd_treatment','past_history','remarks', 'status']
+    search_fields = ['village__name']
+    list_per_page = 15
+
 
 
 

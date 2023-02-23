@@ -63,6 +63,11 @@ class DosageSerializers(serializers.ModelSerializer):
         model = Dosage
         fields = '__all__'
 
+class MedicinesReportCategorySerializers(serializers.ModelSerializer):
+    class Meta:
+        model = MedicinesReportCategory
+        fields = '__all__'
+
 class PatientSerializers(serializers.ModelSerializer):
     village_id = serializers.CharField(source='village.id', required=False,allow_blank=True)
     subcenter_id = serializers.CharField(source='village.subcenter.id', required=False,allow_blank=True)

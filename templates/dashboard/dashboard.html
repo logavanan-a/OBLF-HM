@@ -9,6 +9,7 @@
 <!--************Chart Script Part*********-->
 {% include "dashboard/chart_script.html" %}
 <!--**************************************-->
+
 <div class="row align-items-center">
     <div class="col-xl-12 mx-auto">
         <div class="card">
@@ -56,9 +57,9 @@
         </div>
     </div>
 </div>
-<div class="row">
+<div class="row ">
     {% for i in count_data_for_top_indicator %}
-    <div class="col-lg-4">
+    <div class="col-lg-4 h-100">
         <div class="card border border-primary">
             <div class="card-header bg-transparent ">
                 <h5 class="my-0 text-primary text-center">{{i.0}}</h5>
