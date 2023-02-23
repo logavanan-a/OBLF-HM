@@ -460,7 +460,7 @@ def add_village_wise_drugs(request):
     return render(request, 'manage_stocks/village_wise_drug_dispensation/add_village_wise_drugs.html', locals())
 
 def drug_dispensation_stock_list(request):
-    heading="Drugs Dispensation reports"
+    heading="Drugs Dispensation"
     filter_values = request.GET.dict()
     medicine_obj=Medicines.objects.filter(status=2)
     from dateutil.relativedelta import relativedelta
