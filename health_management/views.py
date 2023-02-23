@@ -315,7 +315,7 @@ def home_visit_report(request):
             'Last date of visit',
             'Health Worker'
             ])
-        for data in data:
+        for data in home_visit_data:
             writer.writerow([
                 data[0],
                 data[1],
@@ -399,7 +399,7 @@ def clinic_level_statistics_list(request):
             'New registration',
             'Total no of consultations'
             ])
-        for data in data:
+        for data in clinic_level_data:
             writer.writerow([
                 data[0],
                 data[1],
