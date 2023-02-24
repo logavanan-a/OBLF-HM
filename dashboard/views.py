@@ -181,7 +181,6 @@ def dashboard(request):
     select 'Proportion in treatment with OBLF', concat(ROUND(case when a.all_data!=0 then (a.not_outside_data::DECIMAL/a.all_data)*100 else a.not_outside_data end),'%')
     from a union all select 'Proportion of NCD patients on 1st generation drugs', concat(ROUND(case when b.all_data!=0 then (b.generation_2::DECIMAL/b.all_data)*100 else b.generation_2 end),'%')
     from b union all select 'Proportion of NCD patients on 2nd generation drugs', concat(ROUND(case when b.all_data!=0 then (b.generation_1::DECIMAL/b.all_data)*100  else b.generation_1 end),'%') from b""" 
-    print(count_sql)
     count_data_for_top_indicator = set_table_chart_data(count_sql)
     percentage_data_for_top_indicator = set_table_chart_data(percentage_sql)
     try:

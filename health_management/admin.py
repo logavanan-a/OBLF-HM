@@ -114,6 +114,20 @@ class DrugDispensationAdmin(ImportExportModelAdmin, ImportExportFormat):
     search_fields = ['medicine__name', 'village__name']
     list_per_page = 15
 
+
+class VillageProfileResource(resources.ModelResource):
+
+    class Meta:
+        model = VillageProfile
+
+    def skip_row(self, instance, dry_run):
+        if dry_run:
+            g = instance.code
+            print(g, 'kpq==========')
+        else:
+            if instance.code:
+                return True
+
 @admin.register(VillageProfile)
 class VillageProfileAdmin(ImportExportModelAdmin, ImportExportFormat):
     list_display = ['village', 'house_hold', 'individual', 'code', 'name', 'head_of_the_family','age','gender','phone_no','resident_in_the_village_since_last_6_month','name_of_the_asha',
@@ -136,6 +150,10 @@ class VillageProfileAdmin(ImportExportModelAdmin, ImportExportFormat):
     'non_ncd_treatment','past_history','remarks', 'status']
     search_fields = ['village__name']
     list_per_page = 15
+
+    resource_class = VillageProfileResource
+
+
 
 
 
