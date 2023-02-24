@@ -111,6 +111,7 @@
 
 {% endblock %}
 {% block extra_javascript %}
+<script src="{% static 'js/pages/form-validation.init.js' %}"></script>
 <script type="text/javascript">
     $("#start_filter").on("change", function(event){
         document.getElementById("end_filter").min=$("#start_filter").val()
@@ -125,6 +126,7 @@
        var start_month = document.getElementById("start_filter");
        var end_month = document.getElementById("end_filter");
        if (start_month != '' && end_month != ''){
+            console.log('opoopo')
            document.querySelector('#start_filter').required = true;
            document.querySelector('#end_filter').required = true;
        }

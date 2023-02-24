@@ -146,7 +146,7 @@ def dashboard(request):
     req_list = request.POST.dict()
     start_date = req_list.get('start_filter', '')
     end_date = req_list.get('end_filter', '')
-    village = req_list.get('village', '')
+    village = req_list.get('village', '0')
     date_filter=""
     if start_date != "":
             date_filter = """and (trmt.visit_date at time zone 'Asia/Kolkata')::date >= '"""+start_date + \
@@ -155,6 +155,7 @@ def dashboard(request):
     village_name=""
     if village:
         village_name =  '''and pt.village_id='''+village
+        
     count_sql = """with a as (select 'Number of clinics' as name, count(distinct((trmt.visit_date at time zone 'Asia/Kolkata')::date)) as count 
     from health_management_treatments trmt inner join health_management_patients pt on trmt.patient_uuid=pt.uuid 
     where 1=1 and trmt.status = 2 """+village_name+date_filter+"""), 
@@ -175,10 +176,12 @@ def dashboard(request):
     coalesce(sum(case when ms.medicine_id=1 then 1 else 0 end),0) as generation_1 from health_management_diagnosis dgs 
     inner join health_management_prescription psp on dgs.treatment_uuid=psp.treatment_uuid 
     inner join application_masters_medicines ms on psp.medicines_id=ms.id inner join health_management_patients pt on psp.patient_uuid=pt.uuid
+    inner join health_management_treatments trmt on psp.treatment_uuid=trmt.uuid
     where 1=1 and dgs.status = 2 """+village_name+date_filter+""") 
-    select 'Proportion in treatment with OBLF', concat(ROUND((a.not_outside_data::DECIMAL/a.all_data)*100),'%') 
-    from a union all select 'Proportion of NCD patients on 1st generation drugs', concat(ROUND((b.generation_2::DECIMAL/b.all_data)*100),'%') 
-    from b union all select 'Proportion of NCD patients on 2nd generation drugs', concat(ROUND((b.generation_1::DECIMAL/b.all_data)*100),'%') from b""" 
+    select 'Proportion in treatment with OBLF', concat(ROUND(case when a.all_data!=0 then (a.not_outside_data::DECIMAL/a.all_data)*100 else a.not_outside_data end),'%')
+    from a union all select 'Proportion of NCD patients on 1st generation drugs', concat(ROUND(case when b.all_data!=0 then (b.generation_2::DECIMAL/b.all_data)*100 else b.generation_2 end),'%')
+    from b union all select 'Proportion of NCD patients on 2nd generation drugs', concat(ROUND(case when b.all_data!=0 then (b.generation_1::DECIMAL/b.all_data)*100  else b.generation_1 end),'%') from b""" 
+    print(count_sql)
     count_data_for_top_indicator = set_table_chart_data(count_sql)
     percentage_data_for_top_indicator = set_table_chart_data(percentage_sql)
     try:
