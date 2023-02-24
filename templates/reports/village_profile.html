@@ -25,6 +25,10 @@
                                 <th>PHC Name</th>
                                 <th>Sub Centre</th>
                                 <th>Village</th>
+                                <th>House hold</th>
+                                <th>Individual</th>
+                                <th>Code</th>
+                                <th>Name</th>
                                 <th>Head of the family</th>
                                 <th>Age</th>
                                 <th>Gender</th>
@@ -69,7 +73,7 @@
                                 <th>Opportunity cost</th>
                                 <th>BP MED 1</th>
                                 <th>BP MED 2</th>
-                                <th>BP MED_3</th>
+                                <th>BP MED 3</th>
                                 <th>DM MED 1</th>
                                 <th>DM MED 2</th>
                                 <th>Statins</th>
@@ -101,6 +105,10 @@
                                 <td>{{vp.village.subcenter.phc|default_if_none:''}}</td>
                                 <td>{{vp.village.subcenter|default_if_none:''}}</td>
                                 <td>{{vp.village|default_if_none:''}}</td>
+                                <td>{{vp.house_hold|default_if_none:''}}</td>
+                                <td>{{vp.individual|default_if_none:''}}</td>
+                                <td>{{vp.code|default_if_none:''}}</td>
+                                <td>{{vp.name|default_if_none:''}}</td>
                                 <td>{{vp.head_of_the_family|default_if_none:''}}</td>
                                 <td>{{vp.age}}</td>
                                 <td>{{vp.gender|default_if_none:''}}</td>
