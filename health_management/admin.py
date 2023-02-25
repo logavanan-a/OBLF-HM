@@ -120,13 +120,14 @@ class VillageProfileResource(resources.ModelResource):
     class Meta:
         model = VillageProfile
 
-    def skip_row(self, instance, dry_run):
-        if dry_run:
-            g = instance.code
-            print(g, 'kpq==========')
-        else:
-            if instance.code:
-                return True
+    def skip_row(self, instance, original):
+        try:
+            village_import = Patients.objects.get(patient_id=instance.code)
+        except Patients.DoesNotExist:
+            village_import = None
+        if village_import is None:
+            return True
+            
 
 @admin.register(VillageProfile)
 class VillageProfileAdmin(ImportExportModelAdmin, ImportExportFormat):
