@@ -716,11 +716,11 @@ def patient_adherence_list(request):
     from health_management_treatments trmt inner join health_management_patients pt on trmt.patient_uuid = pt.uuid inner join application_masters_village vlg on pt.village_id=vlg.id inner join application_masters_subcenter sbc on vlg.subcenter_id = sbc.id 
     inner join application_masters_phc phc on sbc.phc_id = phc.id left outer join (select vlgs.name as village_name, count(distinct(trmt.visit_date)) as vst_date 
     from health_management_treatments trmt inner join health_management_patients pt on trmt.patient_uuid = pt.uuid 
-    inner join application_masters_village vlgs on pt.village_id=vlgs.id where 1=1 group by village_name) as vlg_ct on vlg.name=vlg_ct.village_name where 1=1 """+phc_id+sbc_ids+village_id+between_date+""" group by phc_name, sbc_name, vlg.name, patient_name, patient_code, pt.uuid, vlg_ct.vst_date, reg_date order by vlg.name) 
+    inner join application_masters_village vlgs on pt.village_id=vlgs.id where 1=1 """+between_date+""" group by village_name) as vlg_ct on vlg.name=vlg_ct.village_name where 1=1 """+phc_id+sbc_ids+village_id+between_date+""" group by phc_name, sbc_name, vlg.name, patient_name, patient_code, pt.uuid, vlg_ct.vst_date, reg_date order by vlg.name) 
     select phc_name, sbc_name, village_name, patient_name, patient_code, clinic_total_vst_date, coalesce(sum(case when reg_date<=vst_base.vst_date then 1 else 0 end),0) as vlg_patient_count, no_of_time_clinics_held, 
     concat(ROUND((no_of_time_clinics_held::DECIMAL/coalesce(sum(case when reg_date<=vst_base.vst_date then 1 else 0 end),0))*100), '%') as percentage from a left outer join 
     (select distinct (trmt.visit_date at time zone 'Asia/Kolkata')::date as vst_date, vlg.name as vg from health_management_treatments trmt 
-    inner join health_management_patients pt on trmt.patient_uuid=pt.uuid inner join application_masters_village vlg on pt.village_id=vlg.id) as vst_base on a.village_name=vst_base.vg 
+    inner join health_management_patients pt on trmt.patient_uuid=pt.uuid inner join application_masters_village vlg on pt.village_id=vlg.id where 1=1 """+between_date+""") as vst_base on a.village_name=vst_base.vg 
     group by phc_name, sbc_name, village_name, reg_date, patient_name, patient_code, clinic_total_vst_date, no_of_time_clinics_held"""
     
     sql_query = """with a as (select phc.name as phc_name, sbc.name as sbc_name, vlg.name as village_name, pt.name as patient_name, pt.patient_id as patient_code, pt.uuid as pt_uuid, count(trmt.uuid) as no_of_time_clinics_held, 
