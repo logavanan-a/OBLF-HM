@@ -146,7 +146,7 @@ def dashboard(request):
     req_list = request.POST.dict()
     start_date = req_list.get('start_filter', '')
     end_date = req_list.get('end_filter', '')
-    village = req_list.get('village', '0')
+    village = req_list.get('village', '')
     date_filter=""
     if start_date != "":
             date_filter = """and (trmt.visit_date at time zone 'Asia/Kolkata')::date >= '"""+start_date + \
