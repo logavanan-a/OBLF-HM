@@ -122,7 +122,11 @@ class VillageProfileResource(resources.ModelResource):
 
     def skip_row(self, instance, original):
         try:
-            village_import = Patients.objects.get(patient_id=instance.code)
+            village_profile_code = VillageProfile.objects.filter(code=instance.code).exists()
+            if village_profile_code:
+                return True
+            else:
+                village_import = Patients.objects.get(patient_id=instance.code)
         except Patients.DoesNotExist:
             village_import = None
         if village_import is None:
