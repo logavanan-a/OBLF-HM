@@ -263,7 +263,7 @@ class VillageProfile(BaseContent):
     village = models.ForeignKey(Village, on_delete=models.DO_NOTHING)
     house_hold = models.CharField(max_length=150, null=True, blank=True)
     individual = models.CharField(max_length=150, null=True, blank=True)
-    code = models.CharField(max_length=150, null=True, blank=True)
+    code = models.CharField(max_length=150, unique=True)
     name = models.CharField(max_length=150, null=True, blank=True)
     head_of_the_family = models.CharField(max_length=150, null=True, blank=True)
     age = models.IntegerField(null=True, blank=True)
