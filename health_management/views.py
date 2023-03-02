@@ -252,7 +252,7 @@ def home_visit_report(request):
     filter_values = request.GET.dict()
     from dateutil.relativedelta import relativedelta
     health_worker_obj = UserProfile.objects.filter(status=2)
-    phc_obj = PHC.objects.filter(status=2)
+    phc_obj = PHC.objects.filter(status=2).order_by('name')
     phc = request.GET.get('phc', '0')
     sub_center = request.GET.get('sub_center', '')
     village = request.GET.get('village', '')
@@ -275,13 +275,13 @@ def home_visit_report(request):
             e_date+"""' """
     phc_id=""
     if phc_ids:
-        sub_center_obj = Subcenter.objects.filter(status=2, phc__id=phc_ids)
+        sub_center_obj = Subcenter.objects.filter(status=2, phc__id=phc_ids).order_by('name')
         get_phc_name = PHC.objects.get(id=phc_ids)
         phc_id = '''and phc.id='''+phc
     sbc_ids= ""
     if sub_center_ids:
         get_sbc_name = Subcenter.objects.get(id=sub_center_ids)
-        village_obj = Village.objects.filter(status=2, subcenter__id=sub_center_ids)
+        village_obj = Village.objects.filter(status=2, subcenter__id=sub_center_ids).order_by('name')
         sbc_ids = '''and sbc.id='''+sub_center
     village_id=""
     if village_ids:
@@ -289,7 +289,7 @@ def home_visit_report(request):
         village_id = '''and vlg.id='''+village
     hwk_id=""
     if health_worker_ids:
-        get_health_worker_name = User.objects.get(id=health_worker_ids)
+        get_health_worker_name = User.objects.get(id=health_worker_ids).order_by('first_name')
         hwk_id = '''and upf.user_id='''+health_worker
     cursor = connection.cursor()
     cursor.execute('''select phc.name as phc_name, sbc.name as sbc_name, vlg.name as village_name, pt.name as patient_name, pt.patient_id as patient_code, 
@@ -340,7 +340,7 @@ def clinic_level_statistics_list(request):
     heading="CLINIC LEVEL STATISTICS"
     filter_values = request.GET.dict()
     from dateutil.relativedelta import relativedelta
-    phc_obj = PHC.objects.filter(status=2)
+    phc_obj = PHC.objects.filter(status=2).order_by('name')
     phc = request.GET.get('phc', '')
     sub_center = request.GET.get('sub_center', '')
     village = request.GET.get('village', '')
@@ -361,12 +361,12 @@ def clinic_level_statistics_list(request):
     phc_id= ""
     if phc:
         get_phc_name = PHC.objects.get(id=phc_ids)
-        sub_center_obj = Subcenter.objects.filter(status=2, phc__id=phc)
+        sub_center_obj = Subcenter.objects.filter(status=2, phc__id=phc).order_by('name')
         phc_id = '''and phc.id='''+phc
     sbc_ids= ""
     if sub_center:
         get_sbc_name = Subcenter.objects.get(id=sub_center_ids)
-        village_obj = Village.objects.filter(status=2, subcenter__id=sub_center_ids)
+        village_obj = Village.objects.filter(status=2, subcenter__id=sub_center_ids).order_by('name')
         sbc_ids = '''and sbc.id='''+sub_center
     village_id=""
     if village:
@@ -464,7 +464,7 @@ def drug_dispensation_stock_list(request):
     filter_values = request.GET.dict()
     medicine_obj=Medicines.objects.filter(status=2)
     from dateutil.relativedelta import relativedelta
-    phc_obj = PHC.objects.filter(status=2)
+    phc_obj = PHC.objects.filter(status=2).order_by('name')
     phc = request.GET.get('phc', '')
     sub_center = request.GET.get('sub_center', '')
     village = request.GET.get('village', '')
@@ -485,12 +485,12 @@ def drug_dispensation_stock_list(request):
         prescription_list=prescription_list.filter(status=2, server_created_on__range=[s_date,e_date])
     if phc_ids:
         get_phc_name = PHC.objects.get(id=phc_ids)
-        sub_center_obj = Subcenter.objects.filter(status=2, phc__id=phc_ids)
+        sub_center_obj = Subcenter.objects.filter(status=2, phc__id=phc_ids).order_by('name')
         pateint_registration_report = Patients.objects.filter(village__subcenter__phc__id=phc_ids).values_list('uuid')
         prescription_list = prescription_list.filter(patient_uuid__in=pateint_registration_report)
     if sub_center_ids:
         get_sbc_name = Subcenter.objects.get(id=sub_center_ids)
-        village_obj = Village.objects.filter(status=2, subcenter__id=sub_center_ids)
+        village_obj = Village.objects.filter(status=2, subcenter__id=sub_center_ids).order_by('name')
         pateint_registration_report = Patients.objects.filter(village__subcenter__id=sub_center_ids).values_list('uuid')
         prescription_list = prescription_list.filter(patient_uuid__in=pateint_registration_report)
     if village_ids:
@@ -560,7 +560,7 @@ def patient_registration_report(request):
     heading="Patient Registration Report"
     filter_values = request.GET.dict()
     from dateutil.relativedelta import relativedelta
-    phc_obj = PHC.objects.filter(status=2)
+    phc_obj = PHC.objects.filter(status=2).order_by('name')
     phc = request.GET.get('phc', '')
     sub_center = request.GET.get('sub_center', '')
     village = request.GET.get('village', '')
@@ -581,12 +581,12 @@ def patient_registration_report(request):
     phc_id=""
     if phc_ids:
         get_phc_name = PHC.objects.get(id=phc_ids)
-        sub_center_obj = Subcenter.objects.filter(status=2, phc__id=phc_ids)
+        sub_center_obj = Subcenter.objects.filter(status=2, phc__id=phc_ids).order_by('name')
         phc_id = '''and phc.id='''+phc
     sbc_ids= ""
     if sub_center_ids:
         get_sbc_name = Subcenter.objects.get(id=sub_center_ids)
-        village_obj = Village.objects.filter(status=2, subcenter__id=sub_center_ids)
+        village_obj = Village.objects.filter(status=2, subcenter__id=sub_center_ids).order_by('name')
         sbc_ids = '''and sbc.id='''+sub_center
     village_id=""
     if village_ids:
@@ -669,7 +669,7 @@ def patient_registration_report(request):
 def patient_adherence_list(request):
     heading="PATIENTS ADHERENCE REPORT"
     from dateutil.relativedelta import relativedelta
-    phc_obj = PHC.objects.filter(status=2)
+    phc_obj = PHC.objects.filter(status=2).order_by('name')
     phc = request.GET.get('phc', '')
     sub_center = request.GET.get('sub_center', '')
     village = request.GET.get('village', '')
@@ -698,12 +698,12 @@ def patient_adherence_list(request):
     phc_id=""
     if phc_ids:
         get_phc_name = PHC.objects.get(id=phc_ids)
-        sub_center_obj = Subcenter.objects.filter(status=2, phc__id=phc_ids)
+        sub_center_obj = Subcenter.objects.filter(status=2, phc__id=phc_ids).order_by('name')
         phc_id = '''and phc.id='''+phc
     sbc_ids= ""
     if sub_center_ids:
         get_sbc_name = Subcenter.objects.get(id=sub_center_ids)
-        village_obj = Village.objects.filter(status=2, subcenter__id=sub_center_ids)
+        village_obj = Village.objects.filter(status=2, subcenter__id=sub_center_ids).order_by('name')
         sbc_ids = '''and sbc.id='''+sub_center
     village_id=""
     if village_ids:
@@ -780,8 +780,8 @@ def utilisation_of_services_list(request):
     heading="UTILISATION OF SERVICES AT OBLF CLINICS"
     from dateutil.relativedelta import relativedelta
     filter_values = request.GET.dict()
-    phc_obj = PHC.objects.filter(status=2)
-    phc = request.GET.get('phc', '0')
+    phc_obj = PHC.objects.filter(status=2).order_by('name')
+    phc = request.GET.get('phc', '')
     sub_center = request.GET.get('sub_center', '')
     village = request.GET.get('village', '')
     phc_ids = int(phc) if phc != '' else ''
@@ -800,13 +800,13 @@ def utilisation_of_services_list(request):
             e_date+"""' """
     phc_id=""
     if phc_ids:
-        sub_center_obj = Subcenter.objects.filter(status=2, phc__id=phc_ids)
+        sub_center_obj = Subcenter.objects.filter(status=2, phc__id=phc_ids).order_by('name')
         get_phc_name = PHC.objects.get(id=phc_ids)
         phc_id = '''and phc.id='''+phc
     sbc_ids= ""
     if sub_center_ids:
         get_sbc_name = Subcenter.objects.get(id=sub_center_ids)
-        village_obj = Village.objects.filter(status=2, subcenter__id=sub_center_ids)
+        village_obj = Village.objects.filter(status=2, subcenter__id=sub_center_ids).order_by('name')
         sbc_ids = '''and sbc.id='''+sub_center
     village_id=""
     if village_ids:
@@ -891,7 +891,7 @@ def prevelance_of_ncd_list(request):
     heading="Prevelance of NCD"
     filter_values = request.GET.dict()
     from dateutil.relativedelta import relativedelta
-    phc_obj = PHC.objects.filter(status=2)
+    phc_obj = PHC.objects.filter(status=2).order_by('name')
     phc = request.GET.get('phc', '')
     sub_center = request.GET.get('sub_center', '')
     village = request.GET.get('village', '')
@@ -912,12 +912,12 @@ def prevelance_of_ncd_list(request):
     phc_id= ""
     if phc:
         get_phc_name = PHC.objects.get(id=phc_ids)
-        sub_center_obj = Subcenter.objects.filter(status=2, phc__id=phc)
+        sub_center_obj = Subcenter.objects.filter(status=2, phc__id=phc).order_by('name')
         phc_id = '''and phc.id='''+phc
     sbc_ids= ""
     if sub_center:
         get_sbc_name = Subcenter.objects.get(id=sub_center_ids)
-        village_obj = Village.objects.filter(status=2, subcenter__id=sub_center_ids)
+        village_obj = Village.objects.filter(status=2, subcenter__id=sub_center_ids).order_by('name')
         sbc_ids = '''and sbc.id='''+sub_center
     village_id=""
     if village_ids:
@@ -995,7 +995,7 @@ def village_profile_list(request):
     heading="Village Profile"
     filter_values = request.GET.dict()
     from dateutil.relativedelta import relativedelta
-    phc_obj = PHC.objects.filter(status=2)
+    phc_obj = PHC.objects.filter(status=2).order_by('name')
     phc = request.GET.get('phc', '')
     sub_center = request.GET.get('sub_center', '')
     village = request.GET.get('village', '')
@@ -1013,11 +1013,11 @@ def village_profile_list(request):
         village_profile_list=village_profile_list.filter(status=2, server_created_on__range=[s_date,e_date])
     if phc_ids:
         get_phc_name = PHC.objects.get(id=phc_ids)
-        sub_center_obj = Subcenter.objects.filter(status=2, phc__id=phc_ids)
+        sub_center_obj = Subcenter.objects.filter(status=2, phc__id=phc_ids).order_by('name')
         village_profile_list=village_profile_list.filter(status=2, village__subcenter__phc__id=phc_ids)
     if sub_center_ids:
         get_sbc_name = Subcenter.objects.get(id=sub_center_ids)
-        village_obj = Village.objects.filter(status=2, subcenter__id=sub_center_ids)
+        village_obj = Village.objects.filter(status=2, subcenter__id=sub_center_ids).order_by('name')
         village_profile_list=village_profile_list.filter(status=2, village__subcenter__id=sub_center_ids)
     if village_ids:
         get_village_name = Village.objects.get(id=village_ids)
@@ -1196,7 +1196,7 @@ def village_profile_list(request):
 def get_sub_center(request, subcenter_id):
     if request.method == 'GET' and request.is_ajax():
         result_set = []
-        sub_centers = Subcenter.objects.filter(status=2, phc__id=subcenter_id)
+        sub_centers = Subcenter.objects.filter(status=2, phc__id=subcenter_id).order_by('name')
         for sub_center in sub_centers:
             result_set.append(
                 {'id': sub_center.id, 'name': sub_center.name,})
@@ -1205,7 +1205,7 @@ def get_sub_center(request, subcenter_id):
 def get_village(request, village_id):
     if request.method == 'GET' and request.is_ajax():
         result_set = []
-        villages = Village.objects.filter(status=2, subcenter__id=village_id)
+        villages = Village.objects.filter(status=2, subcenter__id=village_id).order_by('name')
         for village in villages:
             result_set.append(
                 {'id': village.id, 'name': village.name,})

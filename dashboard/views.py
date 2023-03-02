@@ -142,7 +142,7 @@ def set_table_chart_data(sql):
     
 def dashboard(request):
     heading = 'Dashboard'
-    village_obj = Village.objects.filter(status=2)
+    village_obj = Village.objects.filter(status=2).order_by('name')
     req_list = request.POST.dict()
     start_date = req_list.get('start_filter', '')
     end_date = req_list.get('end_filter', '')
