@@ -886,6 +886,79 @@ def utilisation_of_services_list(request):
     return render(request, 'reports/utilisation_of_services.html', locals())
 
 
+def substance_abuse_list(request):
+    heading="Substance abuse"
+    filter_values = request.GET.dict()
+    from dateutil.relativedelta import relativedelta
+    phc_obj = PHC.objects.filter(status=2).order_by('name')
+    phc = request.GET.get('phc', '')
+    sub_center = request.GET.get('sub_center', '')
+    village = request.GET.get('village', '')
+    phc_ids = int(phc) if phc != '' else ''
+    sub_center_ids = int(sub_center) if sub_center != '' else ''
+    village_ids = int(village) if village != '' else ''
+    start_filter = request.GET.get('start_filter', '')
+    end_filter = request.GET.get('end_filter', '')
+    s_date=''
+    e_date=''
+    between_date = ""
+    if start_filter != '':
+        s_date = start_filter
+        e_date = end_filter
+        between_date = """and (trmt.visit_date at time zone 'Asia/Kolkata')::date >= '"""+s_date + \
+            """' and (trmt.visit_date at time zone 'Asia/Kolkata')::date <= '""" + \
+            e_date+"""' """
+    phc_id= ""
+    if phc:
+        get_phc_name = PHC.objects.get(id=phc_ids)
+        sub_center_obj = Subcenter.objects.filter(status=2, phc__id=phc).order_by('name')
+        phc_id = '''and phc.id='''+phc
+    sbc_ids= ""
+    if sub_center:
+        get_sbc_name = Subcenter.objects.get(id=sub_center_ids)
+        village_obj = Village.objects.filter(status=2, subcenter__id=sub_center_ids).order_by('name')
+        sbc_ids = '''and sbc.id='''+sub_center
+    village_id=""
+    if village_ids:
+        get_village_name = Village.objects.get(id=village_ids)
+        village_id = '''and vlg.id='''+village
+    cursor = connection.cursor()
+    cursor.execute('''with a as (select DISTINCT ON (trmt.patient_uuid) trmt.patient_uuid as p_uuid, trmt.visit_date as vst_date, trmt.uuid as t_uuid from health_management_treatments trmt 
+    inner join health_management_patients pt on trmt.patient_uuid=pt.uuid where 1=1 order by p_uuid, vst_date desc) 
+    select phc.name as phc_name, sbc.name as sbc_name, vlg.name as vlg_name,coalesce(sum(case when trmt.is_alcoholic=1 then 1 else 0 end),0) as alcoholic, 
+    coalesce(sum(case when trmt.is_smoker=1 then 1 else 0 end),0) as smoker, coalesce(sum(case when trmt.is_tobacco=1 then 1 else 0 end),0) as tobacco 
+    from a inner join  health_management_treatments trmt on trmt.uuid=t_uuid inner join health_management_patients pt on trmt.patient_uuid=pt.uuid 
+    inner join application_masters_village vlg on pt.village_id = vlg.id inner join application_masters_subcenter sbc on vlg.subcenter_id = sbc.id inner join application_masters_phc phc on sbc.phc_id = phc.id 
+    where 1=1 and trmt.status=2 '''+phc_id+sbc_ids+village_id+between_date+''' group by phc.name, sbc.name, vlg.name order by vlg.name''')
+    substance_abuse_data = cursor.fetchall()
+    export_flag = True if request.POST.get('export') and request.POST.get('export').lower() == 'true' else False
+    if export_flag:
+        response = HttpResponse(content_type='text/csv',)
+        response['Content-Disposition'] = 'attachment; filename="Substance Abuse '+ str(localtime(timezone.now()).strftime("%m-%d-%Y %I-%M %p")) +'.csv"'
+        writer = csv.writer(response)
+        writer.writerow(['SUBSTANCE ABUSE'])
+        writer.writerow([
+            'PHC Name',
+            'Sub Centre',
+            'Village', 
+            'No of Patients take alcohol',
+            'No of Patients smoke',
+            'No of patients use tobacco',
+            ])
+        for data in substance_abuse_data:
+            writer.writerow([
+                data[0],data[1],data[2],data[3],data[4],data[5]
+                ])
+        return response
+    data = pagination_function(request, substance_abuse_data)
+    current_page = request.GET.get('page', 1)
+    page_number_start = int(current_page) - 2 if int(current_page) > 2 else 1
+    page_number_end = page_number_start + 5 if page_number_start + \
+        5 < data.paginator.num_pages else data.paginator.num_pages+1
+    display_page_range = range(page_number_start, page_number_end)
+    return render(request, 'reports/substance_abuse.html', locals())
+
+
 
 def prevelance_of_ncd_list(request):
     heading="Prevelance of NCD"
@@ -1194,7 +1267,7 @@ def village_profile_list(request):
     return render(request, 'reports/village_profile.html', locals())
 
 def get_sub_center(request, subcenter_id):
-    if request.method == 'GET' and request.is_ajax():
+    if request.method == 'GET':
         result_set = []
         sub_centers = Subcenter.objects.filter(status=2, phc__id=subcenter_id).order_by('name')
         for sub_center in sub_centers:
@@ -1203,7 +1276,7 @@ def get_sub_center(request, subcenter_id):
         return HttpResponse(json.dumps(result_set))
 
 def get_village(request, village_id):
-    if request.method == 'GET' and request.is_ajax():
+    if request.method == 'GET':
         result_set = []
         villages = Village.objects.filter(status=2, subcenter__id=village_id).order_by('name')
         for village in villages:

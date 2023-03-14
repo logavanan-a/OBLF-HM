@@ -1,0 +1,123 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block contents %}
+{% include 'partials/filter_report.html' %}
+
+<div class="row">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-body">
+                <form action=""  method="POST" >
+                    {% csrf_token %}
+                    <div class="d-flex justify-content-end mb-3"> 
+                        {% for key, values in filter_values.items %}
+                            <input type="hidden" id="__hd1__{{key}}" name='{{key}}' value="{{values}}"/>
+                        {% endfor %}
+                        <button type="submit" name='export'  class="btn btn-primary waves-effect justify-content-start" value="True">
+                             Export
+                         </button>  
+                    </div>
+                </form>
+                <div class="table-rep-plugin">
+                    <table id="datatable-buttons" class="table  table-bordered dt-responsive w-100 ">
+                        <thead>
+                            <tr>
+                                <th>PHC Name</th>
+                                <th>Sub Centre</th>
+                                <th>Village</th>
+                                <th>No of Patients take alcohol</th>
+                                <th>No of Patients smoke</th>
+                                <th>No of patients use tobacco</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for pl in data %}
+
+                            <tr>
+                                <td>{{pl.0}}</td>
+                                <td>{{pl.1}}</td>
+                                <td>{{pl.2}}</td>
+                                <td>{{pl.3}}</td>
+                                <td>{{pl.4}}</td>
+                                <td>{{pl.5}}</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                {% include 'partials/pagination.html' %}
+            </div>
+        </div>
+    </div> 
+</div> 
+
+{% endblock %}
+{% block extra_javascript %}
+<script src="{% static 'js/pages/form-validation.init.js' %}"></script>
+
+<script type="text/javascript">
+    $("#filter_reset").click(function() {
+        $('#phc').prop('selectedIndex', 0).change();
+        $('#sub_center').prop('selectedIndex', 0).change();
+        $('#village').prop('selectedIndex', 0).change();
+        $('#medicine').prop('selectedIndex', 0).change();
+        $('#start_filter').val('');
+        $('#end_filter').val('');
+        this.form.submit();
+    });
+    document.addEventListener('DOMContentLoaded', function() { 
+        $('#phc').change(function () {
+            var optionSelected = $(this).find("option:selected");
+            var valueSelected  = optionSelected.val();
+            $.ajax({
+                type:"GET",
+                url: '/ajax/subcenter/'+valueSelected+'/',
+                success:function(result){
+                    $("#sub_center option").remove();
+                    a = '<option selected value="">Choose sub center Name</option>';
+                    $("#sub_center").append(a);
+                    if(JSON.parse(result) == 0){
+                        $("#sub_center option").remove();
+                        a = '<option selected value="">No sub center is mapped to this phc</option>';
+                        console.log(a)
+                        $("#sub_center").append(a);
+                    }
+                    else{
+                        $.each(JSON.parse(result),function(key, value)
+                        {
+                            a = '<option value=' + value['id']+'>' + value['name']+'</option>';
+                            $("#sub_center").append(a);
+                        });
+                    }
+                }
+            });
+        });
+        $('#sub_center').change(function () {
+            var optionSelected = $(this).find("option:selected");
+            var valueSelected  = optionSelected.val();
+            $.ajax({
+                type:"GET",
+                url: '/ajax/village/'+valueSelected+'/',
+                success:function(result){
+                    $("#village option").remove();
+                    a = '<option selected value="">Choose Village Name</option>';
+                    $("#village").append(a);
+                    if(JSON.parse(result) == 0){
+                        $("#village option").remove();
+                        a = '<option selected value="">No Village is mapped to this sub center</option>';
+                        console.log(a)
+                        $("#village").append(a);
+                    }
+                    else{
+                        $.each(JSON.parse(result),function(key, value)
+                        {
+                            a = '<option value=' + value['id']+'>' + value['name']+'</option>';
+                            $("#village").append(a);
+                        });
+                    }
+                }
+            });
+        });
+    })
+</script> 
+{% endblock %}
