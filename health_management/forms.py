@@ -69,23 +69,18 @@ medicine_type=[
 ]
 class MedicinesForm(forms.ModelForm):
     name = forms.CharField(required=True, widget=forms.TextInput(attrs={'pattern':'[A-Za-z ]+'}))
-    category_id = forms.CharField(
-        max_length=3,
-        label='category',
-        widget=forms.Select(choices=[(cat.id,cat.name) for cat in Category.objects.filter(status=2,parent_id=0)]),
-    )
-    type = forms.CharField(
+    medicines_type = forms.CharField(
         widget=forms.Select(choices=medicine_type),
     )
 
     def __init__(self, *args, **kwargs):
         super(MedicinesForm, self).__init__(*args, **kwargs)
-        self.fields['category_id'].widget.attrs['class'] = 'form-select'
-        self.fields['type'].widget.attrs['class'] = 'form-select'
+        self.fields['category'].widget.attrs['class'] = 'form-select'
+        self.fields['medicines_type'].widget.attrs['class'] = 'form-select'
 
     class Meta:
         model=Medicines
-        fields=['name', 'type', 'category_id']
+        fields=['name', 'medicines_type', 'category']
 
 #  widget=forms.TextInput(attrs={'pattern':'[A-Za-z0-9 ]+'})
     # def __init__(self, *args, **kwargs):

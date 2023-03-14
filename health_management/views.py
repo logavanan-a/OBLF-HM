@@ -1466,6 +1466,10 @@ class Phc_pull(APIView):
             dosage=Dosage.objects.filter(status=2)
             dosageserializer=DosageSerializers(dosage,many=True)
 
+            #category
+            category=Category.objects.filter(status=2)
+            categoryserializer=CategorySerializers(category,many=True)
+
             #userdata
             userprofileserializer=UserProfileSerializers(user_list, many=True)
 
@@ -1521,6 +1525,7 @@ class Phc_pull(APIView):
             jsonresponse_full['subcenter'] = subcenterserializers.data
             jsonresponse_full['medicines'] = medicineserializer.data
             jsonresponse_full['dosage'] = dosageserializer.data
+            jsonresponse_full['category'] = categoryserializer.data
             jsonresponse_full['ndcs'] = ndcserializers.data
             jsonresponse_full['comorbids'] = comorbidserializers.data
             jsonresponse_full['user_data'] = userprofileserializer.data

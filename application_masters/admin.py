@@ -105,8 +105,8 @@ class MedicinesReportCategoryAdmin(ImportExportModelAdmin, ImportExportFormat):
 
 @admin.register(Medicines)
 class MedicinesAdmin(ImportExportModelAdmin, ImportExportFormat):
-    list_display = ['name', 'code', 'type', 'category_id', 'medicine_id', 'status']
-    fields = ['name', 'code', 'type', 'category_id', 'medicine_id', 'status']
+    list_display = ['name', 'code', 'medicines_type', 'category', 'medicine_id', 'status']
+    fields = ['name', 'code', 'medicines_type', 'category', 'medicine_id', 'status']
     search_fields = ['name']
     ordering = ['name']
     list_per_page = 15

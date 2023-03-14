@@ -163,8 +163,9 @@ class MedicinesReportCategory(BaseContent):
 class Medicines(BaseContent):
     name = models.CharField(max_length=150)
     code = models.CharField(max_length=50, blank=True, null=True)
-    type = models.CharField(max_length=50, blank=True, null=True)
-    category_id = models.IntegerField(null=True, blank=True)
+    medicines_type = models.CharField(max_length=50, blank=True, null=True)
+    # category_id = models.IntegerField(null=True, blank=True)
+    category = models.ForeignKey(Category, on_delete=models.DO_NOTHING, blank=True, null=True)
     medicine_id = models.IntegerField(null=True, blank=True)
 
     class Meta:
