@@ -162,7 +162,7 @@ class Prescription(BaseContent):
 class Diagnosis(BaseContent):
     uuid = models.CharField(max_length=150, null=True, blank=True)
     user_uuid = models.CharField(max_length=150, null=True, blank=True)
-    treatment_uuid = models.CharField(max_length=150, null=True, blank=True)
+    patient_uuid = models.CharField(max_length=150, null=True, blank=True)
     ndc = models.ForeignKey(
         MasterLookup, on_delete=models.DO_NOTHING)
     source_treatment = models.IntegerField(null=True, blank=True)
@@ -173,20 +173,20 @@ class Diagnosis(BaseContent):
     class Meta:
         verbose_name_plural = "Diagnosis"
     
-    def get_patients_uuid(self):
-        try:
-            treatments_list=Treatments.objects.get(uuid=self.treatment_uuid)
-            patients_list=Patients.objects.get(uuid=treatments_list.patient_uuid)
-        except ObjectDoesNotExist:
-            patients_list = None
-        return patients_list
+    # def get_patients_uuid(self):
+    #     try:
+    #         treatments_list=Treatments.objects.get(uuid=self.treatment_uuid)
+    #         patients_list=Patients.objects.get(uuid=treatments_list.patient_uuid)
+    #     except ObjectDoesNotExist:
+    #         patients_list = None
+    #     return patients_list
     
-    def get_health_worker(self):
-        try:
-            health_worker = UserProfile.objects.get(uuid=self.user_uuid, user_type=1)
-        except ObjectDoesNotExist:
-            health_worker = None
-        return health_worker
+    # def get_health_worker(self):
+    #     try:
+    #         health_worker = UserProfile.objects.get(uuid=self.user_uuid, user_type=1)
+    #     except ObjectDoesNotExist:
+    #         health_worker = None
+    #     return health_worker
 
 
 

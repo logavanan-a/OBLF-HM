@@ -557,7 +557,7 @@ def medicine_stock_list(request):
     return render(request, 'manage_stocks/medicine_stock/medicine_list.html', locals())
 
 def patient_registration_report(request):
-    heading="Patient Registration Report"
+    heading="Patient Report"
     filter_values = request.GET.dict()
     from dateutil.relativedelta import relativedelta
     phc_obj = PHC.objects.filter(status=2).order_by('name')
@@ -1849,8 +1849,8 @@ def diagnosis_details(self):
         obj,created = Diagnosis.objects.update_or_create(
             uuid = data.get('uuid'),
             user_uuid = data.get('user_uuid'),
+            patient_uuid = data.get('patient_uuid'),
             defaults = {
-                    "treatment_uuid" : data.get('treatment_uuid'),
                     "source_treatment" : data.get('source_treatment'),
                     "ndc_id" : data.get('ndc_id'),
                     "source_treatment" : data.get('source_treatment'),

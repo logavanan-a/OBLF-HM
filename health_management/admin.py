@@ -50,11 +50,11 @@ class PrescriptionAdmin(ImportExportModelAdmin, ImportExportFormat):
 
 @admin.register(Diagnosis)
 class DiagnosisAdmin(ImportExportModelAdmin, ImportExportFormat):
-    list_display = ['ndc', 'uuid', 'user_uuid', 'treatment_uuid', 'detected_by', 'source_treatment',
+    list_display = ['ndc', 'uuid', 'user_uuid', 'patient_uuid', 'detected_by', 'source_treatment',
     'years', 'server_created_on', 'server_modified_on', 'status']
-    fields = ['ndc', 'uuid', 'user_uuid', 'treatment_uuid', 'detected_by', 'source_treatment',
+    fields = ['ndc', 'uuid', 'user_uuid', 'patient_uuid', 'detected_by', 'source_treatment',
     'years', 'status']
-    search_fields = ['ndc__name', 'uuid', 'user_uuid', 'treatment_uuid']
+    search_fields = ['ndc__name', 'uuid', 'user_uuid', 'patient_uuid']
     list_per_page = 15
 
     def formfield_for_foreignkey(self, db_field, request, **kwargs):
