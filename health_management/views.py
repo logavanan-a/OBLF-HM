@@ -1568,7 +1568,7 @@ class Phc_pull(APIView):
 
             #diagnosis
             ndcs=MasterLookup.objects.filter(parent__id=4)
-            diagnosis_smo_date = Diagnosis.objects.filter(status=2, treatment_uuid__in=patient_treatment_uuids, ndc__in=ndcs).order_by('server_modified_on')
+            diagnosis_smo_date = Diagnosis.objects.filter(status=2, patient_uuid__in=patient_uuids, ndc__in=ndcs).order_by('server_modified_on')
             if data.get('diagnosis_smo_date'):
                 diagnosis_smo_date = diagnosis_smo_date.filter(server_modified_on__gt = data.get('diagnosis_smo_date'))
             diagnosisserializers = DiagnosisSerializers(diagnosis_smo_date,many=True)
@@ -1606,7 +1606,7 @@ class Phc_pull(APIView):
             jsonresponse_full['patients'] = patientSerializers.data
             jsonresponse_full['treatment'] = patient_treatmentSerializers.data
             jsonresponse_full['prescription'] = prescriptionserializers.data
-            jsonresponse_full['diagnosis'] = diagnosisserializers.data
+            # jsonresponse_full['diagnosis'] = diagnosisserializers.data
             jsonresponse_full['scanned_report'] = scanned_reportserializers.data
             jsonresponse_full['home_visit'] = home_visit_serializers.data
 
