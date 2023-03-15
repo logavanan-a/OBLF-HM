@@ -1606,7 +1606,7 @@ class Phc_pull(APIView):
             jsonresponse_full['patients'] = patientSerializers.data
             jsonresponse_full['treatment'] = patient_treatmentSerializers.data
             jsonresponse_full['prescription'] = prescriptionserializers.data
-            # jsonresponse_full['diagnosis'] = diagnosisserializers.data
+            jsonresponse_full['diagnosis'] = diagnosisserializers.data
             jsonresponse_full['scanned_report'] = scanned_reportserializers.data
             jsonresponse_full['home_visit'] = home_visit_serializers.data
 
