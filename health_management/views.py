@@ -607,7 +607,7 @@ def patient_registration_report(request):
     left join health_management_treatments trmt on pt.uuid=trmt.patient_uuid
     left join health_management_prescription pst on trmt.patient_uuid=pst.patient_uuid
     left join application_masters_medicines md on pst.medicines_id=md.id
-    left join health_management_diagnosis dgs on trmt.uuid=dgs.treatment_uuid
+    left join health_management_diagnosis dgs on pt.uuid=dgs.patient_uuid
     left join application_masters_masterlookup ndc on dgs.ndc_id=ndc.id
     where 1=1 '''+phc_id+sbc_ids+village_id+between_date+''' 
     group by phc.name, sbc.name, vlg.name, pt.name, pt.patient_id, pt.dob, age, 
@@ -1016,7 +1016,7 @@ def prevelance_of_ncd_list(request):
     inner join application_masters_subcenter sbc on vlg.subcenter_id = sbc.id 
     inner join application_masters_phc phc on sbc.phc_id = phc.id 
     inner join health_management_treatments as trmt on pt.uuid = trmt.patient_uuid 
-    inner join health_management_diagnosis as dgn on trmt.uuid = dgn.treatment_uuid 
+    inner join health_management_diagnosis as dgn on pt.uuid = dgn.patient_uuid 
     inner join application_masters_masterlookup mtk on dgn.ndc_id = mtk.id
     where 1=1 '''+phc_id+sbc_ids+village_id+between_date+'''
     group by phc.name, sbc.name, vlg.name order by vlg.name) select phc_name, sbc_name, vlg_name, men_less_30,
@@ -1890,8 +1890,8 @@ def home_visit_details(self):
         obj,created = HomeVisit.objects.update_or_create(
             uuid = data.get('uuid'),
             user_uuid = data.get('user_uuid'),
+            patient_uuid = data.get('patient_uuid'),
             defaults = {
-                    "patient_uuid" : data.get('patient_uuid'),
                     "home_vist" : data.get('home_vist'),
                     "image_location" : data.get('image_location'),
                     "response_location" : data.get('response_location'),

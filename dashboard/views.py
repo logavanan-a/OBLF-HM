@@ -172,21 +172,21 @@ def dashboard(request):
     health_management_homevisit hv inner join health_management_patients pt on hv.patient_uuid=pt.uuid where 1=1 and hv.status = 2 """+village_name+home_date_filter+"""),
     e as (select count(*) as count from health_management_treatments trmt inner join health_management_patients pt on trmt.patient_uuid=pt.uuid 
     where 1=1 and trmt.status = 2 """+village_name+date_filter+"""),f as (select count(*) as count from health_management_diagnosis dgs 
-    inner join health_management_treatments trmt on trmt.uuid=dgs.treatment_uuid inner join health_management_patients pt on trmt.patient_uuid=pt.uuid 
+    inner join health_management_treatments trmt on trmt.uuid=dgs.patient_uuid inner join health_management_patients pt on trmt.patient_uuid=pt.uuid 
     where 1=1 and trmt.status = 2 """+village_name+date_filter+""")
     select 'Number of clinics' as name, count(vst_date) as count from a union all select 'Number of Consultations' as name, e.count from e union all 
     select 'Number of NCD Last Vist' as name, coalesce(sum(case when mtk.name='KHT' or mtk.name='KDM' or mtk.name='HT' or mtk.name='DM' then 1 else 0 end),0) as count 
-    from b inner join health_management_diagnosis dgs on b.t_uuid=dgs.treatment_uuid 
+    from b inner join health_management_diagnosis dgs on b.t_uuid=dgs.patient_uuid 
     inner join application_masters_masterlookup mtk on dgs.ndc_id=mtk.id where 1=1 and dgs.status = 2 union all 
     select 'Number of Treatment', count(c.vst_date) as count from c union all select 'Number of NCD' as name, f.count from f 
     union all select d.home_name, d.home_count from d""" 
     percentage_sql= """with a as (select coalesce(sum(case when dgs.source_treatment=1 or dgs.source_treatment=2 or dgs.source_treatment=3 then 1 else 0 end),0) as all_data, 
     coalesce(sum(case when dgs.source_treatment=1 or dgs.source_treatment=3 then 1 else 0 end),0) as not_outside_data 
-    from health_management_diagnosis dgs inner join health_management_treatments trmt on dgs.treatment_uuid=trmt.uuid 
+    from health_management_diagnosis dgs inner join health_management_treatments trmt on dgs.patient_uuid=trmt.patient_uuid 
     inner join health_management_patients pt on trmt.patient_uuid=pt.uuid where 1=1 and dgs.status = 2 """+village_name+date_filter+"""), 
     b as (select count(*) as all_data, coalesce(sum(case when ms.medicine_id=2 then 1 else 0 end),0) as generation_2, 
     coalesce(sum(case when ms.medicine_id=1 then 1 else 0 end),0) as generation_1 from health_management_diagnosis dgs 
-    inner join health_management_prescription psp on dgs.treatment_uuid=psp.treatment_uuid 
+    inner join health_management_prescription psp on dgs.patient_uuid=psp.patient_uuid 
     inner join application_masters_medicines ms on psp.medicines_id=ms.id inner join health_management_patients pt on psp.patient_uuid=pt.uuid
     inner join health_management_treatments trmt on psp.treatment_uuid=trmt.uuid
     where 1=1 and dgs.status = 2 """+village_name+date_filter+""") 
