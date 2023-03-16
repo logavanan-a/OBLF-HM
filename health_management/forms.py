@@ -72,6 +72,7 @@ class MedicinesForm(forms.ModelForm):
     medicines_type = forms.CharField(
         widget=forms.Select(choices=medicine_type),
     )
+    medicine_id = forms.CharField(label='Generation', widget=forms.TextInput(attrs={'pattern':'[0-9]+'}))
 
     def __init__(self, *args, **kwargs):
         super(MedicinesForm, self).__init__(*args, **kwargs)
@@ -80,7 +81,7 @@ class MedicinesForm(forms.ModelForm):
 
     class Meta:
         model=Medicines
-        fields=['name', 'medicines_type', 'category']
+        fields=['name', 'medicines_type', 'category', 'medicine_id']
 
 #  widget=forms.TextInput(attrs={'pattern':'[A-Za-z0-9 ]+'})
     # def __init__(self, *args, **kwargs):
