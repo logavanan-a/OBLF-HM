@@ -172,11 +172,11 @@ def dashboard(request):
     health_management_homevisit hv inner join health_management_patients pt on hv.patient_uuid=pt.uuid where 1=1 and hv.status = 2 """+village_name+home_date_filter+"""),
     e as (select count(*) as count from health_management_treatments trmt inner join health_management_patients pt on trmt.patient_uuid=pt.uuid 
     where 1=1 and trmt.status = 2 """+village_name+date_filter+"""),f as (select count(*) as count from health_management_diagnosis dgs 
-    inner join health_management_treatments trmt on trmt.uuid=dgs.patient_uuid inner join health_management_patients pt on trmt.patient_uuid=pt.uuid 
+    inner join health_management_treatments trmt on trmt.patient_uuid=dgs.patient_uuid inner join health_management_patients pt on trmt.patient_uuid=pt.uuid 
     where 1=1 and trmt.status = 2 """+village_name+date_filter+""")
     select 'Number of clinics' as name, count(vst_date) as count from a union all select 'Number of Consultations' as name, e.count from e union all 
     select 'Number of NCD Last Vist' as name, coalesce(sum(case when mtk.name='KHT' or mtk.name='KDM' or mtk.name='HT' or mtk.name='DM' then 1 else 0 end),0) as count 
-    from b inner join health_management_diagnosis dgs on b.t_uuid=dgs.patient_uuid 
+    from b inner join health_management_diagnosis dgs on b.p_uuid=dgs.patient_uuid 
     inner join application_masters_masterlookup mtk on dgs.ndc_id=mtk.id where 1=1 and dgs.status = 2 union all 
     select 'Number of Treatment', count(c.vst_date) as count from c union all select 'Number of NCD' as name, f.count from f 
     union all select d.home_name, d.home_count from d""" 
