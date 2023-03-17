@@ -78,7 +78,7 @@ class UserProfileAdmin(ImportExportModelAdmin, ImportExportFormat):
     'user_type', 'server_created_on', 'server_modified_on', 'status')
     fields = ['uuid', 'user', 'village', 'phone_no',
     'user_type', 'status']
-    search_fields = ['name', 'user__username', 'village__name', 'uuid']
+    search_fields = ['user__username', 'village__name', 'uuid']
     list_per_page = 15
 
     def villages(self, instance):

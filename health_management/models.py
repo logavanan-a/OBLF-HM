@@ -173,20 +173,19 @@ class Diagnosis(BaseContent):
     class Meta:
         verbose_name_plural = "Diagnosis"
     
-    # def get_patients_uuid(self):
-    #     try:
-    #         treatments_list=Treatments.objects.get(uuid=self.treatment_uuid)
-    #         patients_list=Patients.objects.get(uuid=treatments_list.patient_uuid)
-    #     except ObjectDoesNotExist:
-    #         patients_list = None
-    #     return patients_list
+    def get_patients_uuid(self):
+        try:
+            patients_list=Patients.objects.get(uuid=self.patient_uuid)
+        except ObjectDoesNotExist:
+            patients_list = None
+        return patients_list
     
-    # def get_health_worker(self):
-    #     try:
-    #         health_worker = UserProfile.objects.get(uuid=self.user_uuid, user_type=1)
-    #     except ObjectDoesNotExist:
-    #         health_worker = None
-    #     return health_worker
+    def get_health_worker(self):
+        try:
+            health_worker = UserProfile.objects.get(uuid=self.user_uuid, user_type=1)
+        except ObjectDoesNotExist:
+            health_worker = None
+        return health_worker
 
 
 
