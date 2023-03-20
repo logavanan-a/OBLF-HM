@@ -80,6 +80,7 @@ def drug_prescription_csv_export(request):
     for prescription in prescription_csv:
         patient = prescription.get_user_uuid()
         treatment = prescription.get_treatment_uuid()
+        treatment.visit_date.strftime("%m/%d/%Y %I:%M %p") if treatment else '',
         writer.writerow([
             patient.village.subcenter.phc if patient else '',
             patient.village.subcenter if patient else '',
@@ -241,7 +242,7 @@ def verified_treatments_report(request):
                 treatments.fbs,
                 treatments.pp,
                 treatments.random,
-                treatments.visit_date.strftime("%m/%d/%Y %I:%M %p"),
+                localtime(treatments.visit_date).strftime("%m/%d/%Y %I:%M %p"),
                 ])
         return response
     return render(request, 'reports/verified_treatments.html', locals())
