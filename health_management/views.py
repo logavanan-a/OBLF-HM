@@ -135,9 +135,13 @@ def verified_diagnosis_report(request):
             'Village',                                   
             'Patient Name',
             'Patient Code',
+            'Registered Date',
+            'Age',
+            'Gender',
             'NCD',
             'Source of treatment',
-            'Health Worker'
+            'Health Worker',
+            'Created on',
             ])
         for diagnosis in verified_diagnosis_list:
             patient = diagnosis.get_patients_uuid()
@@ -148,9 +152,13 @@ def verified_diagnosis_report(request):
                 patient.village if patient else '',
                 patient.name if patient else '',
                 patient.patient_id if patient else '',
+                localtime(patient.registered_date).strftime("%Y/%m/%d %I:%M %p") if patient else '',
+                patient.calculate_age() if patient else '',
+                patient.get_gender_display() if patient else '',
                 diagnosis.ndc,
                 diagnosis.source_treatment,
-                health_worker.user.first_name if health_worker else ''
+                health_worker.user.first_name if health_worker else '',
+                localtime(diagnosis.server_created_on).strftime("%Y/%m/%d %I:%M %p")
                 ])
         return response 
     return render(request, 'reports/verified_diagnosis.html', locals())
@@ -208,7 +216,7 @@ def verified_treatments_report(request):
             'Village',                                   
             'Patient Name',
             'Patient Code',
-            'DOB',
+            'Registered Date',
             'Age(today)',
             'Gender',
             'SBP1',
@@ -230,7 +238,7 @@ def verified_treatments_report(request):
                 patient.village if patient else '',
                 patient.name if patient else '',
                 patient.patient_id if patient else '',
-                patient.dob if patient else '',
+                localtime(patient.registered_date).strftime("%Y/%m/%d %I:%M %p") if patient else '',
                 patient.calculate_age() if patient else '',
                 patient.get_gender_display() if patient else '',
                 treatments.bp_sys1,
@@ -242,7 +250,7 @@ def verified_treatments_report(request):
                 treatments.fbs,
                 treatments.pp,
                 treatments.random,
-                localtime(treatments.visit_date).strftime("%m/%d/%Y %I:%M %p"),
+                localtime(treatments.visit_date).strftime("%Y/%m/%d %I:%M %p"),
                 ])
         return response
     return render(request, 'reports/verified_treatments.html', locals())
@@ -982,8 +990,8 @@ def prevelance_of_ncd_list(request):
     if start_filter != '':
         s_date = start_filter
         e_date = end_filter
-        between_date = """and (trmt.visit_date at time zone 'Asia/Kolkata')::date >= '"""+s_date + \
-            """' and (trmt.visit_date at time zone 'Asia/Kolkata')::date <= '""" + \
+        between_date = """and (dgs.server_created_on at time zone 'Asia/Kolkata')::date >= '"""+s_date + \
+            """' and (dgs.server_created_on at time zone 'Asia/Kolkata')::date <= '""" + \
             e_date+"""' """
     phc_id= ""
     if phc:
@@ -999,33 +1007,26 @@ def prevelance_of_ncd_list(request):
     if village_ids:
         get_village_name = Village.objects.get(id=village_ids)
         village_id = '''and vlg.id='''+village
-    
+    # '''+phc_id+sbc_ids+village_id+between_date+'''
     cursor = connection.cursor()
-    cursor.execute('''with a as (select phc.name as phc_name, sbc.name as sbc_name, vlg.name as vlg_name,
-    coalesce(sum(case when date_part('year',age(dob))<30 and gender=1 then 1 else 0 end),0) as men_less_30,
+    cursor.execute('''with a as (select phc.name as phc_name, sbc.name as sbc_name, vlg.name as vlg_name, coalesce(sum(case when date_part('year',age(dob))<30 and gender=1 then 1 else 0 end),0) as men_less_30, 
     coalesce(sum(case when date_part('year',age(dob))<30 and gender=2 then 1 else 0 end),0) as female_less_30,
     coalesce(sum(case when date_part('year',age(dob))>=30 and date_part('year',age(dob))<=50 and gender=1 then 1 else 0 end),0) as men_30_between_50_age, 
     coalesce(sum(case when date_part('year',age(dob))>=30 and date_part('year',age(dob))<=50 and gender=2 then 1 else 0 end),0) as female_30_between_50_age, 
     coalesce(sum(case when date_part('year',age(dob))>50 and gender=1 then 1 else 0 end),0) as men_greater_50, 
     coalesce(sum(case when date_part('year',age(dob))>50 and gender=2 then 1 else 0 end),0) as female_greater_50,
-    coalesce(sum(case when date_part('year',age(dob))<30 and gender=1 and (pt.registered_date at time zone 'Asia/Kolkata')::date=(trmt.visit_date at time zone 'Asia/Kolkata')::date then 1 else 0 end),0) as new_men_less_30,
-    coalesce(sum(case when date_part('year',age(dob))<30 and gender=2 and (pt.registered_date at time zone 'Asia/Kolkata')::date=(trmt.visit_date at time zone 'Asia/Kolkata')::date then 1 else 0 end),0) as new_female_less_30,
-    coalesce(sum(case when date_part('year',age(dob))>=30 and date_part('year',age(dob))<=50 and gender=1 and (pt.registered_date at time zone 'Asia/Kolkata')::date=(trmt.visit_date at time zone 'Asia/Kolkata')::date then 1 else 0 end),0) as new_men_30_between_50_age,
-    coalesce(sum(case when date_part('year',age(dob))>=30 and date_part('year',age(dob))<=50 and gender=2 and (pt.registered_date at time zone 'Asia/Kolkata')::date=(trmt.visit_date at time zone 'Asia/Kolkata')::date then 1 else 0 end),0) as new_female_30_between_50_age,
-    coalesce(sum(case when date_part('year',age(dob))>50 and gender=1 and (pt.registered_date at time zone 'Asia/Kolkata')::date=(trmt.visit_date at time zone 'Asia/Kolkata')::date then 1 else 0 end),0) as new_men_greater_50, 
-    coalesce(sum(case when date_part('year',age(dob))>50 and gender=2 and (pt.registered_date at time zone 'Asia/Kolkata')::date=(trmt.visit_date at time zone 'Asia/Kolkata')::date then 1 else 0 end),0) as new_female_greater_50
-    from health_management_patients pt 
-    inner join application_masters_village vlg on pt.village_id = vlg.id 
+    coalesce(sum(case when date_part('year',age(dob))<30 and gender=1 and (pt.registered_date at time zone 'Asia/Kolkata')::date=(dgs.server_created_on at time zone 'Asia/Kolkata')::date then 1 else 0 end),0) as new_men_less_30,
+    coalesce(sum(case when date_part('year',age(dob))<30 and gender=2 and (pt.registered_date at time zone 'Asia/Kolkata')::date=(dgs.server_created_on at time zone 'Asia/Kolkata')::date then 1 else 0 end),0) as new_female_less_30,
+    coalesce(sum(case when date_part('year',age(dob))>=30 and date_part('year',age(dob))<=50 and gender=1 and (pt.registered_date at time zone 'Asia/Kolkata')::date=(dgs.server_created_on at time zone 'Asia/Kolkata')::date then 1 else 0 end),0) as new_men_30_between_50_age,
+    coalesce(sum(case when date_part('year',age(dob))>=30 and date_part('year',age(dob))<=50 and gender=2 and (pt.registered_date at time zone 'Asia/Kolkata')::date=(dgs.server_created_on at time zone 'Asia/Kolkata')::date then 1 else 0 end),0) as new_female_30_between_50_age,
+    coalesce(sum(case when date_part('year',age(dob))>50 and gender=1 and (pt.registered_date at time zone 'Asia/Kolkata')::date=(dgs.server_created_on at time zone 'Asia/Kolkata')::date then 1 else 0 end),0) as new_men_greater_50, 
+    coalesce(sum(case when date_part('year',age(dob))>50 and gender=2 and (pt.registered_date at time zone 'Asia/Kolkata')::date=(dgs.server_created_on at time zone 'Asia/Kolkata')::date then 1 else 0 end),0) as new_female_greater_50 
+    from health_management_diagnosis dgs inner join health_management_patients pt on pt.uuid = dgs.patient_uuid inner join application_masters_masterlookup mtk on dgs.ndc_id = mtk.id inner join application_masters_village vlg on pt.village_id = vlg.id 
     inner join application_masters_subcenter sbc on vlg.subcenter_id = sbc.id 
-    inner join application_masters_phc phc on sbc.phc_id = phc.id 
-    inner join health_management_treatments as trmt on pt.uuid = trmt.patient_uuid 
-    inner join health_management_diagnosis as dgn on pt.uuid = dgn.patient_uuid 
-    inner join application_masters_masterlookup mtk on dgn.ndc_id = mtk.id
-    where 1=1 '''+phc_id+sbc_ids+village_id+between_date+'''
-    group by phc.name, sbc.name, vlg.name order by vlg.name) select phc_name, sbc_name, vlg_name, men_less_30,
-    female_less_30, men_30_between_50_age, female_30_between_50_age, men_greater_50, female_greater_50, 
-    (men_less_30 + female_less_30 + men_30_between_50_age + female_30_between_50_age + men_greater_50 + female_greater_50)
-    as ncd_total, new_men_less_30, new_female_less_30, new_men_30_between_50_age, new_female_30_between_50_age, new_men_greater_50, new_female_greater_50, (new_men_less_30 + new_female_less_30 + new_men_30_between_50_age + new_female_30_between_50_age + new_men_greater_50 + new_female_greater_50) as new_ncd_total from a''')
+    inner join application_masters_phc phc on sbc.phc_id = phc.id where 1=1 '''+phc_id+sbc_ids+village_id+between_date+''' 
+    group by phc.name, sbc.name, vlg.name order by vlg.name) select phc_name, sbc_name, vlg_name, men_less_30, female_less_30, men_30_between_50_age, female_30_between_50_age, men_greater_50, female_greater_50, 
+    (men_less_30 + female_less_30 + men_30_between_50_age + female_30_between_50_age + men_greater_50 + female_greater_50) as ncd_total, new_men_less_30, new_female_less_30, new_men_30_between_50_age, new_female_30_between_50_age, new_men_greater_50, new_female_greater_50, 
+    (new_men_less_30 + new_female_less_30 + new_men_30_between_50_age + new_female_30_between_50_age + new_men_greater_50 + new_female_greater_50) as new_ncd_total from a''')
     prevelance_of_ncd_data = cursor.fetchall()
     export_flag = True if request.POST.get('export') and request.POST.get( 'export').lower() == 'true' else False
     if export_flag:

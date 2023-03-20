@@ -26,9 +26,13 @@
                                 <th>Village</th>                                   
                                 <th>Patient Name</th>
                                 <th>Patient Code</th>
+                                <th>Registered Date</th>
+                                <th>Age</th>
+                                <th>Gender</th>
                                 <th>NCD</th>
                                 <th>Source of treatment</th>
                                 <th>Health Worker</th>
+                                <th>Created on</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -39,6 +43,9 @@
                                 <th>{{vd.get_patients_uuid.village}}</th>
                                 <th>{{vd.get_patients_uuid.name}}</th>
                                 <th>{{vd.get_patients_uuid.patient_id}}</th>
+                                <th>{{vd.get_patients_uuid.registered_date|date:"d-m-Y h:i a"}}</th>
+                                <th>{{vd.get_patients_uuid.calculate_age}}</th>
+                                <th>{{vd.get_patients_uuid.get_gender_display}}</th>
                                 <th>{{vd.ndc}}</th>
                                 {% if vd.source_treatment == 1 %}
                                     <th>Clinic</th>
@@ -50,6 +57,7 @@
                                     <th>-</th>
                                 {% endif %}
                                 <th>{{vd.get_health_worker.user.first_name}}</th>
+                                <th>{{vd.server_created_on|date:"d-m-Y h:i a"}}</th>
                             </tr>
                             {% endfor %}
                         </tbody>
