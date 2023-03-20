@@ -27,9 +27,10 @@
                                 <th>Village</th>                                   
                                 <th>Patient Name</th>
                                 <th>Patient Code</th>
-                                <th>DOB</th>
+                                <th>Registered Date</th>
                                 <th>Age(today)</th>
                                 <th>Gender</th>
+                                <th>Visit Date</th>
                                 <th>SBP</th>
                                 <th>DBP</th>
                                 <th>Blood Sugar Fasting</th>
@@ -51,7 +52,7 @@
                                 <th>{{prr.5|date:"d/m/Y"|default_if_none:'-'}}</th>
                                 <th>{{prr.6|default_if_none:'-'}}</th>
                                 <th>{{prr.7|default_if_none:'-'}}</th>
-                                <th>{{prr.8|default_if_none:'-'}}</th>
+                                <th>{{prr.8|date:"d/m/Y"|default_if_none:'-'}}</th>
                                 <th>{{prr.9|default_if_none:'-'}}</th>
                                 <th>{{prr.10|default_if_none:'-'}}</th>
                                 <th>{{prr.11|default_if_none:'-'}}</th>
@@ -59,6 +60,7 @@
                                 <th>{{prr.13|default_if_none:'-'}}</th>
                                 <th>{{prr.14|default_if_none:'-'}}</th>
                                 <th>{{prr.15|default_if_none:'-'}}</th>
+                                <th>{{prr.16|default_if_none:'-'}}</th>
                             </tr>
                             {% endfor %}
                         </tbody>

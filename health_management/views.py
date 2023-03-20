@@ -557,7 +557,7 @@ def medicine_stock_list(request):
     return render(request, 'manage_stocks/medicine_stock/medicine_list.html', locals())
 
 def patient_registration_report(request):
-    heading="Patient Report"
+    heading="Patients Report"
     filter_values = request.GET.dict()
     from dateutil.relativedelta import relativedelta
     phc_obj = PHC.objects.filter(status=2).order_by('name')
@@ -594,8 +594,8 @@ def patient_registration_report(request):
         village_id = '''and vlg.id='''+village
     cursor = connection.cursor()
     cursor.execute('''select phc.name as phc_name, sbc.name as sbc_name, vlg.name as village_name, 
-    pt.name as patient_name, pt.patient_id as patient_code, pt.dob, date_part('year',age(pt.dob))::int as age, 
-    case when pt.gender=1 then 'Male' when pt.gender=2 then 'Female' end as gender,
+    pt.name as patient_name, pt.patient_id as patient_code, pt.registered_date, date_part('year',age(pt.dob))::int as age, 
+    case when pt.gender=1 then 'Male' when pt.gender=2 then 'Female' end as gender, trmt.visit_date,
     case when trmt.bp_sys3!='' then trmt.bp_sys3 when trmt.bp_sys2!='' then trmt.bp_sys2 when trmt.bp_sys1!='' then trmt.bp_sys1 else '-' end as sbp,
     case when trmt.bp_non_sys3!='' then trmt.bp_non_sys3 when trmt.bp_non_sys2!='' then trmt.bp_non_sys2 when trmt.bp_non_sys1!='' then trmt.bp_non_sys1 else '-' end as dbp,
     trmt.fbs as fbs, trmt.pp as pp, trmt.random as random, ndc.name as diagnosis,
@@ -610,13 +610,13 @@ def patient_registration_report(request):
     left join health_management_diagnosis dgs on pt.uuid=dgs.patient_uuid
     left join application_masters_masterlookup ndc on dgs.ndc_id=ndc.id
     where 1=1 '''+phc_id+sbc_ids+village_id+between_date+''' 
-    group by phc.name, sbc.name, vlg.name, pt.name, pt.patient_id, pt.dob, age, 
-    source_of_tretement, ndc.name, gender, sbp, dbp, trmt.fbs, trmt.pp, trmt.random''')
+    group by phc.name, sbc.name, vlg.name, pt.name, pt.patient_id, pt.registered_date, pt.dob, age, 
+    trmt.visit_date, source_of_tretement, ndc.name, gender, sbp, dbp, trmt.fbs, trmt.pp, trmt.random''')
     patient_data = cursor.fetchall()
     export_flag = True if request.POST.get('export') and request.POST.get( 'export').lower() == 'true' else False
     if export_flag:
         response = HttpResponse(content_type='text/csv',)
-        response['Content-Disposition'] = 'attachment; filename="patient report '+ str(localtime(timezone.now()).strftime("%m-%d-%Y %I-%M %p")) +'.csv"'
+        response['Content-Disposition'] = 'attachment; filename="Patients Report '+ str(localtime(timezone.now()).strftime("%m-%d-%Y %I-%M %p")) +'.csv"'
         writer = csv.writer(response)
         writer.writerow(['PATIENT REPORT'])
         writer.writerow([
@@ -625,9 +625,10 @@ def patient_registration_report(request):
             'Village', 
             'Patient names', 
             'Patient code', 
-            'DOB', 
+            'Registered date', 
             'Age', 
             'Gender', 
+            'Visit date', 
             'SBP', 
             'DBP', 
             'Blood sugar Fasting', 
@@ -654,7 +655,8 @@ def patient_registration_report(request):
                 patient[12],
                 patient[13],
                 patient[14],
-                patient[15]
+                patient[15],
+                patient[16]
                 ])
         return response
     data = pagination_function(request, patient_data)
