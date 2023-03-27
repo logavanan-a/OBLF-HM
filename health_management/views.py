@@ -1421,6 +1421,7 @@ def master_list_form(request,model):
     headings={
         "userprofile":"user profile",
         "masterlookup":"diagnosis",
+        "category":"Medicine category",
     }
     heading=headings.get(model,model)
     orderlist='name' if model != 'userprofile' else 'user__username'
