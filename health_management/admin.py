@@ -46,6 +46,7 @@ class PrescriptionAdmin(ImportExportModelAdmin, ImportExportFormat):
     fields = ['medicines', 'user_uuid', 'uuid', 'patient_uuid', 'treatment_uuid',
     'dosage', 'no_of_days', 'medicine_type', 'qty', 'status']
     search_fields = ['medicines__name','uuid', 'user_uuid', 'patient_uuid', 'treatment_uuid']
+    list_filter = ['medicines', ]
     list_per_page = 15
 
 @admin.register(Diagnosis)

@@ -38,7 +38,13 @@ class VillageForm(forms.ModelForm):
     class Meta:
         model=Village
         fields=['name','code','subcenter']
-        
+
+class CategoryForm(forms.ModelForm):
+    name = forms.CharField(required=True, widget=forms.TextInput(attrs={'pattern':'[A-Za-z ]+'}))
+
+    class Meta:
+        model=Category
+        fields=['name']
 
 class MasterlookupForm(forms.ModelForm):
     name = forms.CharField(required=True, widget=forms.TextInput(attrs={'pattern':'[A-Za-z ]+'}))
