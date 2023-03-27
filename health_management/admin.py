@@ -56,12 +56,13 @@ class DiagnosisAdmin(ImportExportModelAdmin, ImportExportFormat):
     fields = ['ndc', 'uuid', 'user_uuid', 'patient_uuid', 'detected_by', 'source_treatment',
     'years', 'status']
     search_fields = ['ndc__name', 'uuid', 'user_uuid', 'patient_uuid']
+    list_filter = ['ndc' ]
     list_per_page = 15
 
     def formfield_for_foreignkey(self, db_field, request, **kwargs):
         if db_field.name == "ndc":
             kwargs["queryset"] = MasterLookup.objects.filter(
-                parent__name='ndcs')
+                status=2,parent__name='ndcs')
         return super().formfield_for_foreignkey(db_field, request, **kwargs)
 
 @admin.register(Scanned_Report)
