@@ -179,9 +179,15 @@ def dashboard(request):
     g as (select coalesce(sum(case when mtk.name='KHT' or mtk.name='KDM' or mtk.name='HT' or mtk.name='DM' then 1 else 0 end),0) as count from b 
     inner join health_management_diagnosis dgs on b.d_uuid=dgs.uuid inner join application_masters_masterlookup mtk on dgs.ndc_id=mtk.id where 1=1 and dgs.status = 2), h as (select (count(*)- count(non_ncd.p_uuid)) as non_ncd_count 
     from health_management_patients pt left outer join (select distinct on (dgs.patient_uuid) dgs.patient_uuid as p_uuid, dgs.uuid as d_uuid, dgs.server_created_on as sc_date 
-    from health_management_diagnosis dgs inner join health_management_patients pt on dgs.patient_uuid=pt.uuid where 1=1 """+village_name+dgs_date_filter+""" order by dgs.patient_uuid, dgs.server_created_on desc) as non_ncd on pt.uuid=non_ncd.p_uuid where 1=1 """+village_name+patient_date_filter+""") select 'TOTAL NUMBER OF CLINICS CONDUCTED' as name, count(vst_date) as count from a 
-    union all select 'NUMBER OF CONSULTATIONS' as name, e.count from e union all select 'NUMBER OF NCD CONSULTATION' as name, g.count from g union all select 'NUMBER OF NON-NCD CONSULTATION' as name, h.non_ncd_count from h union all select 'NUMBER OF PEOPLE TREATED', count(c.vst_date) as count from c 
-    union all select 'TOTAL NUMBER OF NCD CASES' as name, f.count from f union all select 'TOTAL NUMBER OF HOME VISITS MADE BY FLHWs' as home_name, d.home_count from d"""
+    from health_management_diagnosis dgs inner join health_management_patients pt on dgs.patient_uuid=pt.uuid 
+    where 1=1 """+village_name+dgs_date_filter+""" order by dgs.patient_uuid, dgs.server_created_on desc) as non_ncd on pt.uuid=non_ncd.p_uuid where 1=1 """+village_name+patient_date_filter+""") 
+    select 'TOTAL NUMBER OF CLINICS CONDUCTED' as name, count(vst_date) as count from a 
+    union all select 'NUMBER OF CONSULTATIONS' as name, e.count from e 
+    union all select 'NUMBER OF NCD CONSULTATION' as name, g.count from g 
+    union all select 'NUMBER OF NON-NCD CONSULTATION' as name, h.non_ncd_count from h 
+    union all select 'NUMBER OF PEOPLE TREATED', count(c.vst_date) as count from c 
+    union all select 'TOTAL NUMBER OF NCD CASES' as name, f.count from f 
+    union all select 'TOTAL NUMBER OF HOME VISITS MADE BY FLHWs' as home_name, d.home_count from d"""
     
     percentage_sql= """with a as (select coalesce(sum(case when dgs.source_treatment=1 or dgs.source_treatment=2 or dgs.source_treatment=3 then 1 else 0 end),0) as all_data, 
     coalesce(sum(case when dgs.source_treatment=1 or dgs.source_treatment=3 then 1 else 0 end),0) as not_outside_data 
