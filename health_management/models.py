@@ -270,7 +270,7 @@ class VillageProfile(BaseContent):
         (3, 'Other')
         )
     name = models.CharField(max_length=150, null=True, blank=True)
-    patient_id = models.CharField(max_length=150, null=True, blank=True)
+    patient_id = models.CharField(max_length=150, null=True, blank=True, unique=True)
     village = models.ForeignKey(Village, on_delete=models.DO_NOTHING)
     dob = models.DateField(blank=True, null=True)
     age = models.PositiveIntegerField(blank=True, null=True)
