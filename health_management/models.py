@@ -275,7 +275,7 @@ class VillageProfile(BaseContent):
     dob = models.DateField(blank=True, null=True)
     age = models.PositiveIntegerField(blank=True, null=True)
     gender = models.IntegerField(choices=GENDER_CHOICE, blank=True, null=True)
-    phone_number = models.CharField(max_length=150, null=True, blank=True, unique=True)
+    phone_number = models.CharField(max_length=150, null=True, blank=True)
     image = models.FileField(
         upload_to='village_profile_image/%y/%m/%d/', blank=True, null=True)
     subcenter_id = models.CharField(max_length=150, null=True, blank=True)
