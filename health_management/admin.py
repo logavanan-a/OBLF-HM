@@ -1,10 +1,14 @@
 from django.contrib import admin
 from .models import *
 from .admin import *
-
+import uuid
 # Register your models here.
 
 admin.site.site_url = '/list/userprofile/'
+
+class PatientsResource(resources.ModelResource):
+    class Meta:
+        model = Patients
 
 @admin.register(Patients)
 class PatientsAdmin(ImportExportModelAdmin, ImportExportFormat):
@@ -122,6 +126,24 @@ class DrugDispensationAdmin(ImportExportModelAdmin, ImportExportFormat):
 #     class Meta:
 #         model = VillageProfile
 
+#     def before_save_instance(self, instance, using_transactions, dry_run):
+#         curr_dt = datetime.datetime.now().strftime("%Y%m%d%H%M%S%f")
+#         user_id=UserProfile.objects.get(village=instance.village)
+#         uuid_id = str(curr_dt) + "-" + str(uuid.uuid4())
+#         obj, created  = Patients.objects.update_or_create(patient_id=instance.patient_id,
+#         defaults={"uuid":uuid_id, "user_uuid":user_id.uuid, "name":instance.name,"age":instance.age,
+#         "gender":instance.gender, "village":instance.village, "phone_number":instance.phone_number,
+#         "image":instance.image,"subcenter_id":instance.subcenter_id, "door_no":instance.door_no,
+#         "seq_no":instance.seq_no})
+#         obj.save()
+#         # instance.
+#         # Patients=Patients.objects.filter(status=2).values_list('patient_id', flat=True)
+#         # if dry_run:
+#         #     print('dbvbdb')
+#         # else:
+        #     print('none')
+
+
 #     def skip_row(self, instance, original):
 #         # try:
 #         village_profile_code = VillageProfile.objects.filter(code=instance.code).exists()
@@ -138,9 +160,9 @@ class DrugDispensationAdmin(ImportExportModelAdmin, ImportExportFormat):
 @admin.register(VillageProfile)
 class VillageProfileAdmin(ImportExportModelAdmin, ImportExportFormat):
     list_display = ['name', 'door_no', 'seq_no', 'patient_id', 'village', 'dob', 'age', 'gender',
-     'phone_number', 'image', 'subcenter_id', 'server_created_on', 'server_modified_on', 'status']
+     'phone_number', 'image', 'subcenter_id', 'server_created_on', 'server_modified_on', 'data_migration', 'status']
     fields = ['name', 'patient_id', 'village', 'dob', 'age', 'gender',
-     'phone_number', 'image', 'subcenter_id', 'door_no', 'seq_no', 'status']
+     'phone_number', 'image', 'subcenter_id', 'door_no', 'seq_no', 'data_migration', 'status']
     search_fields = ['village__name']
     list_per_page = 15
 

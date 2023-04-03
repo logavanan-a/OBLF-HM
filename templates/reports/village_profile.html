@@ -22,13 +22,33 @@
                     <table id="tech-companies-1" class="table table-bordered dt-responsive mb-0">
                         <thead>
                             <tr>
+                                <th>Subcenter</th>
                                 <th>Village</th>
+                                <th>Name</th>
+                                <th>Patient ID</th>
+                                <th>Door No</th>
+                                <th>Seq No</th>
+                                <th>dob</th>
+                                <th>age</th>
+                                <th>Gender</th>
+                                <th>Phone Number</th>
+                                <th>Image</th>
                             </tr>
                         </theah>
                         <tbody>
                             {% for vp in data %}
                             <tr>
+                                <td>{{vp.village.subcenter|default_if_none:''}}</td>
                                 <td>{{vp.village|default_if_none:''}}</td>
+                                <td>{{vp.name|default_if_none:''}}</td>
+                                <td>{{vp.patient_id|default_if_none:''}}</td>
+                                <td>{{vp.door_no|default_if_none:''}}</td>
+                                <td>{{vp.seq_no|default_if_none:''}}</td>
+                                <td>{{vp.dob|default_if_none:''}}</td>
+                                <td>{{vp.age|default_if_none:''}}</td>
+                                <td>{{vp.get_gender_display|default_if_none:''}}</td>
+                                <td>{{vp.phone_number|default_if_none:''}}</td>
+                                <td>{{vp.image|default_if_none:''}}</td>
                             </tr>
                             {% endfor %}
                         </tbody>

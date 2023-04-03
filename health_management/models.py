@@ -4,6 +4,7 @@ from application_masters.models import *
 import datetime
 from django.db.models import Q
 from django.core.exceptions import ObjectDoesNotExist
+# import uuid
 
 # Create your models here.
 
@@ -11,6 +12,7 @@ phone_regex = RegexValidator(
     regex=r'\d{10}$', message="Phone number must be 10 digits") 
 
 class Patients(BaseContent):
+    # default=uuid.uuid4,
     GENDER_CHOICE = (
         (1, 'Male'),
         (2, 'Female'),
@@ -281,6 +283,7 @@ class VillageProfile(BaseContent):
     subcenter_id = models.CharField(max_length=150, null=True, blank=True)
     door_no = models.CharField(max_length=150, null=True, blank=True)
     seq_no = models.CharField(max_length=150, null=True, blank=True)
+    data_migration = models.IntegerField(default=1, null=True, blank=True)
     
 
 

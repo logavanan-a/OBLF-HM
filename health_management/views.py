@@ -1107,12 +1107,31 @@ def village_profile_list(request):
         writer = csv.writer(response)
         writer.writerow(['VILLAGE PROFILE'])
         writer.writerow([
+            'Subcenter',
             'Village',
+            'Name',
+            'Patient ID',
+            'Door No',
+            'Seq No',
+            'dob',
+            'age',
+            'Gender',
+            'Phone Number',
+            'Image',
             ])
         for data in village_profile_list:
             writer.writerow([
+                data.village.subcenter,
                 data.village,
-                data.server_created_on.strftime("%m/%d/%Y %I:%M %p"),
+                data.name,
+                data.patient_id,
+                data.door_no,
+                data.seq_no,
+                data.dob,
+                data.age,
+                data.get_gender_display(),
+                data.phone_number,
+                data.image,
                 ])
         return response
     data = pagination_function(request, village_profile_list)
