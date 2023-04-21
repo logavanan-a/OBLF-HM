@@ -14,6 +14,9 @@ urlpatterns = [
     path('phc/pull/<pk>/', Phc_pull.as_view()),
     path('phc/push/<pk>/', Phc_push.as_view()),
 
+    path('patient-profile/list/', patient_profile_list, name='patient_profile_list'),
+    path('patient-detail/<patient_id>/', patient_profile_detail, name='patient_profile_detail'),
+    path('patient/<id>/delete/', delete_patients_record, name='delete_patients_record'),
     #verfied report
     path('verified-diagnosis-report/', verified_diagnosis_report, name='verified_diagnosis'),
     path('verified-home-visit-report/', verified_home_visit_report, name='verified_home_visit_report'),
