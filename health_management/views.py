@@ -30,7 +30,7 @@ import csv
 
 
 def pagination_function(request, data):
-    records_per_page = 2
+    records_per_page = 10
     paginator = Paginator(data, records_per_page)
     page = request.GET.get('page', 1)
     try: 
@@ -105,7 +105,6 @@ def patient_profile_list(request):
     phc = request.GET.get('phc', '')
     sub_center = request.GET.get('sub_center', '')
     village = request.GET.get('village', '')
-    patient_name = request.GET.get('patient_name', '')
     phc_ids = int(phc) if phc != '' else ''
     sub_center_ids = int(sub_center) if sub_center != '' else ''
     village_ids = int(village) if village != '' else ''
@@ -134,12 +133,6 @@ def patient_profile_list(request):
     if village_ids:
         get_village_name = Village.objects.get(id=village_ids)
         village_id = '''and vlg.id='''+village
-    pnt_name=""
-    pnt_code=""
-    if patient_name:
-        format_name = "'%"+patient_name+"%'"
-        pnt_name = '''and pt.name ilike '''+format_name
-        pnt_code = '''or pt.patient_id ilike '''+format_name
     
     sql='''select distinct on (pt.patient_id) pt.patient_id, phc.name as phc_name, 
     sbc.name as sbc_name, vlg.name as village_name, pt.name as patient_name, 
@@ -163,7 +156,7 @@ def patient_profile_list(request):
     left join application_masters_medicines md on pst.medicines_id=md.id 
     left join health_management_diagnosis dgs on pt.uuid=dgs.patient_uuid 
     left join application_masters_masterlookup ndc on dgs.ndc_id=ndc.id 
-    where 1=1 '''+phc_id+sbc_ids+village_id+between_date+pnt_name+pnt_code+''' 
+    where 1=1 '''+phc_id+sbc_ids+village_id+between_date+''' 
     order by pt.patient_id, trmt.visit_date desc'''
     cursor = connection.cursor()
     cursor.execute(sql)
