@@ -88,7 +88,7 @@ class UserProfileAdmin(ImportExportModelAdmin, ImportExportFormat):
     list_per_page = 15
 
     def villages(self, instance):
-        return [villages.name for villages in instance.village.all()]
+        return [villages.name for villages in instance.village.filter()]
 
     
 
@@ -167,6 +167,18 @@ class VillageProfileAdmin(ImportExportModelAdmin, ImportExportFormat):
     list_per_page = 15
 
     # resource_class = VillageProfileResource
+
+@admin.register(ClinicProfile)
+class ClinicProfileAdmin(ImportExportModelAdmin, ImportExportFormat):
+    list_display = ['code', 'htn', 'detected_by_htn', 'detected_since_htn', 'dm', 'detected_by_dm', 'detected_since_dm', 'tobacco',
+     'alcohol', 'smoking', 'date', 'weight', 'bmi', 'sbp', 'dbp', 'fbs',
+     'ppbs', 'rbs', 'symptoms', 'remarks', 'server_created_on', 
+     'server_modified_on', 'status']
+    fields = ['code', 'htn', 'detected_by_htn', 'detected_since_htn', 'dm', 'detected_by_dm', 'detected_since_dm', 'tobacco',
+     'alcohol', 'smoking', 'date', 'weight', 'bmi', 'sbp', 'dbp', 'fbs',
+     'ppbs', 'rbs', 'symptoms', 'remarks', 'status']
+    search_fields = ['code']
+    list_per_page = 15
 
 
 

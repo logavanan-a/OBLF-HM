@@ -86,6 +86,15 @@
                                 </div>
                             </div>   
                         </div>
+                        <div class="col-md-4">  
+                            <div class="mb-3">
+                                <label for="floatingnameInput">Patient (Name or Code):</label>
+                                <input type="text" id="patient_name" name="patient_name" class='form-control' value='{{patient_name}}' placeholder='Search Patient (Name or Code)...'>
+                                <div class="invalid-feedback">
+                                    Please provide a valid Patient (Name or Code).
+                                </div>
+                            </div>   
+                        </div>
                     </div>
                     <div class="row justify-content-end my-3">
                         <div class="col-auto">
@@ -98,7 +107,8 @@
                 </form>
                 <div class="d-flex">
                    
-                    <p><b>Note:[</b><b>Phc:</b>{{get_phc_name}},<b>Sub Center:</b>{{get_sbc_name}}, <b>Village:</b> {{get_village_name}},{% if get_medicine_name %}<b>Medicine:</b>{{get_medicine_name}},{% endif %}{% if get_health_worker_name %}<b>Health Worker:</b>{{get_health_worker_name.first_name}},{% endif %}<b>Start month & year:</b> {{s_date}}, <b>End month & year:</b> {{e_date}}<b>]</b></p>
+                    <p><b>Note:[</b><b>Phc :</b>{{get_phc_name}},<b>Sub Center :</b>{{get_sbc_name}}, <b>Village :</b> {{get_village_name}},{% if get_medicine_name %}<b>Medicine :</b>{{get_medicine_name}},{% endif %}{% if get_health_worker_name %}
+                        <b>Health Worker :</b>{{get_health_worker_name.first_name}},{% endif %}<b>Start month & year :</b> {{s_date}}, <b>End month & year :</b> {{e_date}}, {% if patient_name %}<b>Patient (Name or Code): </b>{{patient_name}}{% endif %}<b>]</b></p>
                 </div>
             </div>
         </div>

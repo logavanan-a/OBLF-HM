@@ -287,11 +287,49 @@ class VillageProfile(BaseContent):
     
 
 
+class ClinicProfile(BaseContent):
+    TYPE_CHOICES = ((1, 'No'), (2, 'Yes'))
+    code = models.CharField(max_length=150, null=True, blank=True, unique=True)
+    htn = models.IntegerField(null=True, blank=True)
+    detected_by_htn = models.IntegerField(null=True, blank=True)
+    detected_since_htn = models.CharField(max_length=150, null=True, blank=True)
+    dm = models.IntegerField(null=True, blank=True)
+    detected_by_dm = models.IntegerField(null=True, blank=True)
+    detected_since_dm = models.CharField(max_length=150, null=True, blank=True)
+    tobacco = models.IntegerField(null=True, blank=True)
+    alcohol = models.IntegerField(null=True, blank=True)
+    smoking = models.IntegerField(null=True, blank=True)
+    date = models.DateField(blank=True, null=True)
+    weight = models.CharField(max_length=150, null=True, blank=True)
+    bmi = models.CharField(max_length=150, null=True, blank=True)
+    sbp = models.CharField(max_length=150, null=True, blank=True)
+    dbp = models.CharField(max_length=150, null=True, blank=True)
+    fbs = models.CharField(max_length=150, null=True, blank=True)
+    ppbs = models.CharField(max_length=150, null=True, blank=True)
+    rbs = models.CharField(max_length=150, null=True, blank=True)
+    symptoms = models.CharField(max_length=150, null=True, blank=True)
+    remarks = models.CharField(max_length=150, null=True, blank=True)
+    
+    # name_of_the_asha = models.CharField(max_length=150, null=True, blank=True, unique=True)
+    # phone_no_of_asha = models.CharField(max_length=150, null=True, blank=True, unique=True)
+    # name_of_the_plhw = models.CharField(max_length=150, null=True, blank=True, unique=True)
+    # phone_no_of_plhw = models.CharField(max_length=150, null=True, blank=True, unique=True)
+    # name_of_the_anm = models.CharField(max_length=150, null=True, blank=True, unique=True)
+    # phone_no_of_anm = models.CharField(max_length=150, null=True, blank=True, unique=True)
+    # name_of_the_cho = models.CharField(max_length=150, null=True, blank=True, unique=True)
+    # phone_no_of_cho = models.CharField(max_length=150, null=True, blank=True, unique=True)
+    # name_of_the_mo = models.CharField(max_length=150, null=True, blank=True, unique=True)
+    # phone_no_of_mo = models.CharField(max_length=150, null=True, blank=True, unique=True)
+    # voter_id = models.IntegerField(choices=TYPE_CHOICES, default=0, null=True, blank=True)
+    # aadhar = models.IntegerField(choices=TYPE_CHOICES, default=0, null=True, blank=True)
+    # health_card = models.IntegerField(choices=TYPE_CHOICES, default=0, null=True, blank=True)
+    # health_card_no = models.CharField(max_length=150, null=True, blank=True, unique=True)
+    # ayush_man_bharath_cart = models.IntegerField(choices=TYPE_CHOICES, default=0, null=True, blank=True)
+    # ayush_man_bharath_cart_no = models.CharField(max_length=150, null=True, blank=True, unique=True)
+    # ration_cart = models.IntegerField(choices=TYPE_CHOICES, default=0, null=True, blank=True)
+    # ration_cart_type = models.IntegerField(choices=TYPE_CHOICES, default=0, null=True, blank=True)
+    # ration_cart_no = models.CharField(max_length=150, null=True, blank=True, unique=True)
 
-
-
-#     def __str__(self):
-#         return self.email
 
 
     
