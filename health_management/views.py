@@ -101,6 +101,7 @@ def patient_profile_list(request):
     heading="Patients Profile"
     filter_values = request.GET.dict()
     from dateutil.relativedelta import relativedelta
+    patient_value = True
     phc_obj = PHC.objects.filter(status=2).order_by('name')
     phc = request.GET.get('phc', '')
     sub_center = request.GET.get('sub_center', '')
