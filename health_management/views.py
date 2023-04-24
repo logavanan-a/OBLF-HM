@@ -30,7 +30,7 @@ import csv
 
 
 def pagination_function(request, data):
-    records_per_page = 2
+    records_per_page = 10
     paginator = Paginator(data, records_per_page)
     page = request.GET.get('page', 1)
     try: 
@@ -63,10 +63,7 @@ def logout_view(request):
     return HttpResponseRedirect('/login/')
 
 def patient_profile_detail(request, patient_id):
-    print(patient_id, 'patient_id')
     heading="Patients detail"
-    
-    
     sql='''select distinct on (pt.patient_id) pt.patient_id, phc.name as phc_name, 
     sbc.name as sbc_name, vlg.name as village_name, pt.name as patient_name, 
     pt.registered_date, date_part('year',age(pt.dob))::int as age, 
@@ -80,7 +77,7 @@ def patient_profile_detail(request, patient_id):
     case when trmt.bp_non_sys3!='' then trmt.bp_non_sys3 when trmt.bp_non_sys2!='' then trmt.bp_non_sys2 when trmt.bp_non_sys1!='' then trmt.bp_non_sys1 else '-' end as dbp, 
     trmt.fbs as fbs, trmt.pp as pp, trmt.random as random, trmt.symptoms, trmt.remarks, ndc.name as diagnosis, 
     case when dgs.source_treatment=1 then 'CLINIC' when dgs.source_treatment=2 then 'OUTSIDE' when dgs.source_treatment=3 then 'C&O' end as source_of_tretement, 
-    md.name, pt.id, pt.status
+    md.name, pt.id, pt.status, case when pt.status=2 then 'Active' when pt.status=1 then 'Inactive' end as status
     from health_management_patients pt inner join application_masters_village vlg on pt.village_id = vlg.id 
     inner join application_masters_subcenter sbc on vlg.subcenter_id = sbc.id 
     inner join application_masters_phc phc on sbc.phc_id = phc.id 
@@ -154,8 +151,8 @@ def patient_profile_list(request):
     case when trmt.bp_sys3!='' then trmt.bp_sys3 when trmt.bp_sys2!='' then trmt.bp_sys2 when trmt.bp_sys1!='' then trmt.bp_sys1 else '-' end as sbp, 
     case when trmt.bp_non_sys3!='' then trmt.bp_non_sys3 when trmt.bp_non_sys2!='' then trmt.bp_non_sys2 when trmt.bp_non_sys1!='' then trmt.bp_non_sys1 else '-' end as dbp, 
     trmt.fbs as fbs, trmt.pp as pp, trmt.random as random, trmt.symptoms, trmt.remarks, ndc.name as diagnosis, 
-    case when dgs.source_treatment=1 then 'CLINIC' when dgs.source_treatment=2 then 'OUTSIDE' when dgs.source_treatment=3 then 'C&O' end as source_of_tretement, 
-    md.name, pt.id 
+    case when dgs.source_treatment=1 then 'CLINIC' when dgs.source_treatment=2 then 'OUTSIDE' when dgs.source_treatment=3 then 'C&O' end as source_of_tretement,  
+    md.name, pt.id, case when pt.status=2 then 'Active' when pt.status=1 then 'Inactive' end as status
     from health_management_patients pt inner join application_masters_village vlg on pt.village_id = vlg.id 
     inner join application_masters_subcenter sbc on vlg.subcenter_id = sbc.id 
     inner join application_masters_phc phc on sbc.phc_id = phc.id 
