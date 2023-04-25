@@ -1587,7 +1587,7 @@ class LoginAPIView(APIView):
                 })
         else:
             return JsonResponse({
-                "message": "Please connect with administration",
+                "message": "User is inactive please contact admin to login",
                 "status": 0,
             })
 
