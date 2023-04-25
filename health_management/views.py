@@ -181,6 +181,7 @@ def patient_profile_list(request):
             'Registered Date',
             'Age(today)',
             'Gender',
+            'Status',
             'Visit Date',
             'Drinking',
             'Smoking',
@@ -208,6 +209,7 @@ def patient_profile_list(request):
                 patient[5],
                 patient[6],
                 patient[7],
+                patient[25],
                 patient[8],
                 patient[9],
                 patient[10],
@@ -1569,17 +1571,23 @@ class LoginAPIView(APIView):
             if findUser is not None:
                 username = findUser.user.get_username()
                 user = authenticate(request, username=username, password=password)
-        if user is not None:
-            userprofileserialize=UserProfileSerializers(findUser)
-            return JsonResponse({
-                "uId": user.id,
-                "message": "Logged in successfully",
-                "status": 2,
-                "userprofile":[userprofileserialize.data]
-            })
+        if findUser.status == 2:
+            if user is not None:
+                userprofileserialize=UserProfileSerializers(findUser)
+                return JsonResponse({
+                    "uId": user.id,
+                    "message": "Logged in successfully",
+                    "status": 2,
+                    "userprofile":[userprofileserialize.data]
+                })
+            else:
+                return JsonResponse({
+                    "message": "Invalid username or password",
+                    "status": 0,
+                })
         else:
             return JsonResponse({
-                "message": "Invalid username or password",
+                "message": "Please check the administration",
                 "status": 0,
             })
 
@@ -1651,7 +1659,7 @@ class Phc_pull(APIView):
             userprofileserializer=UserProfileSerializers(user_list, many=True)
 
             # patient data
-            patient_uuids=patient_smo_date.values_list('uuid',flat=True)
+            patient_uuids=patient_smo_date.filter(status=2).values_list('uuid',flat=True)
             if data.get('patient_smo_date'):
                 patient_smo_date= patient_smo_date.filter(server_modified_on__gt = data.get('patient_smo_date'))
             patientSerializers = PatientSerializers(patient_smo_date,many=True)
