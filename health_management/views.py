@@ -1587,7 +1587,7 @@ class LoginAPIView(APIView):
                 })
         else:
             return JsonResponse({
-                "message": "Please check the administration",
+                "message": "Please connect with administration",
                 "status": 0,
             })
 
