@@ -16,7 +16,7 @@ class Command(BaseCommand):
             if not patients:
                 vg=VillageProfile.objects.filter(patient_id=vd.patient_id)
                 vg.update(data_migration=3)
-                user_id=UserProfile.objects.filter(village=vd.village).first()
+                user_id=UserProfile.objects.get(village=vd.village, user_type=1, status=2)
                 patients_obj=Patients.objects.create(patient_id=vd.patient_id,
                 uuid=user_id.uuid,user_uuid=uuid_id,name=vd.name,dob=vd.dob,
                 age=vd.age,village=vd.village,phone_number=vd.phone_number,
