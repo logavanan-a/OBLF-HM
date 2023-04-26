@@ -26,4 +26,5 @@ class Command(BaseCommand):
             elif patients:
                 vg=VillageProfile.objects.filter(patient_id=vd.patient_id)
                 vg.update(data_migration=2)
+        print('Patient data created is done')
            
