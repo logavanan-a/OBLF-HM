@@ -18,7 +18,9 @@ class PatientsAdmin(ImportExportModelAdmin, ImportExportFormat):
     fields = ['name', 'village', 'uuid', 'patient_id', 'user_uuid', 'dob', 'age', 'gender', 'phone_number', 'image',
      'height', 'weight', 'door_no', 'seq_no', 'patient_visit_type', 'fee_status',
      'fee_paid', 'fee_date', 'registered_date', 'last_visit_date', 'status']
-    search_fields = ['name', 'village__name', 'uuid', 'patient_id', 'user_uuid']
+    search_fields = ['name', 'uuid', 'patient_id', 'user_uuid']
+    list_filter = ['village' ]
+
     list_per_page = 15
 
     def formfield_for_foreignkey(self, db_field, request, **kwargs):
@@ -163,7 +165,8 @@ class VillageProfileAdmin(ImportExportModelAdmin, ImportExportFormat):
      'phone_number', 'image', 'subcenter_id', 'server_created_on', 'server_modified_on', 'data_migration', 'status']
     fields = ['name', 'patient_id', 'village', 'dob', 'age', 'gender',
      'phone_number', 'image', 'subcenter_id', 'door_no', 'seq_no', 'data_migration', 'status']
-    search_fields = ['village__name']
+    search_fields = ['patient_id']
+    list_filter = ['village' ]
     list_per_page = 15
 
     # resource_class = VillageProfileResource

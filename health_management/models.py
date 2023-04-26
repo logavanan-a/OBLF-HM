@@ -27,7 +27,7 @@ class Patients(BaseContent):
     gender = models.IntegerField(choices=GENDER_CHOICE, blank=True, null=True)
     village = models.ForeignKey(
         Village, on_delete=models.DO_NOTHING, blank=True, null=True)
-    phone_number = models.CharField(max_length=10, validators=[
+    phone_number = models.CharField(max_length=150, validators=[
                                     phone_regex], unique=False, blank=True, null=True)
     image = models.FileField(
         upload_to='patients_image/%y/%m/%d/', blank=True, null=True)
@@ -285,10 +285,7 @@ class VillageProfile(BaseContent):
     seq_no = models.CharField(max_length=150, null=True, blank=True)
     data_migration = models.IntegerField(default=1, null=True, blank=True)
     
-
-
 class ClinicProfile(BaseContent):
-    TYPE_CHOICES = ((1, 'No'), (2, 'Yes'))
     code = models.CharField(max_length=150, null=True, blank=True, unique=True)
     htn = models.IntegerField(null=True, blank=True)
     detected_by_htn = models.IntegerField(null=True, blank=True)
@@ -309,27 +306,16 @@ class ClinicProfile(BaseContent):
     rbs = models.CharField(max_length=150, null=True, blank=True)
     symptoms = models.CharField(max_length=150, null=True, blank=True)
     remarks = models.CharField(max_length=150, null=True, blank=True)
-    
-    # name_of_the_asha = models.CharField(max_length=150, null=True, blank=True, unique=True)
-    # phone_no_of_asha = models.CharField(max_length=150, null=True, blank=True, unique=True)
-    # name_of_the_plhw = models.CharField(max_length=150, null=True, blank=True, unique=True)
-    # phone_no_of_plhw = models.CharField(max_length=150, null=True, blank=True, unique=True)
-    # name_of_the_anm = models.CharField(max_length=150, null=True, blank=True, unique=True)
-    # phone_no_of_anm = models.CharField(max_length=150, null=True, blank=True, unique=True)
-    # name_of_the_cho = models.CharField(max_length=150, null=True, blank=True, unique=True)
-    # phone_no_of_cho = models.CharField(max_length=150, null=True, blank=True, unique=True)
-    # name_of_the_mo = models.CharField(max_length=150, null=True, blank=True, unique=True)
-    # phone_no_of_mo = models.CharField(max_length=150, null=True, blank=True, unique=True)
-    # voter_id = models.IntegerField(choices=TYPE_CHOICES, default=0, null=True, blank=True)
-    # aadhar = models.IntegerField(choices=TYPE_CHOICES, default=0, null=True, blank=True)
-    # health_card = models.IntegerField(choices=TYPE_CHOICES, default=0, null=True, blank=True)
-    # health_card_no = models.CharField(max_length=150, null=True, blank=True, unique=True)
-    # ayush_man_bharath_cart = models.IntegerField(choices=TYPE_CHOICES, default=0, null=True, blank=True)
-    # ayush_man_bharath_cart_no = models.CharField(max_length=150, null=True, blank=True, unique=True)
-    # ration_cart = models.IntegerField(choices=TYPE_CHOICES, default=0, null=True, blank=True)
-    # ration_cart_type = models.IntegerField(choices=TYPE_CHOICES, default=0, null=True, blank=True)
-    # ration_cart_no = models.CharField(max_length=150, null=True, blank=True, unique=True)
+    source_treatment = models.IntegerField(null=True, blank=True)
 
+
+
+
+
+
+
+#     def __str__(self):
+#         return self.email
 
 
     
