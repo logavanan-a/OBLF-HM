@@ -1612,12 +1612,14 @@ class Phc_pull(APIView):
                 subcenter=Subcenter.objects.filter(status=2, id__in=subcenter_ids).order_by('id')
                 phc_ids=subcenter.values_list('phc__id')
                 phc=PHC.objects.filter(status=2, id__in=phc_ids).order_by('id')  
-                patient_smo_date = Patients.objects.filter(village__id__in=user_wise_village_ids, patient_visit_type__in=patient_visit_type).order_by('server_modified_on') 
+                # patient_smo_date = Patients.objects.filter(village__id__in=user_wise_village_ids, patient_visit_type__in=patient_visit_type).order_by('server_modified_on') 
+                patient_smo_date = Patients.objects.filter(village__id__in=user_wise_village_ids).order_by('server_modified_on') 
             else:
                 village=Village.objects.filter(status=2).order_by('id')
                 subcenter=Subcenter.objects.filter(status=2).order_by('id')   
                 phc=PHC.objects.filter(status=2).order_by('id')   
-                patient_smo_date = Patients.objects.filter(patient_visit_type__in=patient_visit_type).order_by('server_modified_on')
+                # patient_smo_date = Patients.objects.filter(patient_visit_type__in=patient_visit_type).order_by('server_modified_on')
+                patient_smo_date = Patients.objects.filter().order_by('server_modified_on')
 
             phcserializers=PHCSerializers(phc, many=True)
             villagesites_serializer=VillageSerializers(village, many=True)
@@ -1659,6 +1661,7 @@ class Phc_pull(APIView):
             userprofileserializer=UserProfileSerializers(user_list, many=True)
 
             # patient data
+            print(patient_smo_date.count(),'llccccoooouuuttt')
             patient_uuids=patient_smo_date.filter(status=2).values_list('uuid',flat=True)
             if data.get('patient_smo_date'):
                 patient_smo_date= patient_smo_date.filter(server_modified_on__gt = data.get('patient_smo_date'))
