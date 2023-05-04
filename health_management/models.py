@@ -286,17 +286,20 @@ class VillageProfile(BaseContent):
     data_migration = models.IntegerField(default=1, null=True, blank=True)
     
 class ClinicProfile(BaseContent):
-    code = models.CharField(max_length=150, null=True, blank=True, unique=True)
+    code = models.CharField(max_length=150, null=True, blank=True)
     htn = models.IntegerField(null=True, blank=True)
     detected_by_htn = models.IntegerField(null=True, blank=True)
     detected_since_htn = models.CharField(max_length=150, null=True, blank=True)
     dm = models.IntegerField(null=True, blank=True)
     detected_by_dm = models.IntegerField(null=True, blank=True)
     detected_since_dm = models.CharField(max_length=150, null=True, blank=True)
+    family_history = models.IntegerField(null=True, blank=True)
     tobacco = models.IntegerField(null=True, blank=True)
     alcohol = models.IntegerField(null=True, blank=True)
     smoking = models.IntegerField(null=True, blank=True)
-    date = models.DateField(blank=True, null=True)
+    visit_date = models.DateField(blank=True, null=True)
+    source_treatment = models.IntegerField(null=True, blank=True)
+    height = models.CharField(max_length=150, null=True, blank=True)
     weight = models.CharField(max_length=150, null=True, blank=True)
     bmi = models.CharField(max_length=150, null=True, blank=True)
     sbp = models.CharField(max_length=150, null=True, blank=True)
@@ -305,17 +308,11 @@ class ClinicProfile(BaseContent):
     ppbs = models.CharField(max_length=150, null=True, blank=True)
     rbs = models.CharField(max_length=150, null=True, blank=True)
     symptoms = models.CharField(max_length=150, null=True, blank=True)
-    remarks = models.CharField(max_length=150, null=True, blank=True)
-    source_treatment = models.IntegerField(null=True, blank=True)
+    remarks = models.CharField(max_length=500, null=True, blank=True)
 
 
-
-
-
-
-
-#     def __str__(self):
-#         return self.email
+    def __str__(self):
+        return self.code
 
 
     
