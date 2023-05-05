@@ -12,12 +12,13 @@ class Command(BaseCommand):
         print(patients.count(), 'patient_count')
         not_imported_data = ClinicProfile.objects.exclude(code__in=patients.values_list('patient_id', flat=True))
         print(not_imported_data.count(),'not')
+        
         for cd in clinic_data:
             curr_dt = datetime.datetime.now().strftime("%Y%m%d%H%M%S%f")
             uuid_id = str(curr_dt) + "-" + str(uuid.uuid4())
             print(uuid_id)
             try:
-                patients_ids=Patients.objects.get(patient_id=cd.code)
+                patients_ids=Patients.objects.get(status=2, patient_id=cd.code)
                 user_uuid = patients_ids.user_uuid
                 patient_uuid = patients_ids.uuid
                 treatment_details = Treatments.objects.filter(patient_uuid=patient_uuid, visit_date__date=cd.visit_date).exists()
@@ -30,7 +31,7 @@ class Command(BaseCommand):
                     hyper_diabetic=cd.family_history, is_tobacco=cd.tobacco, 
                     is_alcoholic=cd.alcohol, is_smoker=cd.smoking)
                     treatment_obj.save()
-                diagnosis_details_tn = Diagnosis.objects.filter(patient_uuid=patient_uuid, ndc_id=cd.htn).exists()
+                # diagnosis_details_tn = Diagnosis.objects.filter(patient_uuid=patient_uuid, ndc_id=cd.htn).exists()
                 # if not diagnosis_details_tn:
                 #     print('TN')
                 # diagnosis_details_dm = Diagnosis.objects.filter(patient_uuid=patient_uuid, ndc_id=cd.dm).exists()
