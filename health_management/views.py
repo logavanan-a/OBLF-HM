@@ -8,6 +8,7 @@ from django.http import HttpResponseRedirect, HttpResponse
 from application_masters.models import *
 from health_management.models import *
 from .serializer import *
+from django.conf import settings
 from .forms import *
 from django.http import JsonResponse
 from rest_framework.response import Response
@@ -21,6 +22,7 @@ from django.db.models import Q
 from django.utils import timezone
 from django.utils.timezone import localtime
 import csv
+batch_rec = settings.BATCH_RECORDS
 
 
 
@@ -1661,45 +1663,45 @@ class Phc_pull(APIView):
             userprofileserializer=UserProfileSerializers(user_list, many=True)
 
             # patient data
-            print(patient_smo_date.count(),'llccccoooouuuttt')
             patient_uuids=patient_smo_date.filter(status=2).values_list('uuid',flat=True)
             if data.get('patient_smo_date'):
-                patient_smo_date= patient_smo_date.filter(server_modified_on__gt = data.get('patient_smo_date'))
-            patientSerializers = PatientSerializers(patient_smo_date,many=True)
+                patient_smo_date= patient_smo_date.filter(server_modified_on__gt =datetime.strptime(data.get('patient_smo_date'), '%Y-%m-%dT%H:%M:%S.%f%z'))
+            patientSerializers = PatientSerializers(patient_smo_date[:batch_rec],many=True)
+            print(patient_smo_date.count(), '88888888888')
             
             # patient treatment 
             patient_treatment_smo_date = Treatments.objects.filter(status=2,patient_uuid__in=patient_uuids).order_by('server_modified_on')
             patient_treatment_uuids=patient_treatment_smo_date.values_list('uuid',flat=True)
             if data.get('treatment_smo_date'):
-                patient_treatment_smo_date= patient_treatment_smo_date.filter(server_modified_on__gt = data.get('treatment_smo_date'))
-            patient_treatmentSerializers = TreatmentSerializers(patient_treatment_smo_date,many=True)
+                patient_treatment_smo_date= patient_treatment_smo_date.filter(server_modified_on__gt = datetime.strptime(data.get('treatment_smo_date'), '%Y-%m-%dT%H:%M:%S.%f%z'))
+            patient_treatmentSerializers = TreatmentSerializers(patient_treatment_smo_date[:batch_rec],many=True)
 
             
             # medicine
             prescription_smo_date = Prescription.objects.filter(status=2, treatment_uuid__in=patient_treatment_uuids).order_by('server_modified_on')
             if data.get('prescription_smo_date'):
-                prescription_smo_date = prescription_smo_date.filter(server_modified_on__gt = data.get('prescription_smo_date'))
-            prescriptionserializers = PrescriptionSerializers(prescription_smo_date,many=True)
+                prescription_smo_date = prescription_smo_date.filter(server_modified_on__gt = datetime.strptime(data.get('prescription_smo_date'), '%Y-%m-%dT%H:%M:%S.%f%z'))
+            prescriptionserializers = PrescriptionSerializers(prescription_smo_date[:batch_rec],many=True)
 
             #diagnosis
             ndcs=MasterLookup.objects.filter(parent__id=4)
             diagnosis_smo_date = Diagnosis.objects.filter(status=2, patient_uuid__in=patient_uuids, ndc__in=ndcs).order_by('server_modified_on')
             if data.get('diagnosis_smo_date'):
-                diagnosis_smo_date = diagnosis_smo_date.filter(server_modified_on__gt = data.get('diagnosis_smo_date'))
-            diagnosisserializers = DiagnosisSerializers(diagnosis_smo_date,many=True)
+                diagnosis_smo_date = diagnosis_smo_date.filter(server_modified_on__gt = datetime.strptime(data.get('diagnosis_smo_date'), '%Y-%m-%dT%H:%M:%S.%f%z'))
+            diagnosisserializers = DiagnosisSerializers(diagnosis_smo_date[:batch_rec],many=True)
 
             # scanned report
             scanned_report_smo_date = Scanned_Report.objects.filter(status=2, patient_uuid__in=patient_uuids).order_by('server_modified_on')
             if data.get('scanned_report_smo_date'):
-                scanned_report_smo_date = scanned_report_smo_date.filter(server_modified_on__gt = data.get('scanned_report_smo_date'))
-            scanned_reportserializers = ScannedReportSerializers(scanned_report_smo_date,many=True)
+                scanned_report_smo_date = scanned_report_smo_date.filter(server_modified_on__gt = datetime.strptime(data.get('scanned_report_smo_date'), '%Y-%m-%dT%H:%M:%S.%f%z'))
+            scanned_reportserializers = ScannedReportSerializers(scanned_report_smo_date[:batch_rec],many=True)
 
             # home visit
             home_visit_smo_date = HomeVisit.objects.filter(status=2,patient_uuid__in=patient_uuids).order_by('server_modified_on')
             home_visit_uuids=home_visit_smo_date.values_list('uuid',flat=True)
             if data.get('home_visit_smo_date'):
-                home_visit_smo_date= home_visit_smo_date.filter(server_modified_on__gt = data.get('treatment_smo_date'))
-            home_visit_serializers = HomeVisitSerializers(home_visit_smo_date,many=True)
+                home_visit_smo_date= home_visit_smo_date.filter(server_modified_on__gt = datetime.strptime(data.get('home_visit_smo_date'), '%Y-%m-%dT%H:%M:%S.%f%z'))
+            home_visit_serializers = HomeVisitSerializers(home_visit_smo_date[:batch_rec],many=True)
 
             jsonresponse_full = {
                 "status":2,
