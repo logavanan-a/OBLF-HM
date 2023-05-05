@@ -10,8 +10,8 @@ class Command(BaseCommand):
     def handle(self, *args, **options):
         village_data = VillageProfile.objects.filter(status=2)
         curr_dt = datetime.datetime.now().strftime("%Y%m%d%H%M%S%f")
-        uuid_id = str(curr_dt) + "-" + str(uuid.uuid4())
         for vd in village_data:
+            uuid_id = str(curr_dt) + "-" + str(uuid.uuid4())
             patients=Patients.objects.filter(patient_id=vd.patient_id).exists()
             if not patients:
                 vg=VillageProfile.objects.filter(patient_id=vd.patient_id)
@@ -27,4 +27,3 @@ class Command(BaseCommand):
                 vg=VillageProfile.objects.filter(patient_id=vd.patient_id)
                 vg.update(data_migration=2)
         print('Patient data created is done')
-           

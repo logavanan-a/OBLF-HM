@@ -111,7 +111,7 @@ class Treatments(BaseContent):
     weight = models.CharField(max_length=150, null=True, blank=True)
     bmi = models.CharField(max_length=150, null=True, blank=True)
     symptoms = models.CharField(max_length=150, null=True, blank=True)
-    remarks = models.CharField(max_length=150, null=True, blank=True)
+    remarks = models.CharField(max_length=500, null=True, blank=True)
     hyper_diabetic = models.PositiveIntegerField(null=True, blank=True)
     co_morbid_ids = models.CharField(max_length=150, null=True, blank=True)
     co_morbid_names = models.CharField(max_length=150, null=True, blank=True)

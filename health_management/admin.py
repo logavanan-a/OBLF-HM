@@ -20,7 +20,7 @@ class PatientsAdmin(ImportExportModelAdmin, ImportExportFormat):
      'fee_paid', 'fee_date', 'registered_date', 'last_visit_date', 'status']
     search_fields = ['name', 'uuid', 'patient_id', 'user_uuid']
     list_filter = ['village' ]
-
+    date_hierarchy = 'server_created_on'
     list_per_page = 15
 
     def formfield_for_foreignkey(self, db_field, request, **kwargs):
