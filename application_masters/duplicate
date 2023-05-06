@@ -7,18 +7,15 @@ for duplicate in duplicates:
     print('Done')
 
 
-
-clk_data = ClinicProfile.objects.filter(code=cd.code).values('visit_date', 'code', 'height', 'weight').order_by('visit_date').first()
-                wt = (clk_data['weight']).split('.') 
-                try:
-                    wg = int(wt[0]) 
-                except ValueError: 
-                    wg = None
-                ht = (clk_data['height']).split('.') 
-                try:
-                    hg=int(ht[0])
-                except ValueError:
-                    hg=None
-                # print(type((hy[0])))
-                patients_ids=Patients.objects.filter(status=2, patient_id=clk_data['code']).update(registered_date=clk_data['visit_date'],
-                height=hg, weight=wg)
+from health_management.models import *
+clinic_data = ClinicProfile.objects.filter(status=2)
+for cd in clinic_data:
+    clk_data = ClinicProfile.objects.filter(code=cd.code).values('visit_date', 'code', 'height', 'weight').order_by('visit_date').first()
+    patients_ids=Patients.objects.filter(status=2, patient_id=clk_data['code']).update(registered_date=clk_data['visit_date'])
+    if clk_data['height'] != '':
+        patients_ids=Patients.objects.filter(status=2, patient_id=clk_data['code']).update(registered_date=clk_data['visit_date'],
+        height=Decimal(clk_data['height'].replace(',', '.')) or None)
+    if clk_data['weight'] != '':
+        print(Decimal(clk_data['weight'].replace(',', '.')))
+        patients_ids=Patients.objects.filter(status=2, patient_id=clk_data['code']).update(registered_date=clk_data['visit_date'],
+        weight=Decimal(clk_data['weight'].replace(',', '.')) or None)

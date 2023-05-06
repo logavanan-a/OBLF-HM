@@ -31,8 +31,8 @@ class Patients(BaseContent):
                                     phone_regex], unique=False, blank=True, null=True)
     image = models.FileField(
         upload_to='patients_image/%y/%m/%d/', blank=True, null=True)
-    height = models.PositiveIntegerField(blank=True, null=True)
-    weight = models.PositiveIntegerField(blank=True, null=True)
+    height = models.DecimalField(blank=True, null=True, max_digits=5, decimal_places=2)
+    weight = models.DecimalField(blank=True, null=True, max_digits=5, decimal_places=2)
     subcenter_id = models.PositiveIntegerField(blank=True, null=True)
     door_no = models.CharField(max_length=150, null=True, blank=True)
     seq_no = models.CharField(max_length=150, null=True, blank=True)
