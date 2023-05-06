@@ -1,0 +1,24 @@
+from health_management.models import *
+from django.db.models import Count
+duplicates = Patients.objects.values('patient_id').annotate(Count('id')).order_by().filter(id__count__gt=1)
+for duplicate in duplicates:
+    pt = Patients.objects.filter(patient_id=duplicate['patient_id']).values_list('id', flat=True).order_by('server_created_on').first()
+    gpt = Patients.objects.filter(id=pt).update(status=1)
+    print('Done')
+
+
+
+clk_data = ClinicProfile.objects.filter(code=cd.code).values('visit_date', 'code', 'height', 'weight').order_by('visit_date').first()
+                wt = (clk_data['weight']).split('.') 
+                try:
+                    wg = int(wt[0]) 
+                except ValueError: 
+                    wg = None
+                ht = (clk_data['height']).split('.') 
+                try:
+                    hg=int(ht[0])
+                except ValueError:
+                    hg=None
+                # print(type((hy[0])))
+                patients_ids=Patients.objects.filter(status=2, patient_id=clk_data['code']).update(registered_date=clk_data['visit_date'],
+                height=hg, weight=wg)

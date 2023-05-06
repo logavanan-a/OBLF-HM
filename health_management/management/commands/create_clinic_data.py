@@ -16,7 +16,7 @@ class Command(BaseCommand):
         for cd in clinic_data:
             curr_dt = datetime.datetime.now().strftime("%Y%m%d%H%M%S%f")
             uuid_id = str(curr_dt) + "-" + str(uuid.uuid4())
-            print(uuid_id)
+            # print(uuid_id)
             try:
                 patients_ids=Patients.objects.get(status=2, patient_id=cd.code)
                 user_uuid = patients_ids.user_uuid
@@ -31,14 +31,27 @@ class Command(BaseCommand):
                     hyper_diabetic=cd.family_history, is_tobacco=cd.tobacco, 
                     is_alcoholic=cd.alcohol, is_smoker=cd.smoking)
                     treatment_obj.save()
-                # diagnosis_details_tn = Diagnosis.objects.filter(patient_uuid=patient_uuid, ndc_id=cd.htn).exists()
-                # if not diagnosis_details_tn:
-                #     print('TN')
-                # diagnosis_details_dm = Diagnosis.objects.filter(patient_uuid=patient_uuid, ndc_id=cd.dm).exists()
-                # if not diagnosis_details_dm:
-                #     print('DM')
-
-
+                if cd.htn:
+                    # diagnosis_details_tn = Diagnosis.objects.filter(patient_uuid=patient_uuid, 
+                    # ndc_id=cd.htn, server_created_on__date='2023-05-06').exists()
+                    # if not diagnosis_details_tn:
+                    diagnosis_th_obj = Diagnosis.objects.create(uuid=uuid_id,
+                    user_uuid=user_uuid, patient_uuid=patient_uuid, ndc_id=cd.htn, 
+                    source_treatment=cd.source_treatment, detected_by=cd.detected_by_htn, 
+                    years=cd.detected_since_htn, server_created_on=cd.visit_date)
+                    diagnosis_th_obj.save()
+                    print('TN SERIES')
+                if cd.dm:
+                    # diagnosis_details_dm = Diagnosis.objects.filter(patient_uuid=patient_uuid,
+                    # ndc_id=cd.dm, server_created_on__date='2023-05-06').exists()
+                    # if not diagnosis_details_dm:
+                    diagnosis_dm_obj = Diagnosis.objects.create(uuid=uuid_id,
+                    user_uuid=user_uuid, patient_uuid=patient_uuid, ndc_id=cd.dm, 
+                    source_treatment=cd.source_treatment, detected_by=cd.detected_by_dm, 
+                    years=cd.detected_since_dm, server_created_on=cd.visit_date)
+                    diagnosis_dm_obj.save()
+                    print('DM SERIES')
+                    
             except Patients.DoesNotExist:
                 patients_ids = None
                 
