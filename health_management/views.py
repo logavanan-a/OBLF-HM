@@ -1623,41 +1623,63 @@ class Phc_pull(APIView):
                 patient_smo_date = Patients.objects.filter(patient_visit_type__in=patient_visit_type).order_by('server_modified_on')
                 # patient_smo_date = Patients.objects.filter().order_by('server_modified_on')
 
-            phcserializers=PHCSerializers(phc, many=True)
-            villagesites_serializer=VillageSerializers(village, many=True)
-            subcenterserializers=SubcenterSerializers(subcenter, many=True)
+            if data.get('phc_date'):
+                phc=phc.filter(server_modified_on__gt =datetime.strptime(data.get('phc_date'), '%Y-%m-%dT%H:%M:%S.%f%z'))   
+            phcserializers=PHCSerializers(phc[:batch_rec], many=True)
+            if data.get('vill_date'):
+                village=village.filter(server_modified_on__gt =datetime.strptime(data.get('vill_date'), '%Y-%m-%dT%H:%M:%S.%f%z'))   
+            villagesites_serializer=VillageSerializers(village[:batch_rec], many=True)
+            if data.get('sub_c_date'):
+                subcenter=subcenter.filter(server_modified_on__gt =datetime.strptime(data.get('sub_c_date'), '%Y-%m-%dT%H:%M:%S.%f%z'))   
+            subcenterserializers=SubcenterSerializers(subcenter[:batch_rec], many=True)
 
             #State
-            state=State.objects.filter(status=2).order_by('id')
-            stateserializer=StateSerializers(state, many=True)
+            state_date=State.objects.filter(status=2).order_by('id')
+            if data.get('state_date'):
+                state_date=state_date.filter(server_modified_on__gt =datetime.strptime(data.get('state_date'), '%Y-%m-%dT%H:%M:%S.%f%z'))
+            stateserializer=StateSerializers(state_date[:batch_rec], many=True)
 
             #district
-            district=District.objects.filter(status=2).order_by('id')   
-            districtserializers=DistrictSerializers(district, many=True)
+            dist_date=District.objects.filter(status=2).order_by('id')   
+            if data.get('dist_date'):
+                dist_date=dist_date.filter(server_modified_on__gt =datetime.strptime(data.get('dist_date'), '%Y-%m-%dT%H:%M:%S.%f%z'))
+            districtserializers=DistrictSerializers(dist_date[:batch_rec], many=True)
 
             #taluk
-            taluk=Taluk.objects.filter(status=2).order_by('id')   
-            talukserializers=TalukSerializers(taluk, many=True) 
+            tal_date=Taluk.objects.filter(status=2).order_by('id')
+            if data.get('tal_date'):
+                tal_date=tal_date.filter(server_modified_on__gt =datetime.strptime(data.get('tal_date'), '%Y-%m-%dT%H:%M:%S.%f%z'))
+            talukserializers=TalukSerializers(tal_date[:batch_rec], many=True) 
 
             #ndcs
-            ndcs=MasterLookup.objects.filter(parent__id=4)
-            ndcserializers=MasterLookupSerializers(ndcs,many=True)
+            ndcs_date=MasterLookup.objects.filter(parent__id=4)
+            if data.get('ndcs_date'):
+                ndcs_date=ndcs_date.filter(server_modified_on__gt =datetime.strptime(data.get('ndcs_date'), '%Y-%m-%dT%H:%M:%S.%f%z'))
+            ndcserializers=MasterLookupSerializers(ndcs_date[:batch_rec],many=True)
 
             #Medicines
-            medicines=Medicines.objects.filter(status=2)
-            medicineserializer=MedicineSerializers(medicines,many=True)
+            medi_date=Medicines.objects.filter(status=2)
+            if data.get('medi_date'):
+                medi_date=medi_date.filter(server_modified_on__gt =datetime.strptime(data.get('medi_date'), '%Y-%m-%dT%H:%M:%S.%f%z'))
+            medicineserializer=MedicineSerializers(medi_date[:batch_rec],many=True)
 
             #comorbids
-            comorbids = Comorbid.objects.filter(status=2)
-            comorbidserializers=ComorbidSerializers(comorbids,many=True)
+            com_b_date = Comorbid.objects.filter(status=2)
+            if data.get('com_b_date'):
+                com_b_date = com_b_date.filter(server_modified_on__gt =datetime.strptime(data.get('com_b_date'), '%Y-%m-%dT%H:%M:%S.%f%z'))
+            comorbidserializers=ComorbidSerializers(com_b_date[:batch_rec],many=True)
 
             #dosage
-            dosage=Dosage.objects.filter(status=2)
-            dosageserializer=DosageSerializers(dosage,many=True)
+            dose_date=Dosage.objects.filter(status=2)
+            if data.get('dose_date'):
+                dose_date=dose_date.filter(server_modified_on__gt =datetime.strptime(data.get('dose_date'), '%Y-%m-%dT%H:%M:%S.%f%z'))
+            dosageserializer=DosageSerializers(dose_date[:batch_rec],many=True)
 
             #category
-            category=Category.objects.filter(status=2)
-            categoryserializer=CategorySerializers(category,many=True)
+            cat_date=Category.objects.filter(status=2)
+            if data.get('cat_date'):
+                cat_date=cat_date.filter(server_modified_on__gt =datetime.strptime(data.get('cat_date'), '%Y-%m-%dT%H:%M:%S.%f%z'))
+            categoryserializer=CategorySerializers(cat_date[:batch_rec], many=True)
 
             #userdata
             userprofileserializer=UserProfileSerializers(user_list, many=True)
