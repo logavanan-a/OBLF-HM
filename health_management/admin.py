@@ -19,7 +19,7 @@ class PatientsAdmin(ImportExportModelAdmin, ImportExportFormat):
      'height', 'weight', 'door_no', 'seq_no', 'patient_visit_type', 'fee_status',
      'fee_paid', 'fee_date', 'registered_date', 'last_visit_date', 'status']
     search_fields = ['name', 'uuid', 'patient_id', 'user_uuid']
-    list_filter = ['village' ]
+    list_filter = ['village', 'status']
     date_hierarchy = 'server_created_on'
     list_per_page = 15
 

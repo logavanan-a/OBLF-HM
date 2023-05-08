@@ -16,5 +16,30 @@ for cd in clinic_data:
         height=clk_data['height'].replace('.', ''))
         ClinicProfile.objects.filter(status=2, code=clk_data['code']).update(
         height=clk_data['height'].replace(',', ''))
-    
 
+from health_management.models import *
+clinic_data = ClinicProfile.objects.filter(status=2)
+for cd in clinic_data:
+    clk_data = ClinicProfile.objects.filter(code=cd.code).values('visit_date', 'code', 'height', 'weight').order_by('visit_date').first()
+    if clk_data['height'] != '':
+        ClinicProfile.objects.filter(status=2, code=clk_data['code']).update(
+        height=clk_data['height'].replace(',', ''))
+
+from health_management.models import *
+clinic_data = ClinicProfile.objects.filter(status=2)
+for cd in clinic_data:
+    clk_data = ClinicProfile.objects.filter(code=cd.code).values('visit_date', 'code', 'height', 'weight').order_by('visit_date').first()
+    if clk_data['height'] != '':
+        Patients.objects.filter(status=2, patient_id=clk_data['code']).update(
+        height=int(clk_data['height']))
+
+patients_ids=Patients.objects.filter(status=2).values_list('uuid', flat=True)
+treatments_ids=Treatments.objects.exclude(status=2, patient_uuid__in=patients_ids)
+
+from health_management.models import *
+import pandas as pd
+pf = pd.read_excel(r'/home/sb-010/Downloads/mistake data.xlsx')
+for i in pf.iterrows():
+    pts = Patients.objects.filter(patient_id=i[1]['patient'], status=2).values_list('uuid', flat=True).first()
+    if pts:
+        Treatments.objects.filter(patient_uuid=i[1]['uuid']).update(patient_uuid=pts)
