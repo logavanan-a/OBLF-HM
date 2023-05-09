@@ -21,6 +21,7 @@ from django.db import connection
 from django.db.models import Q
 from django.utils import timezone
 from django.utils.timezone import localtime
+from collections import defaultdict
 import csv
 batch_rec = settings.BATCH_RECORDS
 
@@ -1626,9 +1627,11 @@ class Phc_pull(APIView):
             if data.get('phc_date'):
                 phc=phc.filter(server_modified_on__gt =datetime.strptime(data.get('phc_date'), '%Y-%m-%dT%H:%M:%S.%f%z'))   
             phcserializers=PHCSerializers(phc[:batch_rec], many=True)
+
             if data.get('vill_date'):
                 village=village.filter(server_modified_on__gt =datetime.strptime(data.get('vill_date'), '%Y-%m-%dT%H:%M:%S.%f%z'))   
             villagesites_serializer=VillageSerializers(village[:batch_rec], many=True)
+            
             if data.get('sub_c_date'):
                 subcenter=subcenter.filter(server_modified_on__gt =datetime.strptime(data.get('sub_c_date'), '%Y-%m-%dT%H:%M:%S.%f%z'))   
             subcenterserializers=SubcenterSerializers(subcenter[:batch_rec], many=True)
@@ -1681,9 +1684,6 @@ class Phc_pull(APIView):
                 cat_date=cat_date.filter(server_modified_on__gt =datetime.strptime(data.get('cat_date'), '%Y-%m-%dT%H:%M:%S.%f%z'))
             categoryserializer=CategorySerializers(cat_date[:batch_rec], many=True)
 
-            #userdata
-            userprofileserializer=UserProfileSerializers(user_list, many=True)
-
             # patient data
             patient_uuids=patient_smo_date.filter(status=2).values_list('uuid',flat=True)
             if data.get('patient_smo_date'):
@@ -1724,31 +1724,31 @@ class Phc_pull(APIView):
             if data.get('home_visit_smo_date'):
                 home_visit_smo_date= home_visit_smo_date.filter(server_modified_on__gt = datetime.strptime(data.get('home_visit_smo_date'), '%Y-%m-%dT%H:%M:%S.%f%z'))
             home_visit_serializers = HomeVisitSerializers(home_visit_smo_date[:batch_rec],many=True)
-
-            jsonresponse_full = {
-                "status":2,
-                "message":"Data Already Sent",
-            } 
-            jsonresponse_full['villages'] = villagesites_serializer.data
-            jsonresponse_full['state'] = stateserializer.data
-            jsonresponse_full['district'] = districtserializers.data
-            jsonresponse_full['taluk'] = talukserializers.data
-            jsonresponse_full['phc'] = phcserializers.data
-            jsonresponse_full['subcenter'] = subcenterserializers.data
-            jsonresponse_full['medicines'] = medicineserializer.data
-            jsonresponse_full['dosage'] = dosageserializer.data
-            jsonresponse_full['category'] = categoryserializer.data
-            jsonresponse_full['ndcs'] = ndcserializers.data
-            jsonresponse_full['comorbids'] = comorbidserializers.data
-            jsonresponse_full['user_data'] = userprofileserializer.data
-
-            jsonresponse_full['patients'] = patientSerializers.data
-            jsonresponse_full['treatment'] = patient_treatmentSerializers.data
-            jsonresponse_full['prescription'] = prescriptionserializers.data
-            jsonresponse_full['diagnosis'] = diagnosisserializers.data
-            jsonresponse_full['scanned_report'] = scanned_reportserializers.data
-            jsonresponse_full['home_visit'] = home_visit_serializers.data
-
+            jsonresponse_full = {}
+            jsonresponse_full['villages'] = villagesites_serializer.data #1
+            jsonresponse_full['state'] = stateserializer.data #2
+            jsonresponse_full['district'] = districtserializers.data #3
+            jsonresponse_full['taluk'] = talukserializers.data #4
+            jsonresponse_full['phc'] = phcserializers.data #5
+            jsonresponse_full['subcenter'] = subcenterserializers.data #6
+            jsonresponse_full['medicines'] = medicineserializer.data #7
+            jsonresponse_full['dosage'] = dosageserializer.data #8
+            jsonresponse_full['category'] = categoryserializer.data #9
+            jsonresponse_full['ndcs'] = ndcserializers.data #10
+            jsonresponse_full['comorbids'] = comorbidserializers.data #11
+            jsonresponse_full['patients'] = patientSerializers.data #13
+            jsonresponse_full['treatment'] = patient_treatmentSerializers.data #14
+            jsonresponse_full['prescription'] = prescriptionserializers.data #15
+            jsonresponse_full['diagnosis'] = diagnosisserializers.data #16
+            jsonresponse_full['scanned_report'] = scanned_reportserializers.data #17
+            jsonresponse_full['home_visit'] = home_visit_serializers.data #18
+            message = 'Data already sent'
+            for i in jsonresponse_full.values():
+                if (len(i) != 0):
+                    message = 'Data sent successfully'
+                    break
+            jsonresponse_full['message'] = message #18
+            jsonresponse_full['status'] = 2 #18
             return Response(jsonresponse_full)
         else:
             return Response({

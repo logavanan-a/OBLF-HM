@@ -39,14 +39,21 @@ treatments_ids=Treatments.objects.exclude(status=2, patient_uuid__in=patients_id
 from health_management.models import *
 import pandas as pd
 pf = pd.read_excel(r'/home/sb-010/Downloads/mistake data.xlsx')
-for i in pf.iterrows():
-    pts = Patients.objects.filter(patient_id=i[1]['patient'], status=2).values_list('uuid', flat=True).first()
+for p in pf.iterrows():
+    pts = Patients.objects.filter(patient_id=p[1]['patient'], status=2).values_list('uuid', flat=True).first()
     print(pts,'----')
     if pts:
-        Treatments.objects.filter(patient_uuid=i[1]['uuid']).update(patient_uuid=pts)
+        Treatments.objects.filter(patient_uuid=p[1]['uuid']).update(patient_uuid=pts)
+df = pd.read_excel(r'/home/sb-010/Downloads/Mistake Diagnosis.xlsx')
+for d in df.iterrows():
+    pts = Patients.objects.filter(patient_id=d[1]['patient'], status=2).values_list('uuid', flat=True).first()
+    if pts:
+        Diagnosis.objects.filter(patient_uuid=d[1]['uuid']).update(patient_uuid=pts)
+
 
 from health_management.models import *
 import pandas as pd
+
 pf = pd.read_excel(r'/home/sb-010/Downloads/mistake data.xlsx')
 for i in pf.iterrows():
     pts = Patients.objects.filter(patient_id=i[1]['patient'], status=2).values_list('uuid', flat=True).first()
