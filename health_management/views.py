@@ -1743,10 +1743,10 @@ class Phc_pull(APIView):
             jsonresponse_full['scanned_report'] = scanned_reportserializers.data #17
             jsonresponse_full['home_visit'] = home_visit_serializers.data #18
             message = 'Data already sent'
-            for i in jsonresponse_full.values():
-                if (len(i) != 0):
-                    message = 'Data sent successfully'
-                    break
+            # for i in jsonresponse_full.values():
+            if (len(patient_smo_date) != 0):
+                message = 'Data sent successfully'
+                # break
             jsonresponse_full['message'] = message #18
             jsonresponse_full['status'] = 2 #18
             return Response(jsonresponse_full)
