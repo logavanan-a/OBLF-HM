@@ -114,7 +114,7 @@ class Treatments(BaseContent):
     remarks = models.CharField(max_length=500, null=True, blank=True)
     hyper_diabetic = models.PositiveIntegerField(null=True, blank=True)
     co_morbid_ids = models.CharField(max_length=150, null=True, blank=True)
-    co_morbid_names = models.CharField(max_length=150, null=True, blank=True)
+    co_morbid_names = models.CharField(max_length=500, null=True, blank=True)
     is_alcoholic = models.IntegerField(null=True, blank=True)
     is_tobacco = models.IntegerField(null=True, blank=True)
     is_smoker = models.IntegerField(choices = SMOKER_CHOICES, null=True, blank=True)
