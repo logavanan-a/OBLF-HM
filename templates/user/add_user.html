@@ -5,7 +5,7 @@
     <div class="col-xl-12 mx-auto">
         <div class="card">
             <div class="card-body">
-                <form method='POST' class="needs-validation" oninput='password2.setCustomValidity(password2.value != password.value ? "Passwords do not match." : "")'>
+                <form method='POST' class="needs-validation" autocomplete="off" oninput='password2.setCustomValidity(password2.value != password.value ? "Passwords do not match." : "")'>
                     {% csrf_token %}
                     <div class='text-danger'>
                         {{error}}
