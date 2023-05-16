@@ -15,6 +15,8 @@ urlpatterns = [
     path('phc/push/<pk>/', Phc_push.as_view()),
 
     path('patient-profile/list/', patient_profile_list, name='patient_profile_list'),
+    path('treatment-details/list/', treatment_details_list, name='treatment_details_list'),
+    path('diagnosis-details/list/', diagnosis_details_list, name='diagnosis_details_list'),
     path('patient-detail/<patient_id>/', patient_profile_detail, name='patient_profile_detail'),
     path('patient/<id>/delete/', delete_patients_record, name='delete_patients_record'),
     #verfied report
