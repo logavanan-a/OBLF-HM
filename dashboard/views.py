@@ -197,7 +197,7 @@ def dashboard(request):
     inner join health_management_prescription psp on dgs.patient_uuid=psp.patient_uuid 
     inner join application_masters_medicines ms on psp.medicines_id=ms.id inner join health_management_patients pt on psp.patient_uuid=pt.uuid
     where 1=1 and dgs.status = 2 """+village_name+dgs_date_filter+""") 
-    select 'NUMBER OF NCD ON TREATMENT WITH OBLF', concat(ROUND(case when a.all_data!=0 then (a.not_outside_data::DECIMAL/a.all_data)*100 else a.not_outside_data end),'%')
+    select 'NUMBER OF NCD ON TREATMENT WITH OBLF', concat(ROUND(case when coalesce(sum(case when coalesce(sum(case when reg_date<=vst_base.vst_date then 1 else 0 end),0)!=0 (no_of_time_clinics_held::DECIMAL/coalesce(sum(case when reg_date<=vst_base.vst_date then 1 else 0 end),0))*100) else no_of_time_clinics_held end), '%')
     from a union all select 'PROPORTION OF NCD CASES ON FIRST GENERATION DRUGS', concat(ROUND(case when b.all_data!=0 then (b.generation_2::DECIMAL/b.all_data)*100 else b.generation_2 end),'%')
     from b union all select 'PROPORTION OF NCD CASES ON SECOND GENERATION DRUGS', concat(ROUND(case when b.all_data!=0 then (b.generation_1::DECIMAL/b.all_data)*100  else b.generation_1 end),'%') from b""" 
     count_data_for_top_indicator = set_table_chart_data(count_sql)
