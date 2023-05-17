@@ -67,32 +67,56 @@ def logout_view(request):
 
 def patient_profile_detail(request, patient_id):
     heading="Patients detail"
-    sql='''select distinct on (pt.patient_id) pt.patient_id, phc.name as phc_name, 
-    sbc.name as sbc_name, vlg.name as village_name, pt.name as patient_name, 
-    pt.registered_date, date_part('year',age(pt.dob))::int as age, 
-    case when pt.gender=1 then 'Male' when pt.gender=2 then 'Female' end as gender, trmt.visit_date, 
-    case when trmt.is_alcoholic=1 then 'YES' when trmt.is_alcoholic=0 then 'NO' end as drinking, 
-    case when trmt.is_smoker=1 then 'YES' when trmt.is_smoker=0 then 'NO' end as smoking, 
-    case when trmt.is_tobacco=1 then 'YES' when trmt.is_tobacco=0 then 'NO' end as tobacco, 
-    case when trmt.hyper_diabetic=1 then 'YES' when trmt.hyper_diabetic=0 then 'NO' end as diabetes, 
-    case when trmt.is_controlled=1 then 'YES' when trmt.is_controlled=0 then 'NO' end as controlled, 
+    # sql='''select distinct on (pt.patient_id) pt.patient_id, phc.name as phc_name, 
+    # sbc.name as sbc_name, vlg.name as village_name, pt.name as patient_name, 
+    # pt.registered_date, date_part('year',age(pt.dob))::int as age, 
+    # case when pt.gender=1 then 'Male' when pt.gender=2 then 'Female' end as gender, trmt.visit_date, 
+    # case when trmt.is_alcoholic=1 then 'YES' when trmt.is_alcoholic=0 then 'NO' end as drinking, 
+    # case when trmt.is_smoker=1 then 'YES' when trmt.is_smoker=0 then 'NO' end as smoking, 
+    # case when trmt.is_tobacco=1 then 'YES' when trmt.is_tobacco=0 then 'NO' end as tobacco, 
+    # case when trmt.hyper_diabetic=1 then 'YES' when trmt.hyper_diabetic=0 then 'NO' end as diabetes, 
+    # case when trmt.is_controlled=1 then 'YES' when trmt.is_controlled=0 then 'NO' end as controlled, 
+    # case when trmt.bp_sys3!='' then trmt.bp_sys3 when trmt.bp_sys2!='' then trmt.bp_sys2 when trmt.bp_sys1!='' then trmt.bp_sys1 else '-' end as sbp, 
+    # case when trmt.bp_non_sys3!='' then trmt.bp_non_sys3 when trmt.bp_non_sys2!='' then trmt.bp_non_sys2 when trmt.bp_non_sys1!='' then trmt.bp_non_sys1 else '-' end as dbp, 
+    # trmt.fbs as fbs, trmt.pp as pp, trmt.random as random, trmt.symptoms, trmt.remarks, ndc.name as diagnosis, 
+    # case when dgs.source_treatment=1 then 'CLINIC' when dgs.source_treatment=2 then 'OUTSIDE' when dgs.source_treatment=3 then 'C&O' end as source_of_tretement, 
+    # md.name, pt.id, pt.status, case when pt.status=2 then 'Active' when pt.status=1 then 'Inactive' end as status
+    # from health_management_patients pt inner join application_masters_village vlg on pt.village_id = vlg.id 
+    # inner join application_masters_subcenter sbc on vlg.subcenter_id = sbc.id 
+    # inner join application_masters_phc phc on sbc.phc_id = phc.id 
+    # left join health_management_treatments trmt on pt.uuid=trmt.patient_uuid 
+    # left join health_management_prescription pst on trmt.patient_uuid=pst.patient_uuid 
+    # left join application_masters_medicines md on pst.medicines_id=md.id 
+    # left join health_management_diagnosis dgs on pt.uuid=dgs.patient_uuid 
+    # left join application_masters_masterlookup ndc on dgs.ndc_id=ndc.id 
+    # where 1=1 and pt.id='''+patient_id+'''
+    # order by pt.patient_id, trmt.visit_date desc'''
+    sql2 = '''with a as (select distinct on (dgs.patient_uuid) dgs.patient_uuid as p_uuid, dgs.server_created_on, string_agg(ndc.name,', ') as ds, 
+    string_agg(case when dgs.source_treatment=1 then 'CLINIC' when dgs.source_treatment=2 then 'OUTSIDE' when dgs.source_treatment=3 then 'C&O' end,', ') as stm 
+    from health_management_diagnosis dgs left join application_masters_masterlookup ndc on dgs.ndc_id=ndc.id 
+    group by dgs.patient_uuid, dgs.server_created_on order by dgs.patient_uuid, 
+    dgs.server_created_on desc), b as (select distinct on (pst.treatment_uuid) pst.treatment_uuid as ptn, pst.server_created_on, string_agg(md.name,' ,') as md_name 
+    from health_management_prescription pst left join application_masters_medicines md on pst.medicines_id=md.id where 1=1 group by pst.treatment_uuid, 
+    pst.server_created_on order by pst.treatment_uuid, pst.server_created_on desc) 
+    select distinct on (pt.patient_id) pt.patient_id, phc.name as phc_name, sbc.name as sbc_name, 
+    vlg.name as village_name, pt.name as patient_name, pt.registered_date, date_part('year',age(pt.dob))::int as age, 
+    case when pt.gender=1 then 'Male' when pt.gender=2 then 'Female' end as gender, trmt.visit_date, case when trmt.is_alcoholic=1 then 'YES' when trmt.is_alcoholic=0 then 'NO' end as drinking, 
+    case when trmt.is_smoker=1 then 'YES' when trmt.is_smoker=0 then 'NO' end as smoking, case when trmt.is_tobacco=1 then 'YES' when trmt.is_tobacco=0 then 'NO' end as tobacco, 
+    case when trmt.hyper_diabetic=1 then 'YES' when trmt.hyper_diabetic=0 then 'NO' end as diabetes, case when trmt.is_controlled=1 then 'YES' when trmt.is_controlled=0 then 'NO' end as controlled, 
     case when trmt.bp_sys3!='' then trmt.bp_sys3 when trmt.bp_sys2!='' then trmt.bp_sys2 when trmt.bp_sys1!='' then trmt.bp_sys1 else '-' end as sbp, 
     case when trmt.bp_non_sys3!='' then trmt.bp_non_sys3 when trmt.bp_non_sys2!='' then trmt.bp_non_sys2 when trmt.bp_non_sys1!='' then trmt.bp_non_sys1 else '-' end as dbp, 
-    trmt.fbs as fbs, trmt.pp as pp, trmt.random as random, trmt.symptoms, trmt.remarks, ndc.name as diagnosis, 
-    case when dgs.source_treatment=1 then 'CLINIC' when dgs.source_treatment=2 then 'OUTSIDE' when dgs.source_treatment=3 then 'C&O' end as source_of_tretement, 
-    md.name, pt.id, pt.status, case when pt.status=2 then 'Active' when pt.status=1 then 'Inactive' end as status
-    from health_management_patients pt inner join application_masters_village vlg on pt.village_id = vlg.id 
-    inner join application_masters_subcenter sbc on vlg.subcenter_id = sbc.id 
-    inner join application_masters_phc phc on sbc.phc_id = phc.id 
+    trmt.fbs as fbs, trmt.pp as pp, trmt.random as random, trmt.symptoms, trmt.remarks, a.ds, a.stm, b.md_name, pt.id, 
+    pt.status, case when pt.status=2 then 'Active' when pt.status=1 then 'Inactive' end as status 
+    from health_management_patients pt 
+    left join application_masters_village vlg on pt.village_id = vlg.id 
+    left join application_masters_subcenter sbc on vlg.subcenter_id = sbc.id 
+    left join application_masters_phc phc on sbc.phc_id = phc.id 
     left join health_management_treatments trmt on pt.uuid=trmt.patient_uuid 
-    left join health_management_prescription pst on trmt.patient_uuid=pst.patient_uuid 
-    left join application_masters_medicines md on pst.medicines_id=md.id 
-    left join health_management_diagnosis dgs on pt.uuid=dgs.patient_uuid 
-    left join application_masters_masterlookup ndc on dgs.ndc_id=ndc.id 
+    left join a on pt.uuid=a.p_uuid left join b on trmt.uuid=b.ptn 
     where 1=1 and pt.id='''+patient_id+'''
     order by pt.patient_id, trmt.visit_date desc'''
     cursor = connection.cursor()
-    cursor.execute(sql)
+    cursor.execute(sql2)
     patient_data = cursor.fetchall()
     
     return render(request, 'patient_profile/patient_detials.html', locals())
@@ -142,32 +166,57 @@ def patient_profile_list(request):
         pnt_name = '''and pt.name ilike '''+format_name
         pnt_code = '''or pt.patient_id ilike '''+format_name
     
-    sql='''select distinct on (pt.patient_id) pt.patient_id, phc.name as phc_name, 
-    sbc.name as sbc_name, vlg.name as village_name, pt.name as patient_name, 
-    pt.registered_date, date_part('year',age(pt.dob))::int as age, 
-    case when pt.gender=1 then 'Male' when pt.gender=2 then 'Female' end as gender, trmt.visit_date, 
-    case when trmt.is_alcoholic=1 then 'YES' when trmt.is_alcoholic=0 then 'NO' end as drinking, 
-    case when trmt.is_smoker=1 then 'YES' when trmt.is_smoker=0 then 'NO' end as smoking, 
-    case when trmt.is_tobacco=1 then 'YES' when trmt.is_tobacco=0 then 'NO' end as tobacco, 
-    case when trmt.hyper_diabetic=1 then 'YES' when trmt.hyper_diabetic=0 then 'NO' end as diabetes, 
-    case when trmt.is_controlled=1 then 'YES' when trmt.is_controlled=0 then 'NO' end as controlled, 
+    # sql='''select distinct on (pt.patient_id) pt.patient_id, phc.name as phc_name, 
+    # sbc.name as sbc_name, vlg.name as village_name, pt.name as patient_name, 
+    # pt.registered_date, date_part('year',age(pt.dob))::int as age, 
+    # case when pt.gender=1 then 'Male' when pt.gender=2 then 'Female' end as gender, trmt.visit_date, 
+    # case when trmt.is_alcoholic=1 then 'YES' when trmt.is_alcoholic=0 then 'NO' end as drinking, 
+    # case when trmt.is_smoker=1 then 'YES' when trmt.is_smoker=0 then 'NO' end as smoking, 
+    # case when trmt.is_tobacco=1 then 'YES' when trmt.is_tobacco=0 then 'NO' end as tobacco, 
+    # case when trmt.hyper_diabetic=1 then 'YES' when trmt.hyper_diabetic=0 then 'NO' end as diabetes, 
+    # case when trmt.is_controlled=1 then 'YES' when trmt.is_controlled=0 then 'NO' end as controlled, 
+    # case when trmt.bp_sys3!='' then trmt.bp_sys3 when trmt.bp_sys2!='' then trmt.bp_sys2 when trmt.bp_sys1!='' then trmt.bp_sys1 else '-' end as sbp, 
+    # case when trmt.bp_non_sys3!='' then trmt.bp_non_sys3 when trmt.bp_non_sys2!='' then trmt.bp_non_sys2 when trmt.bp_non_sys1!='' then trmt.bp_non_sys1 else '-' end as dbp, 
+    # trmt.fbs as fbs, trmt.pp as pp, trmt.random as random, trmt.symptoms, trmt.remarks, ndc.name as diagnosis, 
+    # case when dgs.source_treatment=1 then 'CLINIC' when dgs.source_treatment=2 then 'OUTSIDE' when dgs.source_treatment=3 then 'C&O' end as source_of_tretement,  
+    # md.name, pt.id, case when pt.status=2 then 'Active' when pt.status=1 then 'Inactive' end as status
+    # from health_management_patients pt inner join application_masters_village vlg on pt.village_id = vlg.id 
+    # inner join application_masters_subcenter sbc on vlg.subcenter_id = sbc.id 
+    # inner join application_masters_phc phc on sbc.phc_id = phc.id 
+    # left join health_management_treatments trmt on pt.uuid=trmt.patient_uuid 
+    # left join health_management_prescription pst on trmt.patient_uuid=pst.patient_uuid 
+    # left join application_masters_medicines md on pst.medicines_id=md.id 
+    # left join health_management_diagnosis dgs on pt.uuid=dgs.patient_uuid 
+    # left join application_masters_masterlookup ndc on dgs.ndc_id=ndc.id 
+    # where 1=1 '''+phc_id+sbc_ids+village_id+between_date+pnt_name+pnt_code+''' 
+    # order by pt.patient_id, trmt.visit_date desc'''
+
+    sql2 = '''with a as (select distinct on (dgs.patient_uuid) dgs.patient_uuid as p_uuid, dgs.server_created_on, string_agg(ndc.name,', ') as ds, 
+    string_agg(case when dgs.source_treatment=1 then 'CLINIC' when dgs.source_treatment=2 then 'OUTSIDE' when dgs.source_treatment=3 then 'C&O' end,', ') as stm 
+    from health_management_diagnosis dgs left join application_masters_masterlookup ndc on dgs.ndc_id=ndc.id 
+    group by dgs.patient_uuid, dgs.server_created_on order by dgs.patient_uuid, 
+    dgs.server_created_on desc), b as (select distinct on (pst.treatment_uuid) pst.treatment_uuid as ptn, pst.server_created_on, string_agg(md.name,' ,') as md_name 
+    from health_management_prescription pst left join application_masters_medicines md on pst.medicines_id=md.id where 1=1 group by pst.treatment_uuid, 
+    pst.server_created_on order by pst.treatment_uuid, pst.server_created_on desc) 
+    select distinct on (pt.patient_id) pt.patient_id, phc.name as phc_name, sbc.name as sbc_name, 
+    vlg.name as village_name, pt.name as patient_name, pt.registered_date, date_part('year',age(pt.dob))::int as age, 
+    case when pt.gender=1 then 'Male' when pt.gender=2 then 'Female' end as gender, trmt.visit_date, case when trmt.is_alcoholic=1 then 'YES' when trmt.is_alcoholic=0 then 'NO' end as drinking, 
+    case when trmt.is_smoker=1 then 'YES' when trmt.is_smoker=0 then 'NO' end as smoking, case when trmt.is_tobacco=1 then 'YES' when trmt.is_tobacco=0 then 'NO' end as tobacco, 
+    case when trmt.hyper_diabetic=1 then 'YES' when trmt.hyper_diabetic=0 then 'NO' end as diabetes, case when trmt.is_controlled=1 then 'YES' when trmt.is_controlled=0 then 'NO' end as controlled, 
     case when trmt.bp_sys3!='' then trmt.bp_sys3 when trmt.bp_sys2!='' then trmt.bp_sys2 when trmt.bp_sys1!='' then trmt.bp_sys1 else '-' end as sbp, 
     case when trmt.bp_non_sys3!='' then trmt.bp_non_sys3 when trmt.bp_non_sys2!='' then trmt.bp_non_sys2 when trmt.bp_non_sys1!='' then trmt.bp_non_sys1 else '-' end as dbp, 
-    trmt.fbs as fbs, trmt.pp as pp, trmt.random as random, trmt.symptoms, trmt.remarks, ndc.name as diagnosis, 
-    case when dgs.source_treatment=1 then 'CLINIC' when dgs.source_treatment=2 then 'OUTSIDE' when dgs.source_treatment=3 then 'C&O' end as source_of_tretement,  
-    md.name, pt.id, case when pt.status=2 then 'Active' when pt.status=1 then 'Inactive' end as status
-    from health_management_patients pt inner join application_masters_village vlg on pt.village_id = vlg.id 
-    inner join application_masters_subcenter sbc on vlg.subcenter_id = sbc.id 
-    inner join application_masters_phc phc on sbc.phc_id = phc.id 
+    trmt.fbs as fbs, trmt.pp as pp, trmt.random as random, trmt.symptoms, trmt.remarks, a.ds, a.stm, b.md_name, pt.id, 
+    case when pt.status=2 then 'Active' when pt.status=1 then 'Inactive' end as status 
+    from health_management_patients pt 
+    left join application_masters_village vlg on pt.village_id = vlg.id 
+    left join application_masters_subcenter sbc on vlg.subcenter_id = sbc.id 
+    left join application_masters_phc phc on sbc.phc_id = phc.id 
     left join health_management_treatments trmt on pt.uuid=trmt.patient_uuid 
-    left join health_management_prescription pst on trmt.patient_uuid=pst.patient_uuid 
-    left join application_masters_medicines md on pst.medicines_id=md.id 
-    left join health_management_diagnosis dgs on pt.uuid=dgs.patient_uuid 
-    left join application_masters_masterlookup ndc on dgs.ndc_id=ndc.id 
-    where 1=1 '''+phc_id+sbc_ids+village_id+between_date+pnt_name+pnt_code+''' 
+    left join a on pt.uuid=a.p_uuid left join b on trmt.uuid=b.ptn 
+    where 1=1 '''+phc_id+sbc_ids+village_id+between_date+pnt_name+pnt_code+'''
     order by pt.patient_id, trmt.visit_date desc'''
     cursor = connection.cursor()
-    cursor.execute(sql)
+    cursor.execute(sql2)
     patient_data = cursor.fetchall()
     export_flag = True if request.POST.get('export') and request.POST.get( 'export').lower() == 'true' else False
     if export_flag:
@@ -986,10 +1035,14 @@ def patient_registration_report(request):
     heading="Patients Report"
     filter_values = request.GET.dict()
     from dateutil.relativedelta import relativedelta
+    patient_value = True
     phc_obj = PHC.objects.filter(status=2).order_by('name')
     phc = request.GET.get('phc', '')
     sub_center = request.GET.get('sub_center', '')
     village = request.GET.get('village', '')
+
+    patient_name = request.GET.get('patient_name', '')
+
     phc_ids = int(phc) if phc != '' else ''
     sub_center_ids = int(sub_center) if sub_center != '' else ''
     village_ids = int(village) if village != '' else ''
@@ -1018,7 +1071,13 @@ def patient_registration_report(request):
     if village_ids:
         get_village_name = Village.objects.get(id=village_ids)
         village_id = '''and vlg.id='''+village
-    
+    pnt_name=""
+    pnt_code=""
+    if patient_name:
+        format_name = "'%"+patient_name+"%'"
+        pnt_name = '''and pt.name ilike '''+format_name
+        pnt_code = '''or pt.patient_id ilike '''+format_name
+
     sql='''select distinct on (pt.patient_id) pt.patient_id, phc.name as phc_name, 
     sbc.name as sbc_name, vlg.name as village_name, pt.name as patient_name, 
     pt.registered_date, date_part('year',age(pt.dob))::int as age, 
@@ -1044,33 +1103,33 @@ def patient_registration_report(request):
     order by pt.patient_id, trmt.visit_date desc'''
     cursor = connection.cursor()
     
-    # cursor.execute('''select phc.name as phc_name, sbc.name as sbc_name, vlg.name as village_name, 
-    # pt.name as patient_name, pt.patient_id as patient_code, pt.registered_date, date_part('year',age(pt.dob))::int as age, 
-    # case when pt.gender=1 then 'Male' when pt.gender=2 then 'Female' end as gender, trmt.visit_date,
-    # case when trmt.is_alcoholic=1 then 'YES' when trmt.is_alcoholic=0 then 'NO' end as drinking,
-    # case when trmt.is_smoker=1 then 'YES' when trmt.is_smoker=0 then 'NO' end as smoking,
-    # case when trmt.is_tobacco=1 then 'YES' when trmt.is_tobacco=0 then 'NO' end as tobacco,
-    # case when trmt.hyper_diabetic=1 then 'YES' when trmt.hyper_diabetic=0 then 'NO' end as diabetes,
-    # case when trmt.is_controlled=1 then 'YES' when trmt.is_controlled=0 then 'NO' end as controlled,
-    # case when trmt.bp_sys3!='' then trmt.bp_sys3 when trmt.bp_sys2!='' then trmt.bp_sys2 when trmt.bp_sys1!='' then trmt.bp_sys1 else '-' end as sbp,
-    # case when trmt.bp_non_sys3!='' then trmt.bp_non_sys3 when trmt.bp_non_sys2!='' then trmt.bp_non_sys2 when trmt.bp_non_sys1!='' then trmt.bp_non_sys1 else '-' end as dbp,
-    # trmt.fbs as fbs, trmt.pp as pp, trmt.random as random, trmt.symptoms, trmt.remarks, ndc.name as diagnosis,
-    # case when dgs.source_treatment=1 then 'CLINIC' when dgs.source_treatment=2 then 'OUTSIDE' when dgs.source_treatment=3 then 'C&O' end as source_of_tretement,string_agg(md.name, ', ')
-    # from health_management_patients pt 
-    # inner join application_masters_village vlg on pt.village_id = vlg.id 
-    # inner join application_masters_subcenter sbc on vlg.subcenter_id = sbc.id 
-    # inner join application_masters_phc phc on sbc.phc_id = phc.id
-    # left join health_management_treatments trmt on pt.uuid=trmt.patient_uuid
-    # left join health_management_prescription pst on trmt.patient_uuid=pst.patient_uuid
-    # left join application_masters_medicines md on pst.medicines_id=md.id
-    # left join health_management_diagnosis dgs on pt.uuid=dgs.patient_uuid
-    # left join application_masters_masterlookup ndc on dgs.ndc_id=ndc.id
-    # where 1=1 '''+phc_id+sbc_ids+village_id+between_date+''' 
-    # group by phc.name, sbc.name, vlg.name, pt.name, pt.patient_id, pt.registered_date, pt.dob, age, 
-    # trmt.visit_date, source_of_tretement, ndc.name, gender, sbp, dbp, drinking, smoking, tobacco, diabetes, controlled,
-    # trmt.symptoms, trmt.remarks, trmt.fbs, trmt.pp, trmt.random order by pt.name''')
-    cursor.execute(sql)
+    sql2 = '''with a as (select distinct on (dgs.patient_uuid) dgs.patient_uuid as p_uuid, dgs.server_created_on, string_agg(ndc.name,', ') as ds, 
+    string_agg(case when dgs.source_treatment=1 then 'CLINIC' when dgs.source_treatment=2 then 'OUTSIDE' when dgs.source_treatment=3 then 'C&O' end,', ') as stm 
+    from health_management_diagnosis dgs left join application_masters_masterlookup ndc on dgs.ndc_id=ndc.id 
+    group by dgs.patient_uuid, dgs.server_created_on order by dgs.patient_uuid, 
+    dgs.server_created_on desc), b as (select distinct on (pst.treatment_uuid) pst.treatment_uuid as ptn, pst.server_created_on, string_agg(md.name,' ,') as md_name 
+    from health_management_prescription pst left join application_masters_medicines md on pst.medicines_id=md.id where 1=1 group by pst.treatment_uuid, 
+    pst.server_created_on order by pst.treatment_uuid, pst.server_created_on desc) 
+    select distinct on (pt.patient_id) pt.patient_id, phc.name as phc_name, sbc.name as sbc_name, 
+    vlg.name as village_name, pt.name as patient_name, pt.registered_date, date_part('year',age(pt.dob))::int as age, 
+    case when pt.gender=1 then 'Male' when pt.gender=2 then 'Female' end as gender, trmt.visit_date, case when trmt.is_alcoholic=1 then 'YES' when trmt.is_alcoholic=0 then 'NO' end as drinking, 
+    case when trmt.is_smoker=1 then 'YES' when trmt.is_smoker=0 then 'NO' end as smoking, case when trmt.is_tobacco=1 then 'YES' when trmt.is_tobacco=0 then 'NO' end as tobacco, 
+    case when trmt.hyper_diabetic=1 then 'YES' when trmt.hyper_diabetic=0 then 'NO' end as diabetes, case when trmt.is_controlled=1 then 'YES' when trmt.is_controlled=0 then 'NO' end as controlled, 
+    case when trmt.bp_sys3!='' then trmt.bp_sys3 when trmt.bp_sys2!='' then trmt.bp_sys2 when trmt.bp_sys1!='' then trmt.bp_sys1 else '-' end as sbp, 
+    case when trmt.bp_non_sys3!='' then trmt.bp_non_sys3 when trmt.bp_non_sys2!='' then trmt.bp_non_sys2 when trmt.bp_non_sys1!='' then trmt.bp_non_sys1 else '-' end as dbp, 
+    trmt.fbs as fbs, trmt.pp as pp, trmt.random as random, trmt.symptoms, trmt.remarks, a.ds, a.stm, b.md_name, pt.id, 
+    case when pt.status=2 then 'Active' when pt.status=1 then 'Inactive' end as status 
+    from health_management_patients pt 
+    left join application_masters_village vlg on pt.village_id = vlg.id 
+    left join application_masters_subcenter sbc on vlg.subcenter_id = sbc.id 
+    left join application_masters_phc phc on sbc.phc_id = phc.id 
+    left join health_management_treatments trmt on pt.uuid=trmt.patient_uuid 
+    left join a on pt.uuid=a.p_uuid left join b on trmt.uuid=b.ptn 
+    where 1=1 '''+phc_id+sbc_ids+village_id+between_date+pnt_name+pnt_code+'''
+    order by pt.patient_id, trmt.visit_date desc'''
+    cursor.execute(sql2)
     patient_data = cursor.fetchall()
+
     export_flag = True if request.POST.get('export') and request.POST.get( 'export').lower() == 'true' else False
     if export_flag:
         response = HttpResponse(content_type='text/csv',)
@@ -1147,6 +1206,7 @@ def patient_adherence_list(request):
     phc = request.GET.get('phc', '')
     sub_center = request.GET.get('sub_center', '')
     village = request.GET.get('village', '')
+    patient_name = request.GET.get('patient_name', '')
     phc_ids = int(phc) if phc != '' else ''
     sub_center_ids = int(sub_center) if sub_center != '' else ''
     village_ids = int(village) if village != '' else ''
