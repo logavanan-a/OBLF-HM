@@ -91,16 +91,16 @@ def patient_profile_detail(request, patient_id):
     # left join application_masters_masterlookup ndc on dgs.ndc_id=ndc.id 
     # where 1=1 and pt.id='''+patient_id+'''
     # order by pt.patient_id, trmt.visit_date desc'''
-    sql2 = '''with a as (select distinct on (dgs.patient_uuid) dgs.patient_uuid as p_uuid, dgs.server_created_on, string_agg(ndc.name,', ') as ds, 
+    sql2 = '''with a as (select distinct on (dgs.patient_uuid) dgs.patient_uuid as p_uuid, (dgs.server_created_on at time zone 'Asia/Kolkata')::date, string_agg(ndc.name,', ') as ds, 
     string_agg(case when dgs.source_treatment=1 then 'CLINIC' when dgs.source_treatment=2 then 'OUTSIDE' when dgs.source_treatment=3 then 'C&O' end,', ') as stm 
     from health_management_diagnosis dgs left join application_masters_masterlookup ndc on dgs.ndc_id=ndc.id 
-    group by dgs.patient_uuid, dgs.server_created_on order by dgs.patient_uuid, 
-    dgs.server_created_on desc), b as (select distinct on (pst.treatment_uuid) pst.treatment_uuid as ptn, pst.server_created_on, string_agg(md.name,' ,') as md_name 
+    group by dgs.patient_uuid, (dgs.server_created_on at time zone 'Asia/Kolkata')::date order by dgs.patient_uuid, 
+    (dgs.server_created_on at time zone 'Asia/Kolkata')::date desc), b as (select distinct on (pst.treatment_uuid) pst.treatment_uuid as ptn, (pst.server_created_on at time zone 'Asia/Kolkata')::date, string_agg(md.name,' ,') as md_name 
     from health_management_prescription pst left join application_masters_medicines md on pst.medicines_id=md.id where 1=1 group by pst.treatment_uuid, 
-    pst.server_created_on order by pst.treatment_uuid, pst.server_created_on desc) 
+    (pst.server_created_on at time zone 'Asia/Kolkata')::date order by pst.treatment_uuid, (pst.server_created_on at time zone 'Asia/Kolkata')::date desc) 
     select distinct on (pt.patient_id) pt.patient_id, phc.name as phc_name, sbc.name as sbc_name, 
     vlg.name as village_name, pt.name as patient_name, pt.registered_date, date_part('year',age(pt.dob))::int as age, 
-    case when pt.gender=1 then 'Male' when pt.gender=2 then 'Female' end as gender, trmt.visit_date, case when trmt.is_alcoholic=1 then 'YES' when trmt.is_alcoholic=0 then 'NO' end as drinking, 
+    case when pt.gender=1 then 'Male' when pt.gender=2 then 'Female' end as gender, (trmt.visit_date at time zone 'Asia/Kolkata')::date, case when trmt.is_alcoholic=1 then 'YES' when trmt.is_alcoholic=0 then 'NO' end as drinking, 
     case when trmt.is_smoker=1 then 'YES' when trmt.is_smoker=0 then 'NO' end as smoking, case when trmt.is_tobacco=1 then 'YES' when trmt.is_tobacco=0 then 'NO' end as tobacco, 
     case when trmt.hyper_diabetic=1 then 'YES' when trmt.hyper_diabetic=0 then 'NO' end as diabetes, case when trmt.is_controlled=1 then 'YES' when trmt.is_controlled=0 then 'NO' end as controlled, 
     case when trmt.bp_sys3!='' then trmt.bp_sys3 when trmt.bp_sys2!='' then trmt.bp_sys2 when trmt.bp_sys1!='' then trmt.bp_sys1 else '-' end as sbp, 
@@ -114,7 +114,7 @@ def patient_profile_detail(request, patient_id):
     left join health_management_treatments trmt on pt.uuid=trmt.patient_uuid 
     left join a on pt.uuid=a.p_uuid left join b on trmt.uuid=b.ptn 
     where 1=1 and pt.id='''+patient_id+'''
-    order by pt.patient_id, trmt.visit_date desc'''
+    order by pt.patient_id, (trmt.visit_date at time zone 'Asia/Kolkata')::date desc'''
     cursor = connection.cursor()
     cursor.execute(sql2)
     patient_data = cursor.fetchall()
@@ -191,16 +191,16 @@ def patient_profile_list(request):
     # where 1=1 '''+phc_id+sbc_ids+village_id+between_date+pnt_name+pnt_code+''' 
     # order by pt.patient_id, trmt.visit_date desc'''
 
-    sql2 = '''with a as (select distinct on (dgs.patient_uuid) dgs.patient_uuid as p_uuid, dgs.server_created_on, string_agg(ndc.name,', ') as ds, 
+    sql2 = '''with a as (select distinct on (dgs.patient_uuid) dgs.patient_uuid as p_uuid, (dgs.server_created_on at time zone 'Asia/Kolkata')::date, string_agg(ndc.name,', ') as ds, 
     string_agg(case when dgs.source_treatment=1 then 'CLINIC' when dgs.source_treatment=2 then 'OUTSIDE' when dgs.source_treatment=3 then 'C&O' end,', ') as stm 
     from health_management_diagnosis dgs left join application_masters_masterlookup ndc on dgs.ndc_id=ndc.id 
-    group by dgs.patient_uuid, dgs.server_created_on order by dgs.patient_uuid, 
-    dgs.server_created_on desc), b as (select distinct on (pst.treatment_uuid) pst.treatment_uuid as ptn, pst.server_created_on, string_agg(md.name,' ,') as md_name 
+    group by dgs.patient_uuid, (dgs.server_created_on at time zone 'Asia/Kolkata')::date order by dgs.patient_uuid, 
+    (dgs.server_created_on at time zone 'Asia/Kolkata')::date desc), b as (select distinct on (pst.treatment_uuid) pst.treatment_uuid as ptn, (pst.server_created_on at time zone 'Asia/Kolkata')::date, string_agg(md.name,' ,') as md_name 
     from health_management_prescription pst left join application_masters_medicines md on pst.medicines_id=md.id where 1=1 group by pst.treatment_uuid, 
-    pst.server_created_on order by pst.treatment_uuid, pst.server_created_on desc) 
+    (pst.server_created_on at time zone 'Asia/Kolkata')::date order by pst.treatment_uuid, (pst.server_created_on at time zone 'Asia/Kolkata')::date desc) 
     select distinct on (pt.patient_id) pt.patient_id, phc.name as phc_name, sbc.name as sbc_name, 
     vlg.name as village_name, pt.name as patient_name, pt.registered_date, date_part('year',age(pt.dob))::int as age, 
-    case when pt.gender=1 then 'Male' when pt.gender=2 then 'Female' end as gender, trmt.visit_date, case when trmt.is_alcoholic=1 then 'YES' when trmt.is_alcoholic=0 then 'NO' end as drinking, 
+    case when pt.gender=1 then 'Male' when pt.gender=2 then 'Female' end as gender, (trmt.visit_date at time zone 'Asia/Kolkata')::date, case when trmt.is_alcoholic=1 then 'YES' when trmt.is_alcoholic=0 then 'NO' end as drinking, 
     case when trmt.is_smoker=1 then 'YES' when trmt.is_smoker=0 then 'NO' end as smoking, case when trmt.is_tobacco=1 then 'YES' when trmt.is_tobacco=0 then 'NO' end as tobacco, 
     case when trmt.hyper_diabetic=1 then 'YES' when trmt.hyper_diabetic=0 then 'NO' end as diabetes, case when trmt.is_controlled=1 then 'YES' when trmt.is_controlled=0 then 'NO' end as controlled, 
     case when trmt.bp_sys3!='' then trmt.bp_sys3 when trmt.bp_sys2!='' then trmt.bp_sys2 when trmt.bp_sys1!='' then trmt.bp_sys1 else '-' end as sbp, 
@@ -214,7 +214,7 @@ def patient_profile_list(request):
     left join health_management_treatments trmt on pt.uuid=trmt.patient_uuid 
     left join a on pt.uuid=a.p_uuid left join b on trmt.uuid=b.ptn 
     where 1=1 '''+phc_id+sbc_ids+village_id+between_date+pnt_name+pnt_code+'''
-    order by pt.patient_id, trmt.visit_date desc'''
+    order by pt.patient_id, (trmt.visit_date at time zone 'Asia/Kolkata')::date desc'''
     cursor = connection.cursor()
     cursor.execute(sql2)
     patient_data = cursor.fetchall()
