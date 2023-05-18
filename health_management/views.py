@@ -1103,11 +1103,11 @@ def patient_registration_report(request):
     order by pt.patient_id, trmt.visit_date desc'''
     cursor = connection.cursor()
     
-    sql2 = '''with a as (select distinct on (dgs.patient_uuid) dgs.patient_uuid as p_uuid, dgs.server_created_on, string_agg(ndc.name,', ') as ds, 
+    sql2 = '''with a as (select distinct on (dgs.patient_uuid) dgs.patient_uuid as p_uuid, (dgs.server_created_on at time zone 'Asia/Kolkata')::date, string_agg(ndc.name,', ') as ds, 
     string_agg(case when dgs.source_treatment=1 then 'CLINIC' when dgs.source_treatment=2 then 'OUTSIDE' when dgs.source_treatment=3 then 'C&O' end,', ') as stm 
     from health_management_diagnosis dgs left join application_masters_masterlookup ndc on dgs.ndc_id=ndc.id 
     group by dgs.patient_uuid, (dgs.server_created_on at time zone 'Asia/Kolkata')::date order by dgs.patient_uuid, 
-    (dgs.server_created_on at time zone 'Asia/Kolkata')::date desc), b as (select distinct on (pst.treatment_uuid) pst.treatment_uuid as ptn, pst.server_created_on, string_agg(md.name,' ,') as md_name 
+    (dgs.server_created_on at time zone 'Asia/Kolkata')::date desc), b as (select distinct on (pst.treatment_uuid) pst.treatment_uuid as ptn, (pst.server_created_on at time zone 'Asia/Kolkata')::date, string_agg(md.name,' ,') as md_name 
     from health_management_prescription pst left join application_masters_medicines md on pst.medicines_id=md.id where 1=1 group by pst.treatment_uuid, 
     (pst.server_created_on at time zone 'Asia/Kolkata')::date order by pst.treatment_uuid, (pst.server_created_on at time zone 'Asia/Kolkata')::date desc) 
     select distinct on (pt.patient_id) pt.patient_id, phc.name as phc_name, sbc.name as sbc_name, 
