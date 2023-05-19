@@ -529,54 +529,90 @@ def diagnosis_details_list(request):
     
 def diagnosis_ncd_count_report(request):
     heading="NCD combination to prepare the report"
-    filter_values = request.GET.dict()
-    from dateutil.relativedelta import relativedelta
-    patient_value = True
-    phc_obj = PHC.objects.filter(status=2).order_by('name')
-    phc = request.GET.get('phc', '')
-    sub_center = request.GET.get('sub_center', '')
-    village = request.GET.get('village', '')
-    patient_name = request.GET.get('patient_name', '')
-    phc_ids = int(phc) if phc != '' else ''
-    sub_center_ids = int(sub_center) if sub_center != '' else ''
-    village_ids = int(village) if village != '' else ''
-    start_filter = request.GET.get('start_filter', '')
-    end_filter = request.GET.get('end_filter', '')
-    s_date=''
-    e_date=''
-    between_date = ""
-    if start_filter != '':
-        s_date = start_filter
-        e_date = end_filter
-        between_date = """and (dgs.server_created_on at time zone 'Asia/Kolkata')::date >= '"""+s_date + \
-            """' and (dgs.server_created_on at time zone 'Asia/Kolkata')::date <= '""" + \
-            e_date+"""' """
-    phc_id=""
-    if phc_ids:
-        get_phc_name = PHC.objects.get(id=phc_ids)
-        sub_center_obj = Subcenter.objects.filter(status=2, phc__id=phc_ids).order_by('name')
-        phc_id = '''and phc.id='''+phc
-    sbc_ids= ""
-    if sub_center_ids:
-        get_sbc_name = Subcenter.objects.get(id=sub_center_ids)
-        village_obj = Village.objects.filter(status=2, subcenter__id=sub_center_ids).order_by('name')
-        sbc_ids = '''and sbc.id='''+sub_center
-    village_id=""
-    if village_ids:
-        get_village_name = Village.objects.get(id=village_ids)
-        village_id = '''and vlg.id='''+village
-    pnt_name=""
-    pnt_code=""
-    if patient_name:
-        format_name = "'%"+patient_name+"%'"
-        pnt_name = '''and pt.name ilike '''+format_name
-        pnt_code = '''or pt.patient_id ilike '''+format_name
-    # data = pagination_function(request, diagnosis_data)
-    # current_page = request.GET.get('page', 1)
-    # page_number_start = int(current_page) - 2 if int(current_page) > 2 else 1
-    # page_number_end = page_number_start + 5 if page_number_start + \
-    #     5 < data.paginator.num_pages else data.paginator.num_pages+1
-    # display_page_range = range(page_number_start, page_number_end)
+    now = datetime.now()
+    current_year = now.strftime("%Y")
+    years = request.GET.get('years', current_year)
+    sql_year='''select to_char(detected_years, 'YYYY') as year from health_management_diagnosis dgs left join application_masters_masterlookup ndc on dgs.ndc_id=ndc.id where 1=1 and detected_years is not null group by year order by year'''
+    cursor = connection.cursor()
+    cursor.execute(sql_year)
+    filter_year = cursor.fetchall()
+
+    
+    if years:
+        e_year = int(years)+1
+        s_date='01-01-'+years
+        e_date='01-01-'+str(e_year)
+        between_year = """and detected_years >= '"""+s_date + \
+                """' and detected_years < '""" + \
+                e_date+"""' """
+    sql='''select to_char(detected_years, 'MM-YYYY') as mmyy, to_char(detected_years, 'Month') as month, 
+    coalesce(sum(case when ndc.name='HT' then 1 else 0 end),0) as ht, 
+    coalesce(sum(case when ndc.name='KHT' then 1 else 0 end),0) as kht, 
+    coalesce(sum(case when ndc.name='PHT' then 1 else 0 end),0) as pht, 
+    coalesce(sum(case when ndc.name='DM' then 1 else 0 end),0) as dm, 
+    coalesce(sum(case when ndc.name='KDM' then 1 else 0 end),0) as kdm, 
+    coalesce(sum(case when ndc.name='PDM' then 1 else 0 end),0) as pdm, 
+    coalesce(sum(case when ndc.name='KHT' and ndc.name='DM' then 1 else 0 end),0) as pdm, 
+    coalesce(sum(case when ndc.name='KHT' and ndc.name='PDM' then 1 else 0 end),0) as kht_dm, 
+    coalesce(sum(case when ndc.name='KHT' and ndc.name='KDM' then 1 else 0 end),0) as kht_kdm, 
+    coalesce(sum(case when ndc.name='HT' and ndc.name='DM' then 1 else 0 end),0) as Kht_kdm, 
+    coalesce(sum(case when ndc.name='HT' and ndc.name='PDM' then 1 else 0 end),0) as ht_pdm, 
+    coalesce(sum(case when ndc.name='HT' and ndc.name='KDM' then 1 else 0 end),0) as ht_kdm, 
+    coalesce(sum(case when ndc.name='PHT' and ndc.name='DM' then 1 else 0 end),0) as pht_dm, 
+    coalesce(sum(case when ndc.name='PHT' and ndc.name='PDM' then 1 else 0 end),0) as pht_pdm, 
+    coalesce(sum(case when ndc.name='PHT' and ndc.name='KDM' then 1 else 0 end),0) as pht_Kdm 
+    from health_management_diagnosis dgs 
+    left join application_masters_masterlookup ndc on dgs.ndc_id=ndc.id 
+    where 1=1 and detected_years is not null '''+between_year+''' 
+    group by mmyy, month order by mmyy'''
+    cursor = connection.cursor()
+    cursor.execute(sql)
+    diagnosis_ncd_count_list = cursor.fetchall()
+    export_flag = True if request.POST.get('export') and request.POST.get( 'export').lower() == 'true' else False
+    if export_flag:
+        response = HttpResponse(content_type='text/csv',)
+        response['Content-Disposition'] = 'attachment; filename="Diagnosis Details '+ str(localtime(timezone.now()).strftime("%m-%d-%Y %I-%M %p")) +'.csv"'
+        writer = csv.writer(response)
+        writer.writerow(['DIAGNOSIS DETAILS'])
+        writer.writerow([
+            'Diesease/Month',
+            'HT',
+            'KHT',
+            'PHT',
+            'DM',
+            'KDM',
+            'PDM',
+            'KHT & DM',
+            'KHT & PDM',
+            'KHT & KDM',
+            'HT & DM',
+            'HT & PDM',
+            'HT & KDM',
+            'PHT & DM',
+            'PHT & PDM',
+            'PHT & KDM',
+            ])
+        for patient in diagnosis_ncd_count_list:
+            writer.writerow([
+                patient[0],
+                patient[1],
+                patient[2],
+                patient[3],
+                patient[4],
+                patient[5],
+                patient[6],
+                patient[7],
+                patient[8],
+                patient[9],
+                patient[10],
+                patient[11],
+                patient[12],
+                patient[13],
+                patient[14],
+                patient[15],
+                patient[16],
+                ])
+        return response
     return render(request, 'reports/ncd_combination_to_prepare.html', locals())
 
 def delete_patients_record(request,id):

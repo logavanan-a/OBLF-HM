@@ -1,7 +1,35 @@
 {% extends 'base.html' %}
 {% load static %}
 {% block contents %}
-{% include 'partials/filter_report.html' %}
+<div class="row">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-body">
+                <form action="" class="needs-validation form-horizontal" enctype="multipart/form-data" novalidate  method="GET" id="filters">
+                    <div class="row">
+                        <div class="col-md-4">  
+                            <div class="mb-3">
+                                <select  class="form-select select2"  aria-label="Floating label select example" 
+                                placeholder="Choose years" id="years" name='years' >      
+                                    <option selected value="">Choose Year</option>
+                                    {% for year in filter_year %}
+                                    <option value="{{year.0}}" {% if year.0|slugify == years %}selected{% endif %}>{{year.0}}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>   
+                        </div>
+                        <div class="col-auto">
+                            <button type="submit" class="btn btn-success waves-effect btn-xs float-right">Filter</button>
+                        </div>
+                        <div class="col-auto">
+                            <button type="reset" id="filter_reset"  class="form-control btn btn-warning waves-effect btn-xs float-right" value="True">Reset Filters</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
 
 <div class="row">
     <div class="col-12">
@@ -22,42 +50,48 @@
                     <table id="tech-companies-1" class="table table-bordered dt-responsive mb-0">
                         <thead>
                             <tr>
-                                <th>Diesease</th>
+                                <th>Diesease/Month</th>
+                                <th>HT</th>
+                                <th>KHT</th>
+                                <th>PHT</th>
+                                <th>DM</th>
+                                <th>KDM</th>
+                                <th>PDM</th>
+                                <th>KHT & DM</th>
+                                <th>KHT & PDM</th>
+                                <th>KHT & KDM</th>
+                                <th>HT & DM</th>
+                                <th>HT & PDM</th>
+                                <th>HT & KDM</th>
+                                <th>PHT & DM</th>
+                                <th>PHT & PDM</th>
+                                <th>PHT & KDM</th>
                             </tr>
                         </thead>
                         <tbody>
-                            {% for prr in data %}
+                            {% for prr in diagnosis_ncd_count_list %}
                             <tr>
                                 <th>{{prr.1}}</th>
-                                <th>{{prr.2|default_if_none:'-'}}</th>
+                                <th>{{prr.2}}</th>
                                 <th>{{prr.3}}</th>
-                                <th>{{prr.4|default_if_none:'-'}}</th>
-                                <th>{{prr.0}}</th>
-                                <th>{{prr.5|date:"d/m/Y"|default_if_none:'-'}}</th>
-                                <th>{{prr.6|default_if_none:'-'}}</th>
-                                <th>{{prr.7|default_if_none:'-'}}</th>
-                                <th>{{prr.8|date:"d/m/Y"|default_if_none:'-'}}</th>
-                                <th>{{prr.9|default_if_none:'-'}}</th>
-                                <th>{{prr.10|default_if_none:'-'}}</th>
-                                <th>{{prr.11|default_if_none:'-'}}</th>
-                                <th>{{prr.12|default_if_none:'-'}}</th>
-                                <th>{{prr.13|default_if_none:'-'}}</th>
-                                <th>{{prr.14|default_if_none:'-'}}</th>
-                                <th>{{prr.15|default_if_none:'-'}}</th>
-                                <th>{{prr.16|default_if_none:'-'}}</th>
-                                <th>{{prr.17|default_if_none:'-'}}</th>
-                                <th>{{prr.18|default_if_none:'-'}}</th>
-                                <th>{{prr.19|default_if_none:'-'}}</th>
-                                <th>{{prr.20|default_if_none:'-'}}</th>
-                                <th>{{prr.21|default_if_none:'-'}}</th>
-                                <th>{{prr.22|default_if_none:'-'}}</th>
-                                <th>{{prr.23|default_if_none:'-'}}</th>
+                                <th>{{prr.4}}</th>
+                                <th>{{prr.5}}</th>
+                                <th>{{prr.6}}</th>
+                                <th>{{prr.7}}</th>
+                                <th>{{prr.8}}</th>
+                                <th>{{prr.9}}</th>
+                                <th>{{prr.10}}</th>
+                                <th>{{prr.11}}</th>
+                                <th>{{prr.12}}</th>
+                                <th>{{prr.13}}</th>
+                                <th>{{prr.14}}</th>
+                                <th>{{prr.15}}</th>
+                                <th>{{prr.16}}</th>
                             </tr>
                             {% endfor %}
                         </tbody>
                     </table>
                 </div>
-                {% include 'partials/pagination.html' %}
             </div>
         </div>
     </div> 
@@ -67,85 +101,11 @@
 <script src="{% static 'js/pages/form-validation.init.js' %}"></script>
 <script type="text/javascript">
 
-    function onselected_start_month(){
-        var start_month = document.getElementById("start_filter");
-        var end_month = document.getElementById("end_filter");
-        if (start_month != '' && end_month != ''){
-            document.querySelector('#start_filter').required = true;
-            document.querySelector('#end_filter').required = true;
-        }
-        else{
-            document.querySelector('#start_filter').required = false;
-            document.querySelector('#end_filter').required = false;
-            
-        }  
-    }
-     $("#start_filter").on("change", function(event){
-           document.getElementById("end_filter").min=$("#start_filter").val()
-    });
     $("#filter_reset").click(function() {
-        $('#phc').prop('selectedIndex', 0).change();
-        $('#sub_center').prop('selectedIndex', 0).change();
-        $('#village').prop('selectedIndex', 0).change();
-        $('#health_worker').prop('selectedIndex', 0).change();
-        $('#start_filter').val('');
-        $('#end_filter').val('');
+        $('#years').prop('selectedIndex', '{{current_year}}').change();
         this.form.submit();
     });
-    document.addEventListener('DOMContentLoaded', function() { 
-        $('#phc').change(function () {
-            var optionSelected = $(this).find("option:selected");
-            var valueSelected  = optionSelected.val();
-            $.ajax({
-                type:"GET",
-                url: '/ajax/subcenter/'+valueSelected+'/',
-                success:function(result){
-                    $("#sub_center option").remove();
-                    a = '<option selected value="">Choose sub center Name</option>';
-                    $("#sub_center").append(a);
-                    if(JSON.parse(result) == 0){
-                        $("#sub_center option").remove();
-                        a = '<option selected value="">No sub center is mapped to this phc</option>';
-                        console.log(a)
-                        $("#sub_center").append(a);
-                    }
-                    else{
-                        $.each(JSON.parse(result),function(key, value)
-                        {
-                            a = '<option value=' + value['id']+'>' + value['name']+'</option>';
-                            $("#sub_center").append(a);
-                        });
-                    }
-                }
-            });
-        });
-        $('#sub_center').change(function () {
-            var optionSelected = $(this).find("option:selected");
-            var valueSelected  = optionSelected.val();
-            $.ajax({
-                type:"GET",
-                url: '/ajax/village/'+valueSelected+'/',
-                success:function(result){
-                    $("#village option").remove();
-                    a = '<option selected value="">Choose Village Name</option>';
-                    $("#village").append(a);
-                    if(JSON.parse(result) == 0){
-                        $("#village option").remove();
-                        a = '<option selected value="">No Village is mapped to this sub center</option>';
-                        console.log(a)
-                        $("#village").append(a);
-                    }
-                    else{
-                        $.each(JSON.parse(result),function(key, value)
-                        {
-                            a = '<option value=' + value['id']+'>' + value['name']+'</option>';
-                            $("#village").append(a);
-                        });
-                    }
-                }
-            });
-        });
-    })
+    
 </script> 
 {% endblock %}
 

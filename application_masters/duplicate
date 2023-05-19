@@ -106,12 +106,14 @@ for i in dgs:
                 Diagnosis.objects.filter(id=i.id).update(years=yy_20)
 
 from health_management.models import *
-dgs = Diagnosis.objects.filter()
+from datetime import datetime
+dgs = Diagnosis.objects.filter(detected_years__year='2022')
 for i in dgs:
     if i.years:
-        date = '01-'+i.years
-        print(date)
-    # dgs = Diagnosis.objects.filter(id=i.id).update(detected_years=date)
+        dby_date = '01-'+i.years
+        date = datetime.strptime(dby_date, '%d-%m-%Y').date()
+        print(i.id, dby_date)
+        dgs = Diagnosis.objects.filter(id=i.id).update(detected_years=date)
 
 
 
