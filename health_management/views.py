@@ -106,7 +106,9 @@ def patient_profile_detail(request, patient_id):
     case when trmt.bp_sys3!='' then trmt.bp_sys3 when trmt.bp_sys2!='' then trmt.bp_sys2 when trmt.bp_sys1!='' then trmt.bp_sys1 else '-' end as sbp, 
     case when trmt.bp_non_sys3!='' then trmt.bp_non_sys3 when trmt.bp_non_sys2!='' then trmt.bp_non_sys2 when trmt.bp_non_sys1!='' then trmt.bp_non_sys1 else '-' end as dbp, 
     trmt.fbs as fbs, trmt.pp as pp, trmt.random as random, trmt.symptoms, trmt.remarks, a.ds, a.stm, b.md_name, pt.id, 
-    pt.status, case when pt.status=2 then 'Active' when pt.status=1 then 'Inactive' end as status 
+    pt.status, case when pt.status=2 then 'Active' when pt.status=1 then 'Inactive' end as status,
+    case when a.ds!='' then 'YES' else 'NO' end, case when b.md_name!='' then 'YES' else 'NO' end,
+    case when (trmt.visit_date at time zone 'Asia/Kolkata')::date is not null then 'YES' else 'NO' end
     from health_management_patients pt 
     left join application_masters_village vlg on pt.village_id = vlg.id 
     left join application_masters_subcenter sbc on vlg.subcenter_id = sbc.id 
@@ -206,7 +208,9 @@ def patient_profile_list(request):
     case when trmt.bp_sys3!='' then trmt.bp_sys3 when trmt.bp_sys2!='' then trmt.bp_sys2 when trmt.bp_sys1!='' then trmt.bp_sys1 else '-' end as sbp, 
     case when trmt.bp_non_sys3!='' then trmt.bp_non_sys3 when trmt.bp_non_sys2!='' then trmt.bp_non_sys2 when trmt.bp_non_sys1!='' then trmt.bp_non_sys1 else '-' end as dbp, 
     trmt.fbs as fbs, trmt.pp as pp, trmt.random as random, trmt.symptoms, trmt.remarks, a.ds, a.stm, b.md_name, pt.id, 
-    case when pt.status=2 then 'Active' when pt.status=1 then 'Inactive' end as status 
+    case when pt.status=2 then 'Active' when pt.status=1 then 'Inactive' end as status,
+    case when a.ds!='' then 'YES' else 'NO' end, case when b.md_name!='' then 'YES' else 'NO' end,
+    case when (trmt.visit_date at time zone 'Asia/Kolkata')::date is not null then 'YES' else 'NO' end
     from health_management_patients pt 
     left join application_masters_village vlg on pt.village_id = vlg.id 
     left join application_masters_subcenter sbc on vlg.subcenter_id = sbc.id 
@@ -234,6 +238,7 @@ def patient_profile_list(request):
             'Age(today)',
             'Gender',
             'Status',
+            'Treatment',
             'Visit Date',
             'Drinking',
             'Smoking',
@@ -249,7 +254,8 @@ def patient_profile_list(request):
             'Remarks',
             'Diagnosis',
             'Source of treatment',
-            'Treatment',
+            'Prescription',
+            'Medicines',
             ])
         for patient in patient_data:
             writer.writerow([
@@ -262,6 +268,7 @@ def patient_profile_list(request):
                 patient[6],
                 patient[7],
                 patient[25],
+                patient[28],
                 patient[8],
                 patient[9],
                 patient[10],
@@ -275,9 +282,11 @@ def patient_profile_list(request):
                 patient[18],
                 patient[19],
                 patient[20],
+                patient[26],
                 patient[21],
                 patient[22],
-                patient[23]
+                patient[27],
+                patient[23],
                 ])
         return response
     data = pagination_function(request, patient_data)
@@ -518,6 +527,57 @@ def diagnosis_details_list(request):
     display_page_range = range(page_number_start, page_number_end)
     return render(request, 'patient_profile/diagnosis_details_list.html', locals())
     
+def diagnosis_ncd_count_report(request):
+    heading="NCD combination to prepare the report"
+    filter_values = request.GET.dict()
+    from dateutil.relativedelta import relativedelta
+    patient_value = True
+    phc_obj = PHC.objects.filter(status=2).order_by('name')
+    phc = request.GET.get('phc', '')
+    sub_center = request.GET.get('sub_center', '')
+    village = request.GET.get('village', '')
+    patient_name = request.GET.get('patient_name', '')
+    phc_ids = int(phc) if phc != '' else ''
+    sub_center_ids = int(sub_center) if sub_center != '' else ''
+    village_ids = int(village) if village != '' else ''
+    start_filter = request.GET.get('start_filter', '')
+    end_filter = request.GET.get('end_filter', '')
+    s_date=''
+    e_date=''
+    between_date = ""
+    if start_filter != '':
+        s_date = start_filter
+        e_date = end_filter
+        between_date = """and (dgs.server_created_on at time zone 'Asia/Kolkata')::date >= '"""+s_date + \
+            """' and (dgs.server_created_on at time zone 'Asia/Kolkata')::date <= '""" + \
+            e_date+"""' """
+    phc_id=""
+    if phc_ids:
+        get_phc_name = PHC.objects.get(id=phc_ids)
+        sub_center_obj = Subcenter.objects.filter(status=2, phc__id=phc_ids).order_by('name')
+        phc_id = '''and phc.id='''+phc
+    sbc_ids= ""
+    if sub_center_ids:
+        get_sbc_name = Subcenter.objects.get(id=sub_center_ids)
+        village_obj = Village.objects.filter(status=2, subcenter__id=sub_center_ids).order_by('name')
+        sbc_ids = '''and sbc.id='''+sub_center
+    village_id=""
+    if village_ids:
+        get_village_name = Village.objects.get(id=village_ids)
+        village_id = '''and vlg.id='''+village
+    pnt_name=""
+    pnt_code=""
+    if patient_name:
+        format_name = "'%"+patient_name+"%'"
+        pnt_name = '''and pt.name ilike '''+format_name
+        pnt_code = '''or pt.patient_id ilike '''+format_name
+    # data = pagination_function(request, diagnosis_data)
+    # current_page = request.GET.get('page', 1)
+    # page_number_start = int(current_page) - 2 if int(current_page) > 2 else 1
+    # page_number_end = page_number_start + 5 if page_number_start + \
+    #     5 < data.paginator.num_pages else data.paginator.num_pages+1
+    # display_page_range = range(page_number_start, page_number_end)
+    return render(request, 'reports/ncd_combination_to_prepare.html', locals())
 
 def delete_patients_record(request,id):
     obj=Patients.objects.get(id=id)#.update(status=1)
@@ -1118,7 +1178,9 @@ def patient_registration_report(request):
     case when trmt.bp_sys3!='' then trmt.bp_sys3 when trmt.bp_sys2!='' then trmt.bp_sys2 when trmt.bp_sys1!='' then trmt.bp_sys1 else '-' end as sbp, 
     case when trmt.bp_non_sys3!='' then trmt.bp_non_sys3 when trmt.bp_non_sys2!='' then trmt.bp_non_sys2 when trmt.bp_non_sys1!='' then trmt.bp_non_sys1 else '-' end as dbp, 
     trmt.fbs as fbs, trmt.pp as pp, trmt.random as random, trmt.symptoms, trmt.remarks, a.ds, a.stm, b.md_name, pt.id, 
-    case when pt.status=2 then 'Active' when pt.status=1 then 'Inactive' end as status 
+    case when pt.status=2 then 'Active' when pt.status=1 then 'Inactive' end as status,
+    case when a.ds!='' then 'YES' else 'NO' end, case when b.md_name!='' then 'YES' else 'NO' end,
+    case when (trmt.visit_date at time zone 'Asia/Kolkata')::date is not null then 'YES' else 'NO' end
     from health_management_patients pt 
     left join application_masters_village vlg on pt.village_id = vlg.id 
     left join application_masters_subcenter sbc on vlg.subcenter_id = sbc.id 
@@ -1187,7 +1249,7 @@ def patient_registration_report(request):
                 patient[20],
                 patient[21],
                 patient[22],
-                patient[23]
+                patient[23],
                 ])
         return response
     data = pagination_function(request, patient_data)
@@ -2287,6 +2349,7 @@ def diagnosis_details(self):
                     "source_treatment" : data.get('source_treatment'),
                     "years" : data.get('years'),
                     "detected_by" : data.get('detected_by'),
+                    "detected_years" : data.get('years'),
                     })
         objlist.append(obj)
 

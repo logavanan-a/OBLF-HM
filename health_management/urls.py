@@ -34,6 +34,8 @@ urlpatterns = [
     path('patient-adherence/report/', patient_adherence_list, name='patient_adherence_list'),
     path('village-profile/report/', village_profile_list, name='village_profile_list'),
     path('substance-abuse/report/', substance_abuse_list, name='substance_abuse_list'),
+    path('diagnosis-ncd-count/report/', diagnosis_ncd_count_report, name='diagnosis_ncd_count_report'),
+
 
     path('village-wise-drugs/list/', village_wise_drugs_list, name='village_wise_drug_list'),
     path('add/village-wise-drugs/', add_village_wise_drugs, name='add_village_wise_drugs'),

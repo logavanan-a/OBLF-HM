@@ -174,6 +174,7 @@ class Diagnosis(BaseContent):
         MasterLookup, on_delete=models.DO_NOTHING)
     source_treatment = models.IntegerField(null=True, blank=True)
     detected_by = models.IntegerField(null=True, blank=True)
+    detected_years = models.DateField(null=True, blank=True)
     years = models.CharField(max_length=150, null=True, blank=True)
     sync_status = models.IntegerField(default=2)
 

@@ -32,10 +32,12 @@ class Command(BaseCommand):
                     is_alcoholic=cd.alcohol, is_smoker=cd.smoking)
                     treatment_obj.save()
                 if cd.htn:
+                    curr_htn = datetime.datetime.now().strftime("%Y%m%d%H%M%S%f")
+                    htn_uuid_id = str(curr_htn) + "-" + str(uuid.uuid4())
                     diagnosis_details_tn = Diagnosis.objects.filter(patient_uuid=patient_uuid, 
                     ndc_id=cd.htn, server_created_on__date=cd.visit_date).exists()
                     if not diagnosis_details_tn:
-                        diagnosis_th_obj = Diagnosis.objects.create(uuid=uuid_id,
+                        diagnosis_th_obj = Diagnosis.objects.create(uuid=htn_uuid_id,
                         user_uuid=user_uuid, patient_uuid=patient_uuid, ndc_id=cd.htn, 
                         source_treatment=cd.source_treatment, detected_by=cd.detected_by_htn, 
                         years=cd.detected_since_htn)
@@ -43,10 +45,12 @@ class Command(BaseCommand):
                         diagnosis_th_obj.save()
                         print('TN SERIES')
                 if cd.dm:
+                    curr_dm = datetime.datetime.now().strftime("%Y%m%d%H%M%S%f")
+                    dm_uuid_id = str(curr_dm) + "-" + str(uuid.uuid4())
                     diagnosis_details_dm = Diagnosis.objects.filter(patient_uuid=patient_uuid,
                     ndc_id=cd.dm, server_created_on__date=cd.visit_date).exists()
                     if not diagnosis_details_dm:
-                        diagnosis_dm_obj = Diagnosis.objects.create(uuid=uuid_id,
+                        diagnosis_dm_obj = Diagnosis.objects.create(uuid=dm_uuid_id,
                         user_uuid=user_uuid, patient_uuid=patient_uuid, ndc_id=cd.dm, 
                         source_treatment=cd.source_treatment, detected_by=cd.detected_by_dm, 
                         years=cd.detected_since_dm)

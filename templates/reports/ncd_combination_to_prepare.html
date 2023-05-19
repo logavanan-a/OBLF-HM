@@ -22,34 +22,7 @@
                     <table id="tech-companies-1" class="table table-bordered dt-responsive mb-0">
                         <thead>
                             <tr>
-                                <th>PHC Name</th>
-                                <th>Sub Centre</th>
-                                <th>Village</th>                                   
-                                <th>Patient Name</th>
-                                <th>Patient Code</th>
-                                <th>Registered Date</th>
-                                <th>Age(today)</th>
-                                <th>Gender</th>
-                                <th>Status</th>
-                                <th>Treatment</th>
-                                <th>Last visit date</th>
-                                <th>Drinking</th>
-                                <th>Smoking</th>
-                                <th>Tobacco</th>
-                                <th>Family history of Hypertension or diabetes</th>
-                                <th>Controlled</th>
-                                <th>SBP</th>
-                                <th>DBP</th>
-                                <th>Blood Sugar Fasting</th>
-                                <th>Blood Sugar PP</th>
-                                <th>Blood Sugar Random</th>
-                                <th>Signs & symptoms</th>
-                                <th>Remarks</th>
-                                <th>Diagnosis</th>
-                                <th>NCD</th>
-                                <th>Source of treatment</th>
-                                <th>Prescription</th>
-                                <th>Medicines</th>
+                                <th>Diesease</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -59,12 +32,10 @@
                                 <th>{{prr.2|default_if_none:'-'}}</th>
                                 <th>{{prr.3}}</th>
                                 <th>{{prr.4|default_if_none:'-'}}</th>
-                                <th><a href="/patient-detail/{{prr.24}}/">{{prr.0}}</a></th>
+                                <th>{{prr.0}}</th>
                                 <th>{{prr.5|date:"d/m/Y"|default_if_none:'-'}}</th>
                                 <th>{{prr.6|default_if_none:'-'}}</th>
                                 <th>{{prr.7|default_if_none:'-'}}</th>
-                                <th>{{prr.25|default_if_none:'-'}}</th>
-                                <th>{{prr.28|default_if_none:'-'}}</th>
                                 <th>{{prr.8|date:"d/m/Y"|default_if_none:'-'}}</th>
                                 <th>{{prr.9|default_if_none:'-'}}</th>
                                 <th>{{prr.10|default_if_none:'-'}}</th>
@@ -78,10 +49,8 @@
                                 <th>{{prr.18|default_if_none:'-'}}</th>
                                 <th>{{prr.19|default_if_none:'-'}}</th>
                                 <th>{{prr.20|default_if_none:'-'}}</th>
-                                <th>{{prr.26|default_if_none:'-'}}</th>
                                 <th>{{prr.21|default_if_none:'-'}}</th>
                                 <th>{{prr.22|default_if_none:'-'}}</th>
-                                <th>{{prr.27|default_if_none:'-'}}</th>
                                 <th>{{prr.23|default_if_none:'-'}}</th>
                             </tr>
                             {% endfor %}
@@ -121,7 +90,6 @@
         $('#health_worker').prop('selectedIndex', 0).change();
         $('#start_filter').val('');
         $('#end_filter').val('');
-        $('#patient_name').val('');
         this.form.submit();
     });
     document.addEventListener('DOMContentLoaded', function() { 

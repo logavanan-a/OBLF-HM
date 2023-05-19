@@ -1,4 +1,14 @@
 from health_management.models import *
+import uuid
+import datetime
+dgs = Diagnosis.objects.filter()
+for d in dgs:
+    curr_dt = datetime.datetime.now().strftime("%Y%m%d%H%M%S%f")
+    uuid_id = str(curr_dt) + "-" + str(uuid.uuid4())
+    dgs = Diagnosis.objects.filter(id=d.id).update(uuid=uuid_id)
+
+
+from health_management.models import *
 from django.db.models import Count
 duplicates = Patients.objects.values('patient_id').annotate(Count('id')).order_by().filter(id__count__gt=1)
 for duplicate in duplicates:
@@ -69,3 +79,65 @@ pf = pd.read_excel(r'/home/sb-010/Downloads/mistake data.xlsx')
 for i in pf.iterrows():
     pts = Patients.objects.filter(patient_id=i[1]['patient'], status=2).values_list('uuid', flat=True).first()
     print(pts,'----')
+
+from health_management.models import *
+dgs = Diagnosis.objects.exclude(years__icontains='-')
+for i in dgs:
+    if i.years:
+        print(i.years)
+        mm_yy = '1-' + i.years
+        Diagnosis.objects.filter(id=i.id).update(years=mm_yy)
+        a+=1
+print(a)
+
+print(a)
+from health_management.models import *
+dgs = Diagnosis.objects.filter()
+for i in dgs:
+    if i.years:
+        pp = i.years.split('-')[1]
+        pl = i.years.split('-')[0]
+        if len(pp) < 3:
+            if int(pp) < 10:
+                yy_200 = pl+'-200'+ pp
+                Diagnosis.objects.filter(id=i.id).update(years=yy_200)
+            if int(pp) > 9:
+                yy_20 = pl+'-20'+ pp
+                Diagnosis.objects.filter(id=i.id).update(years=yy_20)
+
+from health_management.models import *
+dgs = Diagnosis.objects.filter()
+for i in dgs:
+    if i.years:
+        date = '01-'+i.years
+        print(date)
+    # dgs = Diagnosis.objects.filter(id=i.id).update(detected_years=date)
+
+
+
+
+            
+    # if len(i.years) > 5:
+    #     mm_yy = i.years[:3]+i.years[-2:]
+    #     print(mm_yy)
+        # Diagnosis.objects.filter(id=i.id).update(years=mm_yy)
+
+from health_management.models import *
+dgs = Diagnosis.objects.filter()
+for i in dgs:
+    if i.years:
+        mm_yy = i.years[-2:]
+        if int(mm_yy) > 23:
+            yy_19 = '19'+ mm_yy
+            Diagnosis.objects.filter(id=i.id).update(years=yy_19)
+        if int(mm_yy) < 24:
+            yy_20 = '20'+ mm_yy
+            Diagnosis.objects.filter(id=i.id).update(years=yy_20)
+            
+
+
+
+
+
+
+        
