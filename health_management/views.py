@@ -529,6 +529,7 @@ def diagnosis_details_list(request):
     
 def diagnosis_ncd_count_report(request):
     heading="NCD combination to prepare the report"
+    from dateutil.relativedelta import relativedelta
     now = datetime.now()
     current_year = now.strftime("%Y")
     years = request.GET.get('years', current_year)
@@ -542,29 +543,50 @@ def diagnosis_ncd_count_report(request):
         e_year = int(years)+1
         s_date='01-01-'+years
         e_date='01-01-'+str(e_year)
+        sd_date= datetime.strptime(s_date, "%d-%m-%Y")
+        ed_date= datetime.strptime(e_date, "%d-%m-%Y")
+        ed_date = ed_date - relativedelta(months=1)
+        start_date = sd_date.strftime("%Y-%m-%d")
+        end_date = ed_date.strftime("%Y-%m-%d")
         between_year = """and detected_years >= '"""+s_date + \
                 """' and detected_years < '""" + \
                 e_date+"""' """
-    sql='''select to_char(detected_years, 'MM-YYYY') as mmyy, to_char(detected_years, 'Month') as month, 
+    sql="""select i::date, to_char(i, 'Month'), 
+    case when mt.ht is not null then mt.ht else 0 end, 
+    case when mt.kht is not null then mt.kht else 0 end, 
+    case when mt.pht is not null then mt.pht else 0 end, 
+    case when mt.dm is not null then mt.dm else 0 end, 
+    case when mt.kdm is not null then mt.kdm else 0 end, 
+    case when mt.pdm is not null then mt.pdm else 0 end, 
+    case when mt.Kht_dm is not null then mt.Kht_dm else 0 end, 
+    case when mt.kht_pdm is not null then mt.kht_pdm else 0 end, 
+    case when mt.kht_kdm is not null then mt.kht_kdm else 0 end, 
+    case when mt.ht_dm is not null then mt.ht_dm else 0 end, 
+    case when mt.ht_pdm is not null then mt.ht_pdm else 0 end, 
+    case when mt.ht_kdm is not null then mt.ht_kdm else 0 end, 
+    case when mt.pht_dm is not null then mt.pht_dm else 0 end, 
+    case when mt.pht_pdm is not null then mt.pht_pdm else 0 end, 
+    case when mt.pht_kdm is not null then mt.pht_kdm else 0 end 
+    from generate_series('"""+start_date+"""', '"""+end_date+"""', '1 month'::interval) i 
+    left outer join (select detected_years as mmyy, to_char(detected_years, 'Month') as month, 
     coalesce(sum(case when ndc.name='HT' then 1 else 0 end),0) as ht, 
     coalesce(sum(case when ndc.name='KHT' then 1 else 0 end),0) as kht, 
     coalesce(sum(case when ndc.name='PHT' then 1 else 0 end),0) as pht, 
     coalesce(sum(case when ndc.name='DM' then 1 else 0 end),0) as dm, 
     coalesce(sum(case when ndc.name='KDM' then 1 else 0 end),0) as kdm, 
     coalesce(sum(case when ndc.name='PDM' then 1 else 0 end),0) as pdm, 
-    coalesce(sum(case when ndc.name='KHT' and ndc.name='DM' then 1 else 0 end),0) as pdm, 
-    coalesce(sum(case when ndc.name='KHT' and ndc.name='PDM' then 1 else 0 end),0) as kht_dm, 
+    coalesce(sum(case when ndc.name='KHT' and ndc.name='DM' then 1 else 0 end),0) as Kht_dm, 
+    coalesce(sum(case when ndc.name='KHT' and ndc.name='PDM' then 1 else 0 end),0) as kht_pdm, 
     coalesce(sum(case when ndc.name='KHT' and ndc.name='KDM' then 1 else 0 end),0) as kht_kdm, 
-    coalesce(sum(case when ndc.name='HT' and ndc.name='DM' then 1 else 0 end),0) as Kht_kdm, 
+    coalesce(sum(case when ndc.name='HT' and ndc.name='DM' then 1 else 0 end),0) as ht_dm, 
     coalesce(sum(case when ndc.name='HT' and ndc.name='PDM' then 1 else 0 end),0) as ht_pdm, 
     coalesce(sum(case when ndc.name='HT' and ndc.name='KDM' then 1 else 0 end),0) as ht_kdm, 
     coalesce(sum(case when ndc.name='PHT' and ndc.name='DM' then 1 else 0 end),0) as pht_dm, 
     coalesce(sum(case when ndc.name='PHT' and ndc.name='PDM' then 1 else 0 end),0) as pht_pdm, 
-    coalesce(sum(case when ndc.name='PHT' and ndc.name='KDM' then 1 else 0 end),0) as pht_Kdm 
+    coalesce(sum(case when ndc.name='PHT' and ndc.name='KDM' then 1 else 0 end),0) as pht_kdm 
     from health_management_diagnosis dgs 
     left join application_masters_masterlookup ndc on dgs.ndc_id=ndc.id 
-    where 1=1 and detected_years is not null '''+between_year+''' 
-    group by mmyy, month order by mmyy'''
+    where 1=1 and detected_years is not null """+between_year+""" group by mmyy, month) as mt on i=mt.mmyy"""
     cursor = connection.cursor()
     cursor.execute(sql)
     diagnosis_ncd_count_list = cursor.fetchall()
