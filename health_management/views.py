@@ -2405,7 +2405,6 @@ def diagnosis_details(self):
                     "source_treatment" : data.get('source_treatment'),
                     "ndc_id" : data.get('ndc_id'),
                     "source_treatment" : data.get('source_treatment'),
-                    "years" : data.get('years'),
                     "detected_by" : data.get('detected_by'),
                     "detected_years" : data.get('years'),
                     })

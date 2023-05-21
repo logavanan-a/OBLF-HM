@@ -102,7 +102,7 @@ class DiagnosisSerializers(serializers.ModelSerializer):
     ndc_id = serializers.CharField(source='ndc.id')
     class Meta:
         model = Diagnosis
-        exclude = ['ndc']
+        exclude = ['ndc', 'years']
 
 class ScannedReportSerializers(serializers.ModelSerializer):
     class Meta:
