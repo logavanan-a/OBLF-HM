@@ -99,10 +99,12 @@ class HomeVisitSerializers(serializers.ModelSerializer):
 
 
 class DiagnosisSerializers(serializers.ModelSerializer):
+    years = serializers.DateField(source='detected_years', required=False)
+
     ndc_id = serializers.CharField(source='ndc.id')
     class Meta:
         model = Diagnosis
-        exclude = ['ndc', 'years']
+        exclude = ['ndc']
 
 class ScannedReportSerializers(serializers.ModelSerializer):
     class Meta:
