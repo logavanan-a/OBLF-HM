@@ -443,8 +443,8 @@ def diagnosis_details_list(request):
     if start_filter != '':
         s_date = start_filter
         e_date = end_filter
-        between_date = """and (dgs.server_created_on at time zone 'Asia/Kolkata')::date >= '"""+s_date + \
-            """' and (dgs.server_created_on at time zone 'Asia/Kolkata')::date <= '""" + \
+        between_date = """and dgs.detected_years >= '"""+s_date + \
+            """' and dgs.detected_years <= '""" + \
             e_date+"""' """
     phc_id=""
     if phc_ids:
@@ -471,7 +471,7 @@ def diagnosis_details_list(request):
     case when pt.gender=1 then 'Male' when pt.gender=2 then 'Female' end as gender, ndc.name as diagnosis, 
     case when dgs.detected_by=1 then 'CLINIC' when dgs.detected_by=2 then 'OUTSIDE' end as detected_by, 
     case when dgs.source_treatment=1 then 'CLINIC' when dgs.source_treatment=2 then 'OUTSIDE' when dgs.source_treatment=3 then 'C&O' end as source_of_tretement, 
-    dgs.years, dgs.server_created_on from health_management_patients pt inner join application_masters_village vlg on pt.village_id = vlg.id 
+    dgs.detected_years, dgs.server_created_on from health_management_patients pt inner join application_masters_village vlg on pt.village_id = vlg.id 
     inner join application_masters_subcenter sbc on vlg.subcenter_id = sbc.id 
     inner join application_masters_phc phc on sbc.phc_id = phc.id 
     inner join health_management_diagnosis dgs on pt.uuid=dgs.patient_uuid 
@@ -500,7 +500,6 @@ def diagnosis_details_list(request):
             'Detected by',
             'Source of treatment',
             'Years',
-            'Created On',
             ])
         for patient in diagnosis_data:
             writer.writerow([
@@ -516,7 +515,6 @@ def diagnosis_details_list(request):
                 patient[9],
                 patient[10],
                 patient[11],
-                patient[12],
                 ])
         return response
     data = pagination_function(request, diagnosis_data)
