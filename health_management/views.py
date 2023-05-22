@@ -583,7 +583,7 @@ def diagnosis_ncd_count_report(request):
     coalesce(sum(case when ndc.name='PHT' and ndc.name='DM' then 1 else 0 end),0) as pht_dm, 
     coalesce(sum(case when ndc.name='PHT' and ndc.name='PDM' then 1 else 0 end),0) as pht_pdm, 
     coalesce(sum(case when ndc.name='PHT' and ndc.name='KDM' then 1 else 0 end),0) as pht_kdm 
-    from health_management_diagnosis dgs 
+    from health_management_diagnosis dgs inner join health_management_patients pt on dgs.patient_uuid=pt.uuid
     inner join application_masters_masterlookup ndc on dgs.ndc_id=ndc.id 
     where 1=1 and detected_years is not null """+between_year+""" group by mmyy, month) as mt on i=mt.mmyy"""
     cursor = connection.cursor()

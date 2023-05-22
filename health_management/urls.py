@@ -39,7 +39,6 @@ urlpatterns = [
 
     path('village-wise-drugs/list/', village_wise_drugs_list, name='village_wise_drug_list'),
     path('add/village-wise-drugs/', add_village_wise_drugs, name='add_village_wise_drugs'),
-
     path('medicine/list/', medicine_stock_list, name='medicine_stock_list'),
     path('add/medicine/', add_medicine_stock, name='add_medicine_stock'),
 
