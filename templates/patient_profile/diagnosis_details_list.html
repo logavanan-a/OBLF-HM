@@ -66,29 +66,29 @@
 <script src="{% static 'js/pages/form-validation.init.js' %}"></script>
 <script type="text/javascript">
 
-    function onselected_start_month(){
-        var start_month = document.getElementById("start_filter");
-        var end_month = document.getElementById("end_filter");
+    function onselected_start_year(){
+        var start_month = document.getElementById("start_month");
+        var end_month = document.getElementById("end_month");
         if (start_month != '' && end_month != ''){
-            document.querySelector('#start_filter').required = true;
-            document.querySelector('#end_filter').required = true;
+            document.querySelector('#start_month').required = true;
+            document.querySelector('#end_month').required = true;
         }
         else{
-            document.querySelector('#start_filter').required = false;
-            document.querySelector('#end_filter').required = false;
+            document.querySelector('#start_month').required = false;
+            document.querySelector('#end_month').required = false;
             
         }  
     }
-     $("#start_filter").on("change", function(event){
-           document.getElementById("end_filter").min=$("#start_filter").val()
+     $("#start_month").on("change", function(event){
+           document.getElementById("end_month").min=$("#start_month").val()
     });
     $("#filter_reset").click(function() {
         $('#phc').prop('selectedIndex', 0).change();
         $('#sub_center').prop('selectedIndex', 0).change();
         $('#village').prop('selectedIndex', 0).change();
         $('#health_worker').prop('selectedIndex', 0).change();
-        $('#start_filter').val('');
-        $('#end_filter').val('');
+        $('#start_month').val('');
+        $('#end_month').val('');
         $('#patient_name').val('');
         this.form.submit();
     });

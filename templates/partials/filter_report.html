@@ -92,7 +92,7 @@
                         <div class="col-md-4">  
                             <div class="mb-3">
                                 <label for="floatingnameInput">Start Month:</label>
-                                <input type="month" class="form-control" name='start_month'  value="{{start_month}}" id="start_month" onchange='onselected_start_month(this)'  onfocus="this.max=new Date().toISOString().split('T')[0]">
+                                <input type="month" class="form-control" max ='{{max_month}}' name='start_month'  value="{{start_filter}}" id="start_month" onchange='onselected_start_year(this)' >
                                 <div class="invalid-feedback">
                                     Please provide a valid both month field.
                                 </div>
@@ -101,7 +101,7 @@
                         <div class="col-md-4">  
                             <div class="mb-3">
                                 <label for="floatingnameInput">End Month:</label>
-                                <input type="month" class="form-control" name='end_month'  value="{{end_month}}" id="end_month" onchange='onselected_start_month(this)'  onfocus="this.max=new Date().toISOString().split('T')[0]">
+                                <input type="month" class="form-control" max ='{{max_month}}' name='end_month'  value="{{end_filter}}" id="end_month" onchange='onselected_start_year(this)' >
                                 <div class="invalid-feedback">
                                     Please provide a valid both month field and Start month should be greater than or equal to end month.
                                 </div>

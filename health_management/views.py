@@ -451,7 +451,8 @@ def diagnosis_details_list(request):
     #         """' and dgs.detected_years < '""" + \
     #         e_date+"""' """
 
-
+    month= datetime.now()
+    max_month=month.strftime("%Y-%m")
     if start_filter != '':
         s_date = datetime.strptime(start_filter, '%Y-%m')
         s_month_date = datetime.strptime(str(start_filter),'%Y-%m')
