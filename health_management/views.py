@@ -454,11 +454,15 @@ def diagnosis_details_list(request):
 
     if start_filter != '':
         s_date = datetime.strptime(start_filter, '%Y-%m')
+        s_month_date = datetime.strptime(str(start_filter),'%Y-%m')
+        s_m_date = s_month_date.strftime("%m-%Y")
         s_date = s_date.replace(day=1)
         e_date = datetime.strptime(end_filter, '%Y-%m')
+        e_month_date = datetime.strptime(str(end_filter),'%Y-%m')
+        e_m_date = e_month_date.strftime("%m-%Y")
         e_date = (e_date + timedelta(days=32)).replace(day=1)
         e_date -= timedelta(days=1)
-        between_date = """AND dgs.detected_years >= '""" + s_date.strftime('%Y-%m-%d') + \
+        between_date = """ AND dgs.detected_years >= '""" + s_date.strftime('%Y-%m-%d') + \
                     """' AND dgs.detected_years < '""" + e_date.strftime('%Y-%m-%d') + """' """
 
         
@@ -466,21 +470,21 @@ def diagnosis_details_list(request):
     if phc_ids:
         get_phc_name = PHC.objects.get(id=phc_ids)
         sub_center_obj = Subcenter.objects.filter(status=2, phc__id=phc_ids).order_by('name')
-        phc_id = '''and phc.id='''+phc
+        phc_id = ''' and phc.id= '''+phc
     sbc_ids= ""
     if sub_center_ids:
         get_sbc_name = Subcenter.objects.get(id=sub_center_ids)
         village_obj = Village.objects.filter(status=2, subcenter__id=sub_center_ids).order_by('name')
-        sbc_ids = '''and sbc.id='''+sub_center
+        sbc_ids = ''' and sbc.id= '''+sub_center
     village_id=""
     if village_ids:
         get_village_name = Village.objects.get(id=village_ids)
-        village_id = '''and vlg.id='''+village
+        village_id = ''' and vlg.id= '''+village
     pnt_name=""
     pnt_code=""
     if patient_name:
         format_name = "'%"+patient_name+"%'"
-        pnt_name = '''and pt.name ilike '''+format_name
+        pnt_name = ''' and pt.name ilike '''+format_name
         pnt_code = '''or pt.patient_id ilike '''+format_name
     sql= '''select phc.name as phc_name, sbc.name as sbc_name, vlg.name as village_name, pt.name as patient_name, 
     pt.patient_id as patient_code, pt.registered_date, date_part('year',age(pt.dob))::int as age, 
