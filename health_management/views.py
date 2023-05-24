@@ -23,6 +23,7 @@ from django.utils import timezone
 from django.utils.timezone import localtime
 from collections import defaultdict
 import csv
+from datetime import datetime, timedelta
 batch_rec = settings.BATCH_RECORDS
 
 
@@ -435,17 +436,31 @@ def diagnosis_details_list(request):
     phc_ids = int(phc) if phc != '' else ''
     sub_center_ids = int(sub_center) if sub_center != '' else ''
     village_ids = int(village) if village != '' else ''
-    start_filter = request.GET.get('start_filter', '')
-    end_filter = request.GET.get('end_filter', '')
+    s_month = True
+    start_filter = request.GET.get('start_month', '')
+    end_filter = request.GET.get('end_month', '')
     s_date=''
     e_date=''
     between_date = ""
+    # if start_filter != '':
+    #     s_date = start_filter +'-01'
+    #     print(s_date,'-----------------------')
+    #     e_date = end_filter + '-1'
+    #     print(e_date,'-----------------------')
+    #     between_date = """and dgs.detected_years >= '"""+s_date + \
+    #         """' and dgs.detected_years < '""" + \
+    #         e_date+"""' """
+
+
     if start_filter != '':
-        s_date = start_filter
-        e_date = end_filter
-        between_date = """and dgs.detected_years >= '"""+s_date + \
-            """' and dgs.detected_years <= '""" + \
-            e_date+"""' """
+        s_date = datetime.strptime(start_filter, '%Y-%m')
+        s_date = s_date.replace(day=1)
+        e_date = datetime.strptime(end_filter, '%Y-%m')
+        e_date = (e_date + timedelta(days=32)).replace(day=1)
+        e_date -= timedelta(days=1)
+        between_date = """AND dgs.detected_years >= '""" + s_date.strftime('%Y-%m') + \
+                    """' AND dgs.detected_years < '""" + e_date.strftime('%Y-%m') + """' """
+
         
     phc_id=""
     if phc_ids:

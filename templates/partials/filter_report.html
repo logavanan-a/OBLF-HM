@@ -68,10 +68,11 @@
                             </div>   
                         </div>
                         {% endif %}
+                        {% if not s_month %}
                         <div class="col-md-4">  
                             <div class="mb-3">
                                 <label for="floatingnameInput">Start Date:</label>
-                                <input type="date" class="form-control" name='start_filter'  value="{{start_filter}}" id="start_filter" onchange='onselected_start_month(this)'>
+                                <input type="date" class="form-control" name='start_filter'  value="{{start_filter}}" id="start_filter" onchange='onselected_start_month(this)'  onfocus="this.max=new Date().toISOString().split('T')[0]">
                                 <div class="invalid-feedback">
                                     Please provide a valid both date field.
                                 </div>
@@ -80,12 +81,33 @@
                         <div class="col-md-4">  
                             <div class="mb-3">
                                 <label for="floatingnameInput">End Date:</label>
-                                <input type="date" class="form-control" name='end_filter'  value="{{end_filter}}" id="end_filter" onchange='onselected_start_month(this)' >
+                                <input type="date" class="form-control" name='end_filter'  value="{{end_filter}}" id="end_filter" onchange='onselected_start_month(this)'  onfocus="this.max=new Date().toISOString().split('T')[0]">
                                 <div class="invalid-feedback">
                                     Please provide a valid both date field and Start date should be greater than or equal to end date.
                                 </div>
                             </div>   
                         </div>
+                        {% endif %}
+                        {% if s_month %}
+                        <div class="col-md-4">  
+                            <div class="mb-3">
+                                <label for="floatingnameInput">Start Month:</label>
+                                <input type="month" class="form-control" name='start_month'  value="{{start_month}}" id="start_month" onchange='onselected_start_month(this)'  onfocus="this.max=new Date().toISOString().split('T')[0]">
+                                <div class="invalid-feedback">
+                                    Please provide a valid both month field.
+                                </div>
+                            </div>   
+                        </div>
+                        <div class="col-md-4">  
+                            <div class="mb-3">
+                                <label for="floatingnameInput">End Month:</label>
+                                <input type="month" class="form-control" name='end_month'  value="{{end_month}}" id="end_month" onchange='onselected_start_month(this)'  onfocus="this.max=new Date().toISOString().split('T')[0]">
+                                <div class="invalid-feedback">
+                                    Please provide a valid both month field and Start month should be greater than or equal to end month.
+                                </div>
+                            </div>   
+                        </div>
+                        {% endif %}
                         {% if patient_value %}
                         <div class="col-md-4">  
                             <div class="mb-3">
