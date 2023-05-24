@@ -455,13 +455,9 @@ def diagnosis_details_list(request):
     if start_filter != '':
         s_date = datetime.strptime(start_filter, '%Y-%m')
         s_date = s_date.replace(day=1)
-        print(s_date, '-----------------------')
-
         e_date = datetime.strptime(end_filter, '%Y-%m')
         e_date = (e_date + timedelta(days=32)).replace(day=1)
         e_date -= timedelta(days=1)
-        print(e_date, '-----------------------')
-
         between_date = """AND dgs.detected_years >= '""" + s_date.strftime('%Y-%m-%d') + \
                     """' AND dgs.detected_years < '""" + e_date.strftime('%Y-%m-%d') + """' """
 
@@ -498,7 +494,6 @@ def diagnosis_details_list(request):
     inner join application_masters_masterlookup ndc on dgs.ndc_id=ndc.id 
     where 1=1 '''+phc_id+sbc_ids+village_id+between_date+pnt_name+pnt_code+'''
     order by dgs.detected_years desc'''
-    print(sql,'--------------')
     cursor = connection.cursor()
     cursor.execute(sql)
     diagnosis_data = cursor.fetchall()
