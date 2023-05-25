@@ -1,6 +1,11 @@
 from health_management.models import *
 import uuid
 import datetime
+
+from health_management.models import *
+for i in Diagnosis.objects.all():
+    i.save()
+    
 dgs = Diagnosis.objects.filter()
 for d in dgs:
     curr_dt = datetime.datetime.now().strftime("%Y%m%d%H%M%S%f")

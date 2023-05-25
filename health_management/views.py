@@ -145,8 +145,8 @@ def patient_profile_list(request):
     if start_filter != '':
         s_date = start_filter
         e_date = end_filter
-        between_date = """and (pt.server_created_on at time zone 'Asia/Kolkata')::date >= '"""+s_date + \
-            """' and (pt.server_created_on at time zone 'Asia/Kolkata')::date <= '""" + \
+        between_date = """and (pt.registered_date at time zone 'Asia/Kolkata')::date >= '"""+s_date + \
+            """' and (pt.registered_date at time zone 'Asia/Kolkata')::date <= '""" + \
             e_date+"""' """
     phc_id=""
     if phc_ids:
@@ -1193,8 +1193,8 @@ def patient_registration_report(request):
     if start_filter != '':
         s_date = start_filter
         e_date = end_filter
-        between_date = """and (pt.server_created_on at time zone 'Asia/Kolkata')::date >= '"""+s_date + \
-            """' and (pt.server_created_on at time zone 'Asia/Kolkata')::date <= '""" + \
+        between_date = """and (pt.registered_date at time zone 'Asia/Kolkata')::date >= '"""+s_date + \
+            """' and (pt.registered_date at time zone 'Asia/Kolkata')::date <= '""" + \
             e_date+"""' """
     phc_id=""
     if phc_ids:
