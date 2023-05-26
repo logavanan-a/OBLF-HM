@@ -28,6 +28,7 @@
                                 <th>Patient Name</th>
                                 <th>Patient Code</th>
                                 <th>Registered Date</th>
+                                <th>Visit Date</th>
                                 <th>Age(today)</th>
                                 <th>Gender</th>
                                 <th>NCD</th>
@@ -40,19 +41,20 @@
                         <tbody>
                             {% for prr in data %}
                             <tr>
-                                <th>{{prr.0}}</th>
                                 <th>{{prr.1}}</th>
                                 <th>{{prr.2|default_if_none:'-'}}</th>
                                 <th>{{prr.3}}</th>
                                 <th>{{prr.4|default_if_none:'-'}}</th>
-                                <th>{{prr.5|date:"d/m/Y"|default_if_none:'-'}}</th>
-                                <th>{{prr.6|default_if_none:'-'}}</th>
-                                <th>{{prr.7|default_if_none:'-'}}</th>
+                                <th>{{prr.5|default_if_none:'-'}}</th>
+                                <th>{{prr.6|date:"d/m/Y"|default_if_none:'-'}}</th>
+                                <th>{{prr.7|date:"d/m/Y"|default_if_none:'-'}}</th>
                                 <th>{{prr.8|default_if_none:'-'}}</th>
                                 <th>{{prr.9|default_if_none:'-'}}</th>
                                 <th>{{prr.10|default_if_none:'-'}}</th>
+                                <th>{{prr.11|default_if_none:'-'}}</th>
                                 <th>{{prr.12|default_if_none:'-'}}</th>
-                                <th>{{prr.13|date:"d/m/Y"|default_if_none:'-'}}</th>
+                                <th>{{prr.14|default_if_none:'-'}}</th>
+                                <th>{{prr.15|date:"d/m/Y"|default_if_none:'-'}}</th>
                             </tr>
                             {% endfor %}
                         </tbody>
