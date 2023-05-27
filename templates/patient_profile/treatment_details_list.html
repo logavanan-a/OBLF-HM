@@ -48,16 +48,15 @@
                         <tbody>
                             {% for prr in data %}
                             <tr>
-                                <th>{{prr.0}}</th>
                                 <th>{{prr.1}}</th>
-                                <th>{{prr.2|default_if_none:'-'}}</th>
-                                <th>{{prr.3}}</th>
-                                <th>{{prr.4|default_if_none:'-'}}</th>
-                                <th>{{prr.5|date:"d/m/Y"|default_if_none:'-'}}</th>
-                                <th>{{prr.6|default_if_none:'-'}}</th>
+                                <th>{{prr.2}}</th>
+                                <th>{{prr.3|default_if_none:'-'}}</th>
+                                <th>{{prr.4}}</th>
+                                <th>{{prr.5|default_if_none:'-'}}</th>
+                                <th>{{prr.6|date:"d/m/Y"|default_if_none:'-'}}</th>
                                 <th>{{prr.7|default_if_none:'-'}}</th>
-                                <th>{{prr.8|date:"d/m/Y"|default_if_none:'-'}}</th>
-                                <th>{{prr.9|default_if_none:'-'}}</th>
+                                <th>{{prr.8|default_if_none:'-'}}</th>
+                                <th>{{prr.9|date:"d/m/Y"|default_if_none:'-'}}</th>
                                 <th>{{prr.10|default_if_none:'-'}}</th>
                                 <th>{{prr.11|default_if_none:'-'}}</th>
                                 <th>{{prr.12|default_if_none:'-'}}</th>
@@ -69,6 +68,7 @@
                                 <th>{{prr.18|default_if_none:'-'}}</th>
                                 <th>{{prr.19|default_if_none:'-'}}</th>
                                 <th>{{prr.20|default_if_none:'-'}}</th>
+                                <th>{{prr.21|default_if_none:'-'}}</th>
                             </tr>
                             {% endfor %}
                         </tbody>

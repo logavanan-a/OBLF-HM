@@ -342,7 +342,7 @@ def treatment_details_list(request):
         format_name = "'%"+patient_name+"%'"
         pnt_name = '''and pt.name ilike '''+format_name
         pnt_code = '''or pt.patient_id ilike '''+format_name
-    sql = '''select phc.name as phc_name, sbc.name as sbc_name, vlg.name as village_name, pt.name as patient_name, pt.patient_id as patient_code, pt.registered_date, date_part('year',age(pt.dob))::int as age, 
+    sql = '''select distinct on (trmt.uuid) trmt.uuid, phc.name as phc_name, sbc.name as sbc_name, vlg.name as village_name, pt.name as patient_name, pt.patient_id as patient_code, pt.registered_date, date_part('year',age(pt.dob))::int as age, 
     case when pt.gender=1 then 'Male' when pt.gender=2 then 'Female' end as gender, 
     trmt.visit_date, case when trmt.is_alcoholic=1 then 'YES' when trmt.is_alcoholic=0 then 'NO' end as drinking, 
     case when trmt.is_smoker=1 then 'YES' when trmt.is_smoker=0 then 'NO' end as smoking, 
@@ -352,12 +352,13 @@ def treatment_details_list(request):
     case when trmt.bp_sys3!='' then trmt.bp_sys3 when trmt.bp_sys2!='' then trmt.bp_sys2 when trmt.bp_sys1!='' then trmt.bp_sys1 else '-' end as sbp, 
     case when trmt.bp_non_sys3!='' then trmt.bp_non_sys3 when trmt.bp_non_sys2!='' then trmt.bp_non_sys2 when trmt.bp_non_sys1!='' then trmt.bp_non_sys1 else '-' end as dbp, 
     trmt.fbs as fbs, trmt.pp as pp, trmt.random as random, trmt.symptoms, trmt.remarks, case when pt.status=2 then 'Active' when pt.status=1 then 'Inactive' end as status 
-    from health_management_patients pt inner join application_masters_village vlg on pt.village_id = vlg.id 
+    from health_management_treatments trmt  
+    inner join health_management_patients pt on trmt.patient_uuid=pt.uuid
+    inner join application_masters_village vlg on pt.village_id = vlg.id
     inner join application_masters_subcenter sbc on vlg.subcenter_id = sbc.id 
     inner join application_masters_phc phc on sbc.phc_id = phc.id 
-    inner join health_management_treatments trmt on pt.uuid=trmt.patient_uuid 
     where 1=1 '''+phc_id+sbc_ids+village_id+between_date+pnt_name+pnt_code+'''
-    order by trmt.visit_date desc'''
+    order by trmt.uuid, trmt.visit_date desc'''
     cursor = connection.cursor()
     cursor.execute(sql)
     treatment_data = cursor.fetchall()
@@ -392,7 +393,6 @@ def treatment_details_list(request):
             ])
         for patient in treatment_data:
             writer.writerow([
-                patient[0],
                 patient[1],
                 patient[2],
                 patient[3],
@@ -413,6 +413,7 @@ def treatment_details_list(request):
                 patient[18],
                 patient[19],
                 patient[20],
+                patient[21],
                 ])
         return response
     data = pagination_function(request, treatment_data)
@@ -492,15 +493,15 @@ def diagnosis_details_list(request):
     case when pt.gender=1 then 'Male' when pt.gender=2 then 'Female' end as gender, ndc.name as diagnosis, 
     case when dgs.detected_by=1 then 'CLINIC' when dgs.detected_by=2 then 'OUTSIDE' end as detected_by, 
     case when dgs.source_treatment=1 then 'CLINIC' when dgs.source_treatment=2 then 'OUTSIDE' when dgs.source_treatment=3 then 'C&O' end as source_of_tretement, 
-    dgs.detected_years, to_char(dgs.detected_years, 'MM/YYYY'), (dgs.server_modified_on at time zone 'Asia/Kolkata')::date from health_management_diagnosis dgs  
+    dgs.detected_years, to_char(dgs.detected_years, 'MM/YYYY'), (dgs.server_created_on at time zone 'Asia/Kolkata')::date from health_management_diagnosis dgs  
     inner join application_masters_masterlookup ndc on dgs.ndc_id=ndc.id 
-    left join health_management_patients pt on dgs.patient_uuid=pt.uuid 
+    inner join health_management_patients pt on dgs.patient_uuid=pt.uuid 
     left join health_management_treatments trmt on dgs.patient_uuid=trmt.patient_uuid 
-    left join application_masters_village vlg on pt.village_id = vlg.id
-    left join application_masters_subcenter sbc on vlg.subcenter_id = sbc.id 
-    left join application_masters_phc phc on sbc.phc_id = phc.id 
+    inner join application_masters_village vlg on pt.village_id = vlg.id
+    inner join application_masters_subcenter sbc on vlg.subcenter_id = sbc.id 
+    inner join application_masters_phc phc on sbc.phc_id = phc.id 
     where 1=1 '''+phc_id+sbc_ids+village_id+between_date+pnt_name+pnt_code+'''
-    order by dgs.uuid, dgs.detected_years, (dgs.server_modified_on at time zone 'Asia/Kolkata')::date desc'''
+    order by dgs.uuid, dgs.detected_years, (dgs.server_created_on at time zone 'Asia/Kolkata')::date desc'''
     cursor = connection.cursor()
     cursor.execute(sql)
     diagnosis_data = cursor.fetchall()

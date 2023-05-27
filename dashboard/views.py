@@ -173,11 +173,11 @@ def dashboard(request):
     inner join health_management_patients pt on dgs.patient_uuid=pt.uuid where 1=1 """+village_name+dgs_date_filter+""" order by dgs.patient_uuid, dgs.server_created_on desc), c as (select distinct((trmt.visit_date at time zone 'Asia/Kolkata')::date) as vst_date, pt.name as patient_name 
     from health_management_treatments trmt inner join health_management_patients pt on trmt.patient_uuid=pt.uuid inner join health_management_prescription psp on trmt.uuid=psp.treatment_uuid 
     inner join application_masters_medicines ms on psp.medicines_id=ms.id where 1=1 and trmt.status = 2 """+village_name+date_filter+"""), d as (select count(*) as home_count from health_management_homevisit hv 
-    inner join health_management_patients pt on hv.patient_uuid=pt.uuid where 1=1 and hv.status=2 """+village_name+home_date_filter+"""), e as (select count(*) as count from health_management_treatments trmt 
-    inner join health_management_patients pt on trmt.patient_uuid=pt.uuid where 1=1 and trmt.status = 2 """+village_name+date_filter+"""),f as (select count(*) as count from health_management_diagnosis dgs 
+    inner join health_management_patients pt on hv.patient_uuid=pt.uuid where 1=1 and hv.status=2 """+village_name+home_date_filter+"""), e as (select count(distinct(trmt.id)) as count from health_management_treatments trmt 
+    inner join health_management_patients pt on trmt.patient_uuid=pt.uuid where 1=1 and trmt.status = 2 """+village_name+date_filter+"""),f as (select count(distinct(dgs.id)) as count from health_management_diagnosis dgs 
     inner join health_management_patients pt on dgs.patient_uuid=pt.uuid where 1=1 and dgs.status = 2 """+village_name+dgs_date_filter+"""), 
     g as (select coalesce(sum(case when mtk.name='KHT' or mtk.name='KDM' or mtk.name='HT' or mtk.name='DM' then 1 else 0 end),0) as count from b 
-    inner join health_management_diagnosis dgs on b.d_uuid=dgs.uuid inner join application_masters_masterlookup mtk on dgs.ndc_id=mtk.id where 1=1 and dgs.status = 2), h as (select (count(*)- count(non_ncd.p_uuid)) as non_ncd_count 
+    inner join health_management_diagnosis dgs on b.d_uuid=dgs.uuid inner join application_masters_masterlookup mtk on dgs.ndc_id=mtk.id where 1=1 and dgs.status = 2), h as (select (count(distinct(pt.id)) - count(non_ncd.p_uuid)) as non_ncd_count 
     from health_management_patients pt left outer join (select distinct on (dgs.patient_uuid) dgs.patient_uuid as p_uuid, dgs.uuid as d_uuid, dgs.server_created_on as sc_date 
     from health_management_diagnosis dgs inner join health_management_patients pt on dgs.patient_uuid=pt.uuid 
     where 1=1 """+village_name+dgs_date_filter+""" order by dgs.patient_uuid, dgs.server_created_on desc) as non_ncd on pt.uuid=non_ncd.p_uuid where 1=1 """+village_name+patient_date_filter+""") 
