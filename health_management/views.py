@@ -496,7 +496,7 @@ def diagnosis_details_list(request):
     dgs.detected_years, to_char(dgs.detected_years, 'MM/YYYY'), (dgs.server_created_on at time zone 'Asia/Kolkata')::date from health_management_diagnosis dgs  
     inner join application_masters_masterlookup ndc on dgs.ndc_id=ndc.id 
     inner join health_management_patients pt on dgs.patient_uuid=pt.uuid 
-    left join health_management_treatments trmt on dgs.patient_uuid=trmt.patient_uuid 
+    left join health_management_treatments trmt on dgs.patient_uuid=trmt.patient_uuid and (dgs.server_created_on at time zone 'Asia/Kolkata')::date=(trmt.visit_date at time zone 'Asia/Kolkata')::date
     inner join application_masters_village vlg on pt.village_id = vlg.id
     inner join application_masters_subcenter sbc on vlg.subcenter_id = sbc.id 
     inner join application_masters_phc phc on sbc.phc_id = phc.id 
