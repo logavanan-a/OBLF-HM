@@ -116,6 +116,11 @@ class TagSerializer(serializers.ModelSerializer):
         model = Village
         fields = '__all__'
 
+class HealthSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Health
+        fields = '__all__'
+
 
 class UserProfileSerializers(serializers.ModelSerializer):
     username = serializers.CharField(source='user.username')

@@ -132,6 +132,28 @@ class Treatments(BaseContent):
         return patients_list
 
 
+class Health(BaseContent):
+    uuid = models.CharField(max_length=150, null=True, blank=True)
+    user_uuid = models.CharField(max_length=150, null=True, blank=True)
+    patient_uuid = models.CharField(max_length=150, null=True, blank=True)
+    hyper_diabetic = models.PositiveIntegerField(default=0)
+    co_morbid_ids = models.CharField(max_length=150, null=True, blank=True)
+    co_morbid_names = models.CharField(max_length=500, null=True, blank=True)
+    is_alcoholic = models.IntegerField(default=0)
+    is_tobacco = models.IntegerField(default=0)
+    is_smoker = models.IntegerField(default=0, null=True, blank=True)
+    dm_check = models.IntegerField(default=0)
+    ht_check = models.IntegerField(default=0)
+    dm_status = models.IntegerField(default=0)
+    ht_status = models.IntegerField(default=0)
+    dm_source_treatment = models.IntegerField(default=0)
+    ht_source_treatment = models.IntegerField(default=0)
+    dm_years = models.DateField(null=True, blank=True)
+    ht_years = models.DateField(null=True, blank=True)
+    dm_detected_by = models.IntegerField(default=0)
+    ht_detected_by = models.IntegerField(default=0)
+
+
 class Prescription(BaseContent):
     uuid = models.CharField(max_length=150, null=True, blank=True)
     patient_uuid = models.CharField(max_length=150, null=True, blank=True)

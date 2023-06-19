@@ -43,7 +43,22 @@ class TreatmentsAdmin(ImportExportModelAdmin, ImportExportFormat):
     date_hierarchy = 'visit_date'
     list_per_page = 15
 
-
+@admin.register(Health)
+class HealthAdmin(ImportExportModelAdmin, ImportExportFormat):
+    list_display = ['uuid', 'user_uuid', 'patient_uuid',
+        'hyper_diabetic', 'co_morbid_ids', 'co_morbid_names',
+        'is_alcoholic', 'is_tobacco', 'is_smoker',
+        'dm_check', 'ht_check', 'dm_status', 'ht_status', 'dm_source_treatment',
+        'ht_source_treatment', 'dm_years', 'ht_years', 'dm_detected_by', 'ht_detected_by',
+        'server_created_on', 'server_modified_on', 'status']
+    fields = ['uuid', 'user_uuid', 'patient_uuid',
+        'hyper_diabetic',  'co_morbid_ids', 'co_morbid_names',
+        'is_alcoholic', 'is_tobacco', 'is_smoker',
+        'dm_check', 'ht_check', 'dm_status', 'ht_status', 'dm_source_treatment',
+        'ht_source_treatment', 'dm_years', 'ht_years', 'dm_detected_by', 'ht_detected_by',
+        'status']
+    search_fields = ['uuid', 'user_uuid', 'patient_uuid']
+    list_per_page = 15
 
 @admin.register(Prescription)
 class PrescriptionAdmin(ImportExportModelAdmin, ImportExportFormat):
@@ -91,6 +106,7 @@ class UserProfileAdmin(ImportExportModelAdmin, ImportExportFormat):
 
     def villages(self, instance):
         return [villages.name for villages in instance.village.filter()]
+
 
     
 
