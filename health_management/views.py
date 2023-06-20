@@ -2305,8 +2305,6 @@ class Phc_push(APIView):
                         health_response['data'].append(health_info)
                         health_success =  health_response['data']
 
-
-
             else :
                 return Response({
                 "message":"User does not exits"
