@@ -153,6 +153,9 @@ class Health(BaseContent):
     dm_detected_by = models.IntegerField(default=0)
     ht_detected_by = models.IntegerField(default=0)
 
+    def __str__(self):
+        return self.uuid
+
 
 class Prescription(BaseContent):
     uuid = models.CharField(max_length=150, null=True, blank=True)
@@ -197,7 +200,6 @@ class Diagnosis(BaseContent):
     source_treatment = models.IntegerField(null=True, blank=True)
     detected_by = models.IntegerField(null=True, blank=True)
     detected_years = models.DateField(null=True, blank=True)
-    # years = models.CharField(max_length=150, null=True, blank=True)
     sync_status = models.IntegerField(default=2)
 
     class Meta:
