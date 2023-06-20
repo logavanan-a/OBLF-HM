@@ -2177,7 +2177,6 @@ class Phc_pull(APIView):
             jsonresponse_full['dosage'] = dosageserializer.data #8
             jsonresponse_full['category'] = categoryserializer.data #9
             jsonresponse_full['ndcs'] = ndcserializers.data #10
-            jsonresponse_full['health'] = healthserializer.data #18
             jsonresponse_full['comorbids'] = comorbidserializers.data #11
             jsonresponse_full['patients'] = patientSerializers.data #13
             jsonresponse_full['treatment'] = patient_treatmentSerializers.data #14
@@ -2185,6 +2184,7 @@ class Phc_pull(APIView):
             jsonresponse_full['diagnosis'] = diagnosisserializers.data #16
             jsonresponse_full['scanned_report'] = scanned_reportserializers.data #17
             jsonresponse_full['home_visit'] = home_visit_serializers.data #18
+            jsonresponse_full['health'] = healthserializer.data #19
             message = 'Data already sent'
             # for i in jsonresponse_full.values():
             if (len(patient_smo_date) != 0):
