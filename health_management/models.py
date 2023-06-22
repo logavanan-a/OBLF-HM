@@ -18,12 +18,12 @@ class Patients(BaseContent):
         (2, 'Female'),
         (3, 'Other')
         )
-    uuid = models.CharField(max_length=150, blank=True, null=True)
+    uuid = models.CharField(max_length=150, blank=True, null=True, db_index=True)
     user_uuid = models.CharField(max_length=150, null=True, blank=True)
     patient_id = models.CharField(max_length=150, blank=True, null=True)
     name = models.CharField(max_length=150)
     dob = models.DateField(blank=True, null=True)
-    age = models.PositiveIntegerField(blank=True, null=True)
+    # age = models.PositiveIntegerField(blank=True, null=True)
     gender = models.IntegerField(choices=GENDER_CHOICE, blank=True, null=True)
     village = models.ForeignKey(
         Village, on_delete=models.DO_NOTHING, blank=True, null=True)
@@ -32,17 +32,15 @@ class Patients(BaseContent):
     image = models.FileField(
         upload_to='patients_image/%y/%m/%d/', blank=True, null=True)
     height = models.PositiveIntegerField(blank=True, null=True)
-    weight = models.DecimalField(blank=True, null=True, max_digits=5, decimal_places=2)
+    # weight = models.DecimalField(blank=True, null=True, max_digits=5, decimal_places=2)
     subcenter_id = models.PositiveIntegerField(blank=True, null=True)
     door_no = models.CharField(max_length=150, null=True, blank=True)
     seq_no = models.CharField(max_length=150, null=True, blank=True)
     patient_visit_type = models.ForeignKey(
         MasterLookup, on_delete=models.DO_NOTHING, null=True, blank=True)
-    fee_status = models.PositiveIntegerField(null=True, blank=True)
-    fee_paid = models.PositiveIntegerField(null=True, blank=True)
-    fee_date = models.DateTimeField(null=True, blank=True)
+    
     registered_date = models.DateTimeField(null=True, blank=True)
-    last_visit_date = models.DateTimeField(null=True, blank=True)
+    # last_visit_date = models.DateTimeField(null=True, blank=True)
     sync_status = models.IntegerField(default=2)
 
     class Meta:
@@ -87,10 +85,6 @@ class Patients(BaseContent):
 
 
 class Treatments(BaseContent):
-    SMOKER_CHOICES = (
-    (0, 'No'),
-    (1, 'Yes')
-    )
     SMOKER_CONTROLLED = (
     (0, 'No'),
     (1, 'Yes')
@@ -112,12 +106,6 @@ class Treatments(BaseContent):
     bmi = models.CharField(max_length=150, null=True, blank=True)
     symptoms = models.CharField(max_length=150, null=True, blank=True)
     remarks = models.CharField(max_length=500, null=True, blank=True)
-    hyper_diabetic = models.PositiveIntegerField(null=True, blank=True)
-    co_morbid_ids = models.CharField(max_length=150, null=True, blank=True)
-    co_morbid_names = models.CharField(max_length=500, null=True, blank=True)
-    is_alcoholic = models.IntegerField(null=True, blank=True)
-    is_tobacco = models.IntegerField(null=True, blank=True)
-    is_smoker = models.IntegerField(choices = SMOKER_CHOICES, null=True, blank=True)
     is_controlled = models.IntegerField(choices = SMOKER_CONTROLLED, null=True, blank=True)
     sync_status = models.IntegerField(default=2)
 
@@ -136,7 +124,7 @@ class Health(BaseContent):
     uuid = models.CharField(max_length=150, null=True, blank=True)
     user_uuid = models.CharField(max_length=150, null=True, blank=True)
     patient_uuid = models.CharField(max_length=150, null=True, blank=True)
-    hyper_diabetic = models.PositiveIntegerField(default=0)
+    hyper_diabetic = models.IntegerField(default=0)
     co_morbid_ids = models.CharField(max_length=150, null=True, blank=True)
     co_morbid_names = models.CharField(max_length=500, null=True, blank=True)
     is_alcoholic = models.IntegerField(default=0)
@@ -272,6 +260,12 @@ class HomeVisit(BaseContent):
             patients_list = None
         return patients_list
 
+class FeePayement(BaseContent):
+    uuid = models.CharField(max_length=150, null=True, blank=True)
+    patient_uuid = models.CharField(max_length=150, null=True, blank=True)
+    fee_status = models.PositiveIntegerField(null=True, blank=True)
+    fee_paid = models.PositiveIntegerField(null=True, blank=True)
+    payment_date = models.DateTimeField(null=True, blank=True)
    
 
 class MedicineStock(BaseContent):

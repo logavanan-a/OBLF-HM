@@ -2166,6 +2166,11 @@ class Phc_pull(APIView):
                 health_smo_date = health_smo_date.filter(server_modified_on__gt = datetime.strptime(data.get('health_smo_date'), '%Y-%m-%dT%H:%M:%S.%f%z'))
             healthserializer = HealthSerializer(health_smo_date[:batch_rec],many=True)
 
+            fee_smo_date = FeePayement.objects.filter(status=2,patient_uuid__in=patient_uuids).order_by('server_modified_on')
+            if data.get('fee_smo_date'):
+                fee_smo_date = fee_smo_date.filter(server_modified_on__gt = datetime.strptime(data.get('fee_smo_date'), '%Y-%m-%dT%H:%M:%S.%f%z'))
+            feepayementserializer = HealthSerializer(fee_smo_date[:batch_rec],many=True)
+
             jsonresponse_full = {}
             jsonresponse_full['villages'] = villagesites_serializer.data #1
             jsonresponse_full['state'] = stateserializer.data #2
@@ -2185,6 +2190,7 @@ class Phc_pull(APIView):
             jsonresponse_full['scanned_report'] = scanned_reportserializers.data #17
             jsonresponse_full['home_visit'] = home_visit_serializers.data #18
             jsonresponse_full['health'] = healthserializer.data #19
+            jsonresponse_full['fee_payement'] = feepayementserializer.data #20
             message = 'Data already sent'
             # for i in jsonresponse_full.values():
             if (len(patient_smo_date) != 0):
@@ -2209,131 +2215,145 @@ class Phc_push(APIView):
         scanned_report_success =[]
         home_visit_success =[]
         health_success =[]
+        fee_payement_success =[]
+        # try:
+        data = request.build_absolute_uri()
+        data = request.data
+        # import ipdbget
+        # ipdb.set_trace()
+        patient_response = {'data':[]}
+        diagnosis_response = {'data':[]}
+        prescription_response = {'data':[]}
+        treatment_response = {'data':[]}
+        scanned_report_response = {'data':[]}
+        home_visit_response = {'data':[]}
+        health_response = {'data':[]}
+        fee_payement_response = {'data':[]}
+
         try:
-            data = request.build_absolute_uri()
-            data = request.data
-            # import ipdbget
-            # ipdb.set_trace()
-            patient_response = {'data':[]}
-            diagnosis_response = {'data':[]}
-            prescription_response = {'data':[]}
-            treatment_response = {'data':[]}
-            scanned_report_response = {'data':[]}
-            home_visit_response = {'data':[]}
-            health_response = {'data':[]}
+            valid_user = UserProfile.objects.filter(uuid = pk)
+        except:
+            return Response({"message":"Invalid UUID"})
+        #-TODO-valid user based on that village
+        if  valid_user :
+            user = valid_user.first()
+            with transaction.atomic():
+                # user_data = data.get('userdata')
+                patient_data  = patient_details(request)
+                for obj in patient_data:
+                    patient_info ={}
+                    patient_info['uuid']=obj.uuid
+                    patient_info['patient_id'] = obj.patient_id
+                    patient_info['SCO'] = obj.server_created_on
+                    patient_info['SMO'] = obj.server_modified_on
+                    patient_info['sync_status'] = obj.sync_status
+                    patient_response['data'].append(patient_info)
+                    patient_success =  patient_response['data']
 
-            try:
-                valid_user = UserProfile.objects.filter(uuid = pk)
-            except:
-                return Response({"message":"Invalid UUID"})
-            #-TODO-valid user based on that village
-            if  valid_user :
-                user = valid_user.first()
-                with transaction.atomic():
-                    # user_data = data.get('userdata')
-                    patient_data  = patient_details(request)
-                    for obj in patient_data:
-                        patient_info ={}
-                        patient_info['uuid']=obj.uuid
-                        patient_info['patient_id'] = obj.patient_id
-                        patient_info['SCO'] = obj.server_created_on
-                        patient_info['SMO'] = obj.server_modified_on
-                        patient_info['sync_status'] = obj.sync_status
-                        patient_response['data'].append(patient_info)
-                        patient_success =  patient_response['data']
+                
+                diagnosis_data  = diagnosis_details(data)
+                for obj in diagnosis_data:
+                    diagnosis_info ={}
+                    diagnosis_info['uuid']=obj.uuid
+                    diagnosis_info['SCO'] = obj.server_created_on
+                    diagnosis_info['SMO'] = obj.server_modified_on
+                    diagnosis_info['sync_status'] = obj.sync_status
+                    diagnosis_response['data'].append(diagnosis_info)
+                    diagnosis_success =  diagnosis_response['data']
 
-                    
-                    diagnosis_data  = diagnosis_details(data)
-                    for obj in diagnosis_data:
-                        diagnosis_info ={}
-                        diagnosis_info['uuid']=obj.uuid
-                        diagnosis_info['SCO'] = obj.server_created_on
-                        diagnosis_info['SMO'] = obj.server_modified_on
-                        diagnosis_info['sync_status'] = obj.sync_status
-                        diagnosis_response['data'].append(diagnosis_info)
-                        diagnosis_success =  diagnosis_response['data']
+                
+                prescription_data  = prescription_details(data)
+                for obj in prescription_data:
+                    prescription_info ={}
+                    prescription_info['uuid']=obj.uuid
+                    prescription_info['SCO'] = obj.server_created_on
+                    prescription_info['SMO'] = obj.server_modified_on
+                    prescription_info['sync_status'] = obj.sync_status
+                    prescription_response['data'].append(prescription_info)
+                    prescription_success =  prescription_response['data']
 
-                    
-                    prescription_data  = prescription_details(data)
-                    for obj in prescription_data:
-                        prescription_info ={}
-                        prescription_info['uuid']=obj.uuid
-                        prescription_info['SCO'] = obj.server_created_on
-                        prescription_info['SMO'] = obj.server_modified_on
-                        prescription_info['sync_status'] = obj.sync_status
-                        prescription_response['data'].append(prescription_info)
-                        prescription_success =  prescription_response['data']
+                treatment_data  = treatment_details(data)
+                for obj in treatment_data:
+                    treatment_info ={}
+                    treatment_info['uuid']=obj.uuid
+                    treatment_info['SCO'] = obj.server_created_on
+                    treatment_info['SMO'] = obj.server_modified_on
+                    treatment_info['sync_status'] = obj.sync_status
+                    treatment_response['data'].append(treatment_info)
+                    treatment_success =  treatment_response['data']
 
-                    treatment_data  = treatment_details(data)
-                    for obj in treatment_data:
-                        treatment_info ={}
-                        treatment_info['uuid']=obj.uuid
-                        treatment_info['SCO'] = obj.server_created_on
-                        treatment_info['SMO'] = obj.server_modified_on
-                        treatment_info['sync_status'] = obj.sync_status
-                        treatment_response['data'].append(treatment_info)
-                        treatment_success =  treatment_response['data']
+                
+                scanned_report_data  = scanned_report_details(data)
+                for obj in scanned_report_data:
+                    scanned_report_info ={}
+                    scanned_report_info['uuid']=obj.uuid
+                    scanned_report_info['SCO'] = obj.server_created_on
+                    scanned_report_info['SMO'] = obj.server_modified_on
+                    scanned_report_info['sync_status'] = obj.sync_status
+                    scanned_report_response['data'].append(scanned_report_info)
+                    scanned_report_success =  scanned_report_response['data']
+                
+                home_visit_data  = home_visit_details(request)
+                for obj in home_visit_data:
+                    home_visit_info ={}
+                    home_visit_info['uuid']=obj.uuid
+                    home_visit_info['SCO'] = obj.server_created_on
+                    home_visit_info['SMO'] = obj.server_modified_on
+                    home_visit_info['sync_status'] = obj.sync_status
+                    home_visit_response['data'].append(home_visit_info)
+                    home_visit_success =  home_visit_response['data']
 
-                    
-                    scanned_report_data  = scanned_report_details(data)
-                    for obj in scanned_report_data:
-                        scanned_report_info ={}
-                        scanned_report_info['uuid']=obj.uuid
-                        scanned_report_info['SCO'] = obj.server_created_on
-                        scanned_report_info['SMO'] = obj.server_modified_on
-                        scanned_report_info['sync_status'] = obj.sync_status
-                        scanned_report_response['data'].append(scanned_report_info)
-                        scanned_report_success =  scanned_report_response['data']
-                    
-                    home_visit_data  = home_visit_details(request)
-                    for obj in home_visit_data:
-                        home_visit_info ={}
-                        home_visit_info['uuid']=obj.uuid
-                        home_visit_info['SCO'] = obj.server_created_on
-                        home_visit_info['SMO'] = obj.server_modified_on
-                        home_visit_info['sync_status'] = obj.sync_status
-                        home_visit_response['data'].append(home_visit_info)
-                        home_visit_success =  home_visit_response['data']
+                health_data  = health_details(data)
+                for obj in health_data:
+                    health_info ={}
+                    health_info['uuid']=obj.uuid
+                    health_info['SCO'] = obj.server_created_on
+                    health_info['SMO'] = obj.server_modified_on
+                    health_info['sync_status'] = obj.sync_status
+                    health_response['data'].append(health_info)
+                    health_success =  health_response['data']
 
-                    health_data  = health_details(data)
-                    for obj in health_data:
-                        health_info ={}
-                        health_info['uuid']=obj.uuid
-                        health_info['SCO'] = obj.server_created_on
-                        health_info['SMO'] = obj.server_modified_on
-                        health_info['sync_status'] = obj.sync_status
-                        health_response['data'].append(health_info)
-                        health_success =  health_response['data']
+                fee_payement_data  = fee_payement_details(data)
+                for obj in fee_payement_data:
+                    fee_payement_info ={}
+                    fee_payement_info['uuid']=obj.uuid
+                    fee_payement_info['SCO'] = obj.server_created_on
+                    fee_payement_info['SMO'] = obj.server_modified_on
+                    fee_payement_info['sync_status'] = obj.sync_status
+                    fee_payement_response['data'].append(fee_payement_info)
+                    fee_payement_success =  fee_payement_response['data']
 
-            else :
-                return Response({
-                "message":"User does not exits"
-                })
-                    
+        else :
             return Response({
-                "status":2,
-                "message":"Data Already Sent",
-                "patient_data" : patient_success,
-                "diagnosis_data" : diagnosis_success,
-                "prescription_data" : prescription_success,
-                "treatment_data" : treatment_success,
-                "scanned_report_data" : scanned_report_success,
-                "home_visit_data" : home_visit_success,
-                "health_data" : health_success,
+            "message":"User does not exits"
             })
+                
+        return Response({
+            "status":2,
+            "message":"Data Already Sent",
+            "patient_data" : patient_success,
+            "diagnosis_data" : diagnosis_success,
+            "prescription_data" : prescription_success,
+            "treatment_data" : treatment_success,
+            "scanned_report_data" : scanned_report_success,
+            "home_visit_data" : home_visit_success,
+            "health_data" : health_success,
+            "fee_payement_data" : fee_payement_success,
+        })
 
-        except Exception as e:
-            return Response({
-                "status":0,
-                "message":str(e),
-                "patient_data" : patient_success,
-                "diagnosis_data" : diagnosis_success,
-                "prescription_data" : prescription_success,
-                "treatment_data" : treatment_success,
-                "scanned_report_data" : scanned_report_success,
-                "home_visit_data" : home_visit_success,
-                "health_data" : health_success,
-            })
+        # except Exception as e:
+        #     return Response({
+        #         "status":0,
+        #         "message":str(e),
+        #         "patient_data" : patient_success,
+        #         "diagnosis_data" : diagnosis_success,
+        #         "prescription_data" : prescription_success,
+        #         "treatment_data" : treatment_success,
+        #         "scanned_report_data" : scanned_report_success,
+        #         "home_visit_data" : home_visit_success,
+        #         "health_data" : health_success,
+        #         "fee_payement_data" : fee_payement_success,
+        #     })
     
 def patient_details(self):
     objlist =[]
@@ -2346,21 +2366,15 @@ def patient_details(self):
             defaults= {
                         "name" : data.get('name'),
                         "dob" : data.get('dob'),
-                        "age":data.get('age'),
                         "gender" : data.get('gender'),
                         "village_id" : data.get('village_id') if data.get('village_id') != 0 else None,
                         "subcenter_id" : data.get('subcenter_id') if data.get('subcenter_id') != '' else None,
                         "phone_number": data.get('phone'),
                         "height":data.get('height'),
-                        "weight":data.get('weight') if data.get('weight') != '' else None,
-                        "door_no":data.get('door_no') if data.get('weight') != '' else None,
-                        "seq_no":data.get('seq_no') if data.get('weight') != '' else None,
+                        "door_no":data.get('door_no') if data.get('door_no') != '' else None,
+                        "seq_no":data.get('seq_no') if data.get('seq_no') != '' else None,
                         "patient_visit_type_id": data.get('patient_visit_type'),                        
-                        "fee_status":data.get('fee_status'),
-                        "fee_paid":data.get('fee_paid'),
-                        "fee_date":data.get('fee_date'),
                         "registered_date":data.get('registered_date'),
-                        "last_visit_date":data.get('last_visit_date'),
                         })
         if created:
             obj.patient_id = data.get('patient_id')
@@ -2398,13 +2412,6 @@ def treatment_details(self):
                     "bmi" : data.get('bmi'),
                     "symptoms" : data.get('symptoms'),
                     "remarks" : data.get('remarks'),
-                    "co_morbid_ids" : data.get('co_morbid_ids'),
-                    "co_morbid_names" : data.get('co_morbid_names'),
-                    "hyper_diabetic" : data.get('hyper_diabetic'),
-                    "is_alcoholic" : data.get('is_alcoholic'),
-                    # "sub_category_names" : data.get('sub_category_names'),
-                    "is_tobacco":data.get('is_tobacco'),
-                    "is_smoker":data.get('is_smoker'),
                     "is_controlled":data.get('is_controlled'),
                     })
         objlist.append(obj)
@@ -2482,9 +2489,23 @@ def diagnosis_details(self):
                     "detected_years" : data.get('years'),
                     })
         objlist.append(obj)
-
     return objlist
 
+def fee_payement_details(self):
+    objlist = []
+    datas = json.loads(self.get('fee_payment'))
+    create_post_log(self,datas)
+    for data in datas:
+        obj,created = FeePayement.objects.update_or_create(
+            uuid = data.get('uuid'),
+            patient_uuid = data.get('patient_uuid'),
+            defaults = {
+                    "fee_status" : data.get('fee_status'),
+                    "fee_paid" : data.get('fee_paid'),
+                    "payment_date" : data.get('payment_date'),
+                    })
+        objlist.append(obj)
+    return objlist
 
 def scanned_report_details(self):
     objlist = []
@@ -2495,14 +2516,12 @@ def scanned_report_details(self):
             uuid = data.get('uuid'),
             user_uuid = data.get('user_uuid'),
             patient_uuid = data.get('patient_uuid'),
-
             defaults = {
                     "title" : data.get('title'),
                     "image_path" : data.get('image_path'),
                     "captured_date" : data.get('captured_date'),
                     })
         objlist.append(obj)
-
     return objlist
 
 

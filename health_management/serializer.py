@@ -121,6 +121,11 @@ class HealthSerializer(serializers.ModelSerializer):
         model = Health
         fields = '__all__'
 
+class FeePayementSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = FeePayement
+        fields = '__all__'
+
 
 class UserProfileSerializers(serializers.ModelSerializer):
     username = serializers.CharField(source='user.username')

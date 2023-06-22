@@ -12,12 +12,10 @@ class PatientsResource(resources.ModelResource):
 
 @admin.register(Patients)
 class PatientsAdmin(ImportExportModelAdmin, ImportExportFormat):
-    list_display = ['name', 'village', 'uuid', 'patient_id', 'user_uuid', 'dob', 'age', 'gender', 'phone_number', 'image',
-     'height', 'weight', 'door_no', 'seq_no', 'patient_visit_type', 'fee_status', 
-     'fee_paid', 'fee_date', 'registered_date', 'last_visit_date', 'server_created_on', 'server_modified_on', 'status']
-    fields = ['name', 'village', 'uuid', 'patient_id', 'user_uuid', 'dob', 'age', 'gender', 'phone_number', 'image',
-     'height', 'weight', 'door_no', 'seq_no', 'patient_visit_type', 'fee_status',
-     'fee_paid', 'fee_date', 'registered_date', 'last_visit_date', 'status']
+    list_display = ['name', 'village', 'uuid', 'patient_id', 'user_uuid', 'dob', 'gender', 'phone_number', 'image',
+     'height', 'door_no', 'seq_no', 'patient_visit_type', 'registered_date', 'server_created_on', 'server_modified_on', 'status']
+    fields = ['name', 'village', 'uuid', 'patient_id', 'user_uuid', 'dob', 'gender', 'phone_number', 'image',
+     'height', 'door_no', 'seq_no', 'patient_visit_type', 'registered_date', 'status']
     search_fields = ['name', 'uuid', 'patient_id', 'user_uuid']
     list_filter = ['village', 'status']
     date_hierarchy = 'server_created_on'
@@ -33,12 +31,10 @@ class PatientsAdmin(ImportExportModelAdmin, ImportExportFormat):
 class TreatmentsAdmin(ImportExportModelAdmin, ImportExportFormat):
     list_display = ['uuid', 'user_uuid', 'patient_uuid', 'visit_date', 'bp_sys1', 'bp_non_sys1', 'bp_sys2', 'bp_non_sys2',
      'bp_sys3', 'bp_non_sys3', 'fbs', 'pp', 'random', 'weight', 
-     'bmi', 'symptoms', 'remarks', 'hyper_diabetic', 'co_morbid_ids', 'co_morbid_names',
-     'is_alcoholic', 'is_tobacco', 'is_smoker', 'is_controlled', 'server_created_on', 'server_modified_on', 'status']
+     'bmi', 'symptoms', 'remarks', 'is_controlled', 'server_created_on', 'server_modified_on', 'status']
     fields = ['uuid', 'user_uuid', 'patient_uuid', 'visit_date', 'bp_sys1', 'bp_non_sys1', 'bp_sys2', 'bp_non_sys2',
      'bp_sys3', 'bp_non_sys3', 'fbs', 'pp', 'random', 'weight', 
-     'bmi', 'symptoms', 'remarks', 'hyper_diabetic', 'co_morbid_ids', 'co_morbid_names',
-     'is_alcoholic', 'is_tobacco', 'is_smoker', 'is_controlled', 'status']
+     'bmi', 'symptoms', 'remarks', 'is_controlled', 'status']
     search_fields = ['uuid', 'user_uuid', 'patient_uuid']
     date_hierarchy = 'visit_date'
     list_per_page = 15
@@ -58,6 +54,13 @@ class HealthAdmin(ImportExportModelAdmin, ImportExportFormat):
         'ht_source_treatment', 'dm_years', 'ht_years', 'dm_detected_by', 'ht_detected_by',
         'status']
     search_fields = ['uuid', 'user_uuid', 'patient_uuid']
+    list_per_page = 15
+
+@admin.register(FeePayement)
+class FeePayementAdmin(ImportExportModelAdmin, ImportExportFormat):
+    list_display = ['uuid', 'patient_uuid', 'fee_status', 'fee_paid', 'payment_date', 'status']
+    fields = ['uuid', 'patient_uuid', 'fee_status', 'fee_paid', 'payment_date', 'status']
+    search_fields = ['uuid', 'patient_uuid']
     list_per_page = 15
 
 @admin.register(Prescription)
