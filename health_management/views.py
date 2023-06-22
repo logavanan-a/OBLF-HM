@@ -1584,8 +1584,8 @@ def substance_abuse_list(request):
     if start_filter != '':
         s_date = start_filter
         e_date = end_filter
-        between_date = """and (trmt.visit_date at time zone 'Asia/Kolkata')::date >= '"""+s_date + \
-            """' and (trmt.visit_date at time zone 'Asia/Kolkata')::date <= '""" + \
+        between_date = """and (health.server_created_on at time zone 'Asia/Kolkata')::date >= '"""+s_date + \
+            """' and (health.server_created_on at time zone 'Asia/Kolkata')::date <= '""" + \
             e_date+"""' """
     phc_id= ""
     if phc:
@@ -1602,13 +1602,13 @@ def substance_abuse_list(request):
         get_village_name = Village.objects.get(id=village_ids)
         village_id = '''and vlg.id='''+village
     cursor = connection.cursor()
-    cursor.execute('''with a as (select DISTINCT ON (trmt.patient_uuid) trmt.patient_uuid as p_uuid, trmt.visit_date as vst_date, trmt.uuid as t_uuid from health_management_treatments trmt 
-    inner join health_management_patients pt on trmt.patient_uuid=pt.uuid where 1=1 order by p_uuid, vst_date desc) 
-    select phc.name as phc_name, sbc.name as sbc_name, vlg.name as vlg_name,coalesce(sum(case when trmt.is_alcoholic=1 then 1 else 0 end),0) as alcoholic, 
-    coalesce(sum(case when trmt.is_smoker=1 then 1 else 0 end),0) as smoker, coalesce(sum(case when trmt.is_tobacco=1 then 1 else 0 end),0) as tobacco 
-    from a inner join  health_management_treatments trmt on trmt.uuid=t_uuid inner join health_management_patients pt on trmt.patient_uuid=pt.uuid 
+    cursor.execute('''with a as (select DISTINCT ON (health.patient_uuid) health.patient_uuid as p_uuid, (health.server_created_on at time zone 'Asia/Kolkata')::date as hlt_date, health.uuid as t_uuid from health_management_health health 
+    inner join health_management_patients pt on health.patient_uuid=pt.uuid where 1=1 order by p_uuid, hlt_date desc) 
+    select phc.name as phc_name, sbc.name as sbc_name, vlg.name as vlg_name,coalesce(sum(case when health.is_alcoholic=1 then 1 else 0 end),0) as alcoholic, 
+    coalesce(sum(case when health.is_smoker=1 then 1 else 0 end),0) as smoker, coalesce(sum(case when health.is_tobacco=1 then 1 else 0 end),0) as tobacco 
+    from a inner join  health_management_health health on health.uuid=t_uuid inner join health_management_patients pt on health.patient_uuid=pt.uuid 
     inner join application_masters_village vlg on pt.village_id = vlg.id inner join application_masters_subcenter sbc on vlg.subcenter_id = sbc.id inner join application_masters_phc phc on sbc.phc_id = phc.id 
-    where 1=1 and trmt.status=2 '''+phc_id+sbc_ids+village_id+between_date+''' group by phc.name, sbc.name, vlg.name order by vlg.name''')
+    where 1=1 and health.status=2 '''+phc_id+sbc_ids+village_id+between_date+''' group by phc.name, sbc.name, vlg.name order by vlg.name''')
     substance_abuse_data = cursor.fetchall()
     export_flag = True if request.POST.get('export') and request.POST.get('export').lower() == 'true' else False
     if export_flag:
