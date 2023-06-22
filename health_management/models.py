@@ -266,7 +266,7 @@ class FeePayement(BaseContent):
     patient_uuid = models.CharField(max_length=150, null=True, blank=True, db_index=True)
     fee_status = models.PositiveIntegerField(null=True, blank=True)
     fee_paid = models.PositiveIntegerField(null=True, blank=True)
-    fee_date = models.DateTimeField(null=True, blank=True)
+    payment_date = models.DateTimeField(null=True, blank=True)
    
 
 class MedicineStock(BaseContent):

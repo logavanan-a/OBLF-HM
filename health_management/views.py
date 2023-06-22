@@ -2503,7 +2503,7 @@ def fee_payement_details(self):
             defaults = {
                     "fee_status" : data.get('fee_status'),
                     "fee_paid" : data.get('fee_paid'),
-                    "fee_date" : data.get('fee_date'),
+                    "payment_date" : data.get('payment_date'),
                     })
         objlist.append(obj)
     return objlist
