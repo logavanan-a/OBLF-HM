@@ -19,8 +19,8 @@ class Patients(BaseContent):
         (3, 'Other')
         )
     uuid = models.CharField(max_length=150, blank=True, null=True, db_index=True)
-    user_uuid = models.CharField(max_length=150, null=True, blank=True)
-    patient_id = models.CharField(max_length=150, blank=True, null=True)
+    user_uuid = models.CharField(max_length=150, null=True, blank=True, db_index=True)
+    patient_id = models.CharField(max_length=150, blank=True, null=True, db_index=True)
     name = models.CharField(max_length=150)
     dob = models.DateField(blank=True, null=True)
     # age = models.PositiveIntegerField(blank=True, null=True)
@@ -89,9 +89,9 @@ class Treatments(BaseContent):
     (0, 'No'),
     (1, 'Yes')
     )
-    uuid = models.CharField(max_length=150, null=True, blank=True)
-    user_uuid = models.CharField(max_length=150, null=True, blank=True)
-    patient_uuid = models.CharField(max_length=150, null=True, blank=True)
+    uuid = models.CharField(max_length=150, null=True, blank=True, db_index=True)
+    user_uuid = models.CharField(max_length=150, null=True, blank=True, db_index=True)
+    patient_uuid = models.CharField(max_length=150, null=True, blank=True, db_index=True)
     visit_date = models.DateTimeField(null=True, blank=True)
     bp_sys1 = models.CharField(max_length=150, null=True, blank=True)
     bp_non_sys1 = models.CharField(max_length=150, null=True, blank=True)
@@ -121,7 +121,7 @@ class Treatments(BaseContent):
 
 
 class Health(BaseContent):
-    uuid = models.CharField(max_length=150, null=True, blank=True)
+    uuid = models.CharField(max_length=150, null=True, blank=True, db_index=True)
     user_uuid = models.CharField(max_length=150, null=True, blank=True)
     patient_uuid = models.CharField(max_length=150, null=True, blank=True)
     hyper_diabetic = models.IntegerField(default=0)
@@ -146,10 +146,10 @@ class Health(BaseContent):
 
 
 class Prescription(BaseContent):
-    uuid = models.CharField(max_length=150, null=True, blank=True)
-    patient_uuid = models.CharField(max_length=150, null=True, blank=True)
-    user_uuid = models.CharField(max_length=150, null=True, blank=True)
-    treatment_uuid = models.CharField(max_length=150, null=True, blank=True)
+    uuid = models.CharField(max_length=150, null=True, blank=True, db_index=True)
+    patient_uuid = models.CharField(max_length=150, null=True, blank=True, db_index=True)
+    user_uuid = models.CharField(max_length=150, null=True, blank=True, db_index=True)
+    treatment_uuid = models.CharField(max_length=150, null=True, blank=True, db_index=True)
     medicines = models.ForeignKey(
         Medicines, on_delete=models.DO_NOTHING)
     dosage = models.ForeignKey(Dosage, on_delete=models.DO_NOTHING,blank =True,null =True)
@@ -180,9 +180,9 @@ class Prescription(BaseContent):
     
 
 class Diagnosis(BaseContent):
-    uuid = models.CharField(max_length=150, null=True, blank=True)
-    user_uuid = models.CharField(max_length=150, null=True, blank=True)
-    patient_uuid = models.CharField(max_length=150, null=True, blank=True)
+    uuid = models.CharField(max_length=150, null=True, blank=True, db_index=True)
+    user_uuid = models.CharField(max_length=150, null=True, blank=True, db_index=True)
+    patient_uuid = models.CharField(max_length=150, null=True, blank=True, db_index=True)
     ndc = models.ForeignKey(
         MasterLookup, on_delete=models.DO_NOTHING)
     source_treatment = models.IntegerField(null=True, blank=True)
@@ -210,9 +210,9 @@ class Diagnosis(BaseContent):
 
 
 class Scanned_Report(BaseContent):
-    uuid = models.CharField(max_length=150, null=True, blank=True)
-    user_uuid = models.CharField(max_length=150, null=True, blank=True)
-    patient_uuid = models.CharField(max_length=150, null=True, blank=True)
+    uuid = models.CharField(max_length=150, null=True, blank=True, db_index=True)
+    user_uuid = models.CharField(max_length=150, null=True, blank=True, db_index=True)
+    patient_uuid = models.CharField(max_length=150, null=True, blank=True, db_index=True)
     title = models.CharField(max_length=150, null=True, blank=True)
     image_path = models.CharField(max_length=150, null=True, blank=True)
     captured_date = models.DateTimeField(null=True, blank=True)
@@ -224,7 +224,7 @@ class Scanned_Report(BaseContent):
 
 class UserProfile(BaseContent):
     USER_TYPE_CHOICES = ((1, 'Health worker'), (2, 'Doctor'))
-    uuid = models.CharField(max_length=200,unique =True, default=uuid.uuid4,null=True)
+    uuid = models.CharField(max_length=200,unique =True, default=uuid.uuid4,null=True, db_index=True)
     phone_no = models.CharField(max_length=150, unique=False, blank=True, null=True)
     user = models.ForeignKey(
         User, on_delete=models.DO_NOTHING)
@@ -236,9 +236,9 @@ class UserProfile(BaseContent):
 
 class HomeVisit(BaseContent):
     VISIT_TYPE_CHOICES = ((1, 'No'), (2, 'Yes'))
-    uuid = models.CharField(max_length=150, null=True, blank=True)
-    user_uuid = models.CharField(max_length=150, null=True, blank=True)
-    patient_uuid = models.CharField(max_length=150, null=True, blank=True)
+    uuid = models.CharField(max_length=150, null=True, blank=True, db_index=True)
+    user_uuid = models.CharField(max_length=150, null=True, blank=True, db_index=True)
+    patient_uuid = models.CharField(max_length=150, null=True, blank=True, db_index=True)
     home_vist = models.PositiveIntegerField(choices=VISIT_TYPE_CHOICES, default=0)
     image_location = models.CharField(max_length=150, null=True, blank=True)
     response_location = models.CharField(max_length=150, null=True, blank=True)
@@ -261,11 +261,12 @@ class HomeVisit(BaseContent):
         return patients_list
 
 class FeePayement(BaseContent):
-    uuid = models.CharField(max_length=150, null=True, blank=True)
-    patient_uuid = models.CharField(max_length=150, null=True, blank=True)
+    uuid = models.CharField(max_length=150, null=True, blank=True, db_index=True)
+    user_uuid = models.CharField(max_length=150, null=True, blank=True, db_index=True)
+    patient_uuid = models.CharField(max_length=150, null=True, blank=True, db_index=True)
     fee_status = models.PositiveIntegerField(null=True, blank=True)
     fee_paid = models.PositiveIntegerField(null=True, blank=True)
-    payment_date = models.DateTimeField(null=True, blank=True)
+    fee_date = models.DateTimeField(null=True, blank=True)
    
 
 class MedicineStock(BaseContent):
