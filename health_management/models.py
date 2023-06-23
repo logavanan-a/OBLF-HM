@@ -261,7 +261,7 @@ class HomeVisit(BaseContent):
         return patients_list
 
 class FeePayement(BaseContent):
-    uuid = models.CharField(max_length=150, null=True, blank=True, db_index=True)
+    uuid = models.CharField(max_length=150, unique=True, null=True, blank=True, db_index=True)
     user_uuid = models.CharField(max_length=150, null=True, blank=True, db_index=True)
     patient_uuid = models.CharField(max_length=150, null=True, blank=True, db_index=True)
     fee_status = models.PositiveIntegerField(null=True, blank=True)
