@@ -92,7 +92,7 @@ class Treatments(BaseContent):
     uuid = models.CharField(max_length=150, null=True, blank=True, db_index=True)
     user_uuid = models.CharField(max_length=150, null=True, blank=True, db_index=True)
     patient_uuid = models.CharField(max_length=150, null=True, blank=True, db_index=True)
-    visit_date = models.DateTimeField(null=True, blank=True)
+    visit_date = models.DateTimeField(null=True, blank=True, db_index=True)
     bp_sys1 = models.CharField(max_length=150, null=True, blank=True)
     bp_non_sys1 = models.CharField(max_length=150, null=True, blank=True)
     bp_sys2 = models.CharField(max_length=150, null=True, blank=True)
@@ -121,7 +121,7 @@ class Treatments(BaseContent):
 
 
 class Health(BaseContent):
-    uuid = models.CharField(max_length=150, null=True, blank=True, db_index=True)
+    uuid = models.CharField(max_length=150, null=True, blank=True, unique =True, db_index=True)
     user_uuid = models.CharField(max_length=150, null=True, blank=True)
     patient_uuid = models.CharField(max_length=150, null=True, blank=True)
     hyper_diabetic = models.IntegerField(default=0)
@@ -141,8 +141,8 @@ class Health(BaseContent):
     dm_detected_by = models.IntegerField(default=0)
     ht_detected_by = models.IntegerField(default=0)
 
-    def __str__(self):
-        return self.uuid
+    # def __str__(self):
+    #     return self.uuid
 
 
 class Prescription(BaseContent):
