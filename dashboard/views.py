@@ -177,14 +177,15 @@ def dashboard(request):
     inner join health_management_patients pt on trmt.patient_uuid=pt.uuid where 1=1 and trmt.status = 2 """+village_name+date_filter+"""),f as (select count(distinct(dgs.id)) as count from health_management_diagnosis dgs 
     inner join health_management_patients pt on dgs.patient_uuid=pt.uuid where 1=1 and dgs.status = 2 and pt.status=2 """+village_name+dgs_date_filter+"""), 
     g as (select coalesce(sum(case when mtk.name='KHT' or mtk.name='KDM' or mtk.name='HT' or mtk.name='DM' then 1 else 0 end),0) as count from b 
-    inner join health_management_diagnosis dgs on b.d_uuid=dgs.uuid inner join application_masters_masterlookup mtk on dgs.ndc_id=mtk.id where 1=1 and dgs.status = 2), h as (select (count(distinct(pt.id)) - count(non_ncd.p_uuid)) as non_ncd_count 
-    from health_management_patients pt left outer join (select distinct on (dgs.patient_uuid) dgs.patient_uuid as p_uuid, dgs.uuid as d_uuid, dgs.server_created_on as sc_date 
+    inner join health_management_diagnosis dgs on b.d_uuid=dgs.uuid inner join application_masters_masterlookup mtk on dgs.ndc_id=mtk.id where 1=1 and dgs.status = 2),
+    diag_count as(select count(distinct(dgs.patient_uuid)) as dia_p_uuid
     from health_management_diagnosis dgs inner join health_management_patients pt on dgs.patient_uuid=pt.uuid 
-    where 1=1 and dgs.status=2 """+village_name+dgs_date_filter+""" order by dgs.patient_uuid, dgs.server_created_on desc) as non_ncd on pt.uuid=non_ncd.p_uuid where 1=1 and pt.status=2 """+village_name+patient_date_filter+""") 
+    where 1=1 and dgs.status=2 """+village_name+dgs_date_filter+"""),
+    total_pat as(select count(pt.uuid) as t_puuid from health_management_patients pt where 1=1 and pt.status=2 """+village_name+dgs_date_filter+""")
     select 'TOTAL NUMBER OF CLINICS CONDUCTED' as name, count(vst_date) as count from a 
     union all select 'NUMBER OF CONSULTATIONS' as name, e.count from e 
     union all select 'NUMBER OF NCD CONSULTATION' as name, g.count from g 
-    union all select 'NUMBER OF NON-NCD CONSULTATION' as name, h.non_ncd_count from h 
+    union all select 'NUMBER OF NON-NCD CONSULTATION' as name, (b.t_puuid-a.dia_p_uuid) from diag_count a join total_pat b on 1=1 
     union all select 'NUMBER OF PEOPLE TREATED', count(c.vst_date) as count from c 
     union all select 'TOTAL NUMBER OF NCD CASES' as name, f.count from f 
     union all select 'TOTAL NUMBER OF HOME VISITS MADE BY FLHWs' as home_name, d.home_count from d"""

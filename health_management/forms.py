@@ -3,8 +3,8 @@ from application_masters.models import *
 
 
 class PhcForm(forms.ModelForm):
-    name = forms.CharField(required=True, widget=forms.TextInput(attrs={'pattern':'[A-Za-z ]+'}))
-    code = forms.CharField(max_length=3, required=True, widget=forms.TextInput(attrs={'pattern':'[A-Za-z0-9 ]+'}))
+    name = forms.CharField(required=True, widget=forms.TextInput(attrs={'pattern':'[A-Za-z ]+','placeholder': 'Enter Name'}))
+    code = forms.CharField(max_length=3, required=True, widget=forms.TextInput(attrs={'pattern':'[A-Za-z0-9 ]+','placeholder': 'Enter Code'}))
 
     def __init__(self, *args, **kwargs):
         super(PhcForm, self).__init__(*args, **kwargs)
@@ -15,8 +15,8 @@ class PhcForm(forms.ModelForm):
         fields=['name','code','taluk']
 
 class SubcenterForm(forms.ModelForm):
-    name = forms.CharField(required=True, widget=forms.TextInput(attrs={'pattern':'[A-Za-z ]+'}))
-    code = forms.CharField(max_length=3, required=True, widget=forms.TextInput(attrs={'pattern':'[A-Za-z0-9 ]+'}))
+    name = forms.CharField(required=True, widget=forms.TextInput(attrs={'pattern':'[A-Za-z ]+','placeholder': 'Enter Name'}))
+    code = forms.CharField(max_length=3, required=True, widget=forms.TextInput(attrs={'pattern':'[A-Za-z0-9 ]+','placeholder': 'Enter Code'}))
 
     def __init__(self, *args, **kwargs):
         super(SubcenterForm, self).__init__(*args, **kwargs)
@@ -27,9 +27,9 @@ class SubcenterForm(forms.ModelForm):
         fields=['name','code','phc']
 
 class VillageForm(forms.ModelForm):
-    name = forms.CharField(required=True, widget=forms.TextInput(attrs={'pattern':'[A-Za-z ]+'}))
-    code = forms.CharField(max_length=3, required=True, widget=forms.TextInput(attrs={'pattern':'[A-Za-z0-9 ]+'}))
-    subcenter = forms.ModelChoiceField(queryset=Subcenter.objects.filter(status=2))
+    name = forms.CharField(required=True, widget=forms.TextInput(attrs={'pattern':'[A-Za-z ]+','placeholder': 'Enter Name'}))
+    code = forms.CharField(max_length=3, required=True, widget=forms.TextInput(attrs={'pattern':'[A-Za-z0-9 ]+','placeholder': 'Enter Code'}))
+    subcenter = forms.ModelChoiceField(queryset=Subcenter.objects.filter(status=2),empty_label="Select Subcenter")
 
     def __init__(self, *args, **kwargs):
         super(VillageForm, self).__init__(*args, **kwargs)
@@ -40,14 +40,14 @@ class VillageForm(forms.ModelForm):
         fields=['name','code','subcenter']
 
 class CategoryForm(forms.ModelForm):
-    name = forms.CharField(required=True, widget=forms.TextInput(attrs={'pattern':'[A-Za-z ]+'}))
+    name = forms.CharField(required=True, widget=forms.TextInput(attrs={'pattern':'[A-Za-z ]+','placeholder': 'Enter Name'}))
 
     class Meta:
         model=Category
         fields=['name']
 
 class MasterlookupForm(forms.ModelForm):
-    name = forms.CharField(required=True, widget=forms.TextInput(attrs={'pattern':'[A-Za-z ]+'}))
+    name = forms.CharField(required=True, widget=forms.TextInput(attrs={'pattern':'[A-Za-z ]+','placeholder': 'Enter Name'}))
     class Meta:
         model=MasterLookup
         fields=['name']
@@ -74,11 +74,11 @@ medicine_type=[
     ('Inhaler','Inhaler'),
 ]
 class MedicinesForm(forms.ModelForm):
-    name = forms.CharField(required=True, widget=forms.TextInput(attrs={'pattern':'[A-Za-z ]+'}))
+    name = forms.CharField(required=True, widget=forms.TextInput(attrs={'pattern':'[A-Za-z ]+','placeholder': 'Enter Name'}))
     medicines_type = forms.CharField(
         widget=forms.Select(choices=medicine_type),
     )
-    medicine_id = forms.CharField(label='Generation', widget=forms.TextInput(attrs={'pattern':'[0-9]+'}))
+    medicine_id = forms.CharField(label='Generation', widget=forms.TextInput(attrs={'pattern':'[0-9]+','placeholder': 'Enter Medicine Name'}))
 
     def __init__(self, *args, **kwargs):
         super(MedicinesForm, self).__init__(*args, **kwargs)
