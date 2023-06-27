@@ -89,7 +89,7 @@ class Treatments(BaseContent):
     (0, 'No'),
     (1, 'Yes')
     )
-    uuid = models.CharField(max_length=150, null=True, blank=True, db_index=True)
+    uuid = models.CharField(max_length=150, unique=True, null=True, blank=True, db_index=True)
     user_uuid = models.CharField(max_length=150, null=True, blank=True, db_index=True)
     patient_uuid = models.CharField(max_length=150, null=True, blank=True, db_index=True)
     visit_date = models.DateTimeField(null=True, blank=True, db_index=True)
@@ -146,7 +146,7 @@ class Health(BaseContent):
 
 
 class Prescription(BaseContent):
-    uuid = models.CharField(max_length=150, null=True, blank=True, db_index=True)
+    uuid = models.CharField(max_length=150, unique=True, null=True, blank=True, db_index=True)
     patient_uuid = models.CharField(max_length=150, null=True, blank=True, db_index=True)
     user_uuid = models.CharField(max_length=150, null=True, blank=True, db_index=True)
     treatment_uuid = models.CharField(max_length=150, null=True, blank=True, db_index=True)
@@ -180,7 +180,7 @@ class Prescription(BaseContent):
     
 
 class Diagnosis(BaseContent):
-    uuid = models.CharField(max_length=150, null=True, blank=True, db_index=True)
+    uuid = models.CharField(max_length=150, unique=True, null=True, blank=True, db_index=True)
     user_uuid = models.CharField(max_length=150, null=True, blank=True, db_index=True)
     patient_uuid = models.CharField(max_length=150, null=True, blank=True, db_index=True)
     ndc = models.ForeignKey(
@@ -210,7 +210,7 @@ class Diagnosis(BaseContent):
 
 
 class Scanned_Report(BaseContent):
-    uuid = models.CharField(max_length=150, null=True, blank=True, db_index=True)
+    uuid = models.CharField(max_length=150, unique=True, null=True, blank=True, db_index=True)
     user_uuid = models.CharField(max_length=150, null=True, blank=True, db_index=True)
     patient_uuid = models.CharField(max_length=150, null=True, blank=True, db_index=True)
     title = models.CharField(max_length=150, null=True, blank=True)
@@ -236,7 +236,7 @@ class UserProfile(BaseContent):
 
 class HomeVisit(BaseContent):
     VISIT_TYPE_CHOICES = ((1, 'No'), (2, 'Yes'))
-    uuid = models.CharField(max_length=150, null=True, blank=True, db_index=True)
+    uuid = models.CharField(max_length=150, unique=True, null=True, blank=True, db_index=True)
     user_uuid = models.CharField(max_length=150, null=True, blank=True, db_index=True)
     patient_uuid = models.CharField(max_length=150, null=True, blank=True, db_index=True)
     home_vist = models.PositiveIntegerField(choices=VISIT_TYPE_CHOICES, default=0)
