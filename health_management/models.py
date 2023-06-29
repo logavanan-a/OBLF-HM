@@ -18,7 +18,7 @@ class Patients(BaseContent):
         (2, 'Female'),
         (3, 'Other')
         )
-    uuid = models.CharField(max_length=150, blank=True, null=True, db_index=True)
+    uuid = models.CharField(max_length=150, unique =True, blank=True, null=True, db_index=True)
     user_uuid = models.CharField(max_length=150, null=True, blank=True, db_index=True)
     patient_id = models.CharField(max_length=150, blank=True, null=True, db_index=True)
     name = models.CharField(max_length=150)
@@ -122,8 +122,8 @@ class Treatments(BaseContent):
 
 class Health(BaseContent):
     uuid = models.CharField(max_length=150, null=True, blank=True, unique =True, db_index=True)
-    user_uuid = models.CharField(max_length=150, null=True, blank=True)
-    patient_uuid = models.CharField(max_length=150, null=True, blank=True)
+    user_uuid = models.CharField(max_length=150, null=True, blank=True, db_index=True)
+    patient_uuid = models.CharField(max_length=150, unique =True, null=True, blank=True, db_index=True)
     hyper_diabetic = models.IntegerField(default=0)
     co_morbid_ids = models.CharField(max_length=150, null=True, blank=True)
     co_morbid_names = models.CharField(max_length=500, null=True, blank=True)

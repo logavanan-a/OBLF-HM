@@ -5,13 +5,31 @@ import datetime
 from health_management.models import *
 for i in Diagnosis.objects.all():
     i.save()
-    
-dgs = Diagnosis.objects.filter()
-for d in dgs:
+
+
+dgs_id = Diagnosis.objects.filter(patient_uuid='d5c5537e-de6c-4b5f-92f4-e677bcaa2b2d').values_list('id', flat=True)
+trmt_id = Treatments.objects.filter(patient_uuid='d5c5537e-de6c-4b5f-92f4-e677bcaa2b2d').values_list('id', flat=True)
+prt_id = Prescription.objects.filter(patient_uuid='d5c5537e-de6c-4b5f-92f4-e677bcaa2b2d').values_list('id', flat=True)
+sr_id = Scanned_Report.objects.filter(patient_uuid='d5c5537e-de6c-4b5f-92f4-e677bcaa2b2d').values_list('id', flat=True)
+hv_id = HomeVisit.objects.filter(patient_uuid='d5c5537e-de6c-4b5f-92f4-e677bcaa2b2d').values_list('id', flat=True)
+
+dgs_id = Diagnosis.objects.filter(patient_uuid='20230623151457156a379f28-8f05-4396-8001-a6669cc21981').values_list('id', flat=True)
+trmt_id = Treatments.objects.filter(patient_uuid='20230623151457156a379f28-8f05-4396-8001-a6669cc21981').values_list('id', flat=True)
+prt_id = Prescription.objects.filter(patient_uuid='20230623151457156a379f28-8f05-4396-8001-a6669cc21981').values_list('id', flat=True)
+sr_id = Scanned_Report.objects.filter(patient_uuid='20230623151457156a379f28-8f05-4396-8001-a6669cc21981').values_list('id', flat=True)
+hv_id = HomeVisit.objects.filter(patient_uuid='20230623151457156a379f28-8f05-4396-8001-a6669cc21981').values_list('id', flat=True)
+pts = Patients.objects.filter(village_id=14).first().uuid
+Diagnosis.objects.filter(id__in=dgs_id).update(patient_uuid=pts)
+Treatments.objects.filter(id__in=trmt_id).update(patient_uuid=pts)
+Prescription.objects.filter(id__in=prt_id).update(patient_uuid=pts)
+Scanned_Report.objects.filter(id__in=sr_id).update(patient_uuid=pts)
+HomeVisit.objects.filter(id__in=hv_id).update(patient_uuid=pts)
+
+pts = Patients.objects.filter(village_id=14)
+for d in pts:
     curr_dt = datetime.datetime.now().strftime("%Y%m%d%H%M%S%f")
     uuid_id = str(curr_dt) + "-" + str(uuid.uuid4())
-    dgs = Diagnosis.objects.filter(id=d.id).update(uuid=uuid_id)
-
+    pts = Patients.objects.filter(id=d.id).update(uuid=uuid_id)
 
 from health_management.models import *
 from django.db.models import Count
@@ -122,6 +140,49 @@ for i in dgs:
         print(i.id, dby_date)
         dgs = Diagnosis.objects.filter(id=i.id).update(detected_years=date)
 
+from health_management.models import *
+c_htn = ClinicProfile.objects.exclude(detected_since_htn__icontains='-')
+c_dm = ClinicProfile.objects.exclude(detected_since_dm__icontains='-')
+for dm in c_dm:
+    if dm.detected_since_dm:
+        ddm_date = '01-01-'+dm.detected_since_dm
+        ClinicProfile.objects.filter(id=dm.id).update(detected_since_dm=ddm_date)
+    
+for htn in c_htn:
+    if htn.detected_since_htn:
+        dhtn_date = '01-01-'+htn.detected_since_htn
+        ClinicProfile.objects.filter(id=htn.id).update(detected_since_htn=dhtn_date)
+        
+
+clds = ClinicProfile.objects.filter()
+for cld in clds:
+    if cld.detected_since_dm:
+        len_dm_f = cld.detected_since_dm.split('-')[-1]
+        len_dm_l = cld.detected_since_dm.split('-')[-2]
+        if len(len_dm_f) < 3 and len(len_dm_f) != 1:
+            if int(len_dm_f) < 99:
+                dm_20 = '01-'+ len_dm_l +'-20' +len_dm_f
+                ClinicProfile.objects.filter(id=cld.id).update(detected_since_dm=dm_20)
+            if int(len_dm_f) >= 99:
+                dm_19 = '01-'+ len_dm_l +'-19' +len_dm_f
+                ClinicProfile.objects.filter(id=cld.id).update(detected_since_dm=dm_19)
+    if cld.detected_since_htn:
+        len_htn_f = cld.detected_since_htn.split('-')[-1]
+        len_htn_l = cld.detected_since_htn.split('-')[-2]
+        if len(len_htn_f) < 3:
+            if int(len_htn_f) < 99:
+                htn_20 = '01-'+ len_htn_l +'-20' +len_htn_f
+                ClinicProfile.objects.filter(id=cld.id).update(detected_since_htn=htn_20)
+            if int(len_htn_f) >= 99:
+                htn_19 = '01-'+ len_htn_l +'-19' +len_htn_f
+                ClinicProfile.objects.filter(id=cld.id).update(detected_since_htn=htn_19)
+
+clinic_data = ClinicProfile.objects.filter(status=2)
+for cd in clinic_data:
+    curr_dt = datetime.datetime.now().strftime("%Y%m%d%H%M%S%f")
+    uuid_id = str(curr_dt) + "-" + str(uuid.uuid4())
+    try:
+        patients_ids=Patients.objects.get(status=2, patient_id=cd.code)
 
 
 
