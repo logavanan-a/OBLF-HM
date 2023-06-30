@@ -19,7 +19,16 @@ class Command(BaseCommand):
             # print(uuid_id)
             try:
                 patients_ids=Patients.objects.get(status=2, patient_id=cd.code)
+                user_uuid = patients_ids.user_uuid
+                patient_uuid = patients_ids.uuid
+                health_details = Health.objects.filter(patient_uuid=patient_uuid).exists()
+                if not health_details:
+                    Health.objects.create(uuid=uuid_id, user_uuid=user_uuid, 
+                    patient_uuid=patient_uuid, is_alcoholic=cd.alcohol, is_tobacco=cd.tobacco, is_smoker=cd.smoking,
+                    dm_check=2,ht_check=2,dm_status=, ht_status=,dm_source_treatment=,ht_source_treatment=,
+                    dm_years=cd.detected_since_dm,ht_years=cd.detected_since_htn,dm_detected_by=,ht_detected_by=)
             except Patients.DoesNotExist:
-                patients_ids = 
+                patients_ids = None
+                print(';;;;')
                         
         print('Clinic data imported is done')

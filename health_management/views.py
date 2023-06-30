@@ -2365,8 +2365,8 @@ def patient_details(self):
     for data in datas:
         obj, created = Patients.objects.update_or_create(
             uuid = data.get('uuid'),
-            user_uuid = data.get('user_uuid'),
             defaults= {
+                        "user_uuid" : data.get('user_uuid'),
                         "name" : data.get('name'),
                         "dob" : data.get('dob'),
                         "gender" : data.get('gender'),
@@ -2397,9 +2397,9 @@ def treatment_details(self):
     for data in datas:
         obj,created = Treatments.objects.update_or_create(
             uuid = data.get('uuid'),
-            user_uuid = data.get('user_uuid'),
             patient_uuid = data.get('patient_uuid'),
             defaults = {
+                    "user_uuid" : data.get('user_uuid'),
                     "visit_date" : data.get('visit_date'),
                     "bp_sys1" : data.get('bp_sys1'),
                     "bp_non_sys1" : data.get('bp_non_sys1'),
@@ -2428,9 +2428,9 @@ def health_details(self):
     for data in datas:
         obj,created = Health.objects.update_or_create(
             uuid = data.get('uuid'),
-            user_uuid = data.get('user_uuid'),
             patient_uuid = data.get('patient_uuid'),
             defaults = {
+                    "user_uuid" : data.get('user_uuid'),
                     "co_morbid_ids" : data.get('co_morbid_ids'),
                     "co_morbid_names" : data.get('co_morbid_names'),
                     "hyper_diabetic" : data.get('hyper_diabetic'),
@@ -2460,9 +2460,9 @@ def prescription_details(self):
     for data in datas:
         obj,created = Prescription.objects.update_or_create(
             uuid = data.get('uuid'),
-            user_uuid = data.get('user_uuid'),
             patient_uuid = data.get('patient_uuid'),
             defaults = {
+                    "user_uuid" : data.get('user_uuid'),
                     "treatment_uuid" : data.get('treatment_uuid'),
                     "medicines_id" : data.get('medicine_id'),
                     "dosage_id" : data.get('dosage'),
@@ -2482,9 +2482,9 @@ def diagnosis_details(self):
     for data in datas:
         obj,created = Diagnosis.objects.update_or_create(
             uuid = data.get('uuid'),
-            user_uuid = data.get('user_uuid'),
             patient_uuid = data.get('patient_uuid'),
             defaults = {
+                    "user_uuid" : data.get('user_uuid'),
                     "source_treatment" : data.get('source_treatment'),
                     "ndc_id" : data.get('ndc_id'),
                     "source_treatment" : data.get('source_treatment'),
@@ -2501,9 +2501,9 @@ def fee_payement_details(self):
     for data in datas:
         obj,created = FeePayement.objects.update_or_create(
             uuid = data.get('uuid'),
-            user_uuid = data.get('user_uuid'),
             patient_uuid = data.get('patient_uuid'),
             defaults = {
+                    "user_uuid" : data.get('user_uuid'),
                     "fee_status" : data.get('fee_status'),
                     "fee_paid" : data.get('fee_paid'),
                     "payment_date" : data.get('payment_date'),
@@ -2518,9 +2518,9 @@ def scanned_report_details(self):
     for data in datas:
         obj,created = Scanned_Report.objects.update_or_create(
             uuid = data.get('uuid'),
-            user_uuid = data.get('user_uuid'),
             patient_uuid = data.get('patient_uuid'),
             defaults = {
+                    "user_uuid" : data.get('user_uuid'),
                     "title" : data.get('title'),
                     "image_path" : data.get('image_path'),
                     "captured_date" : data.get('captured_date'),
@@ -2536,9 +2536,9 @@ def home_visit_details(self):
     for data in datas:
         obj,created = HomeVisit.objects.update_or_create(
             uuid = data.get('uuid'),
-            user_uuid = data.get('user_uuid'),
             patient_uuid = data.get('patient_uuid'),
             defaults = {
+                    "user_uuid" : data.get('user_uuid'),
                     "home_vist" : data.get('home_vist'),
                     "image_location" : data.get('image_location'),
                     "response_location" : data.get('response_location'),

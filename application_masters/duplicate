@@ -219,7 +219,12 @@ for pt in pts:
         print(future_date)
         
             
+pts = Patients.objects.values('patient_id').annotate(Count('id')).order_by('-server_created_on').filter(id__count__gt=1)
+for pt in pts:
+    excp = Patients.objects.filter(patient_id=pt['patient_id']).first()
+    Patients.objects.filter(patient_id=pt['patient_id']).exclude(id=excp.id).update(status=1)
 
+    
 
 
 
