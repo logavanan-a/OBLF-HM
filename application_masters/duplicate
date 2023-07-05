@@ -177,7 +177,22 @@ for cld in clds:
                 htn_19 = '01-'+ len_htn_l +'-19' +len_htn_f
                 ClinicProfile.objects.filter(id=cld.id).update(detected_since_htn=htn_19)
 
-clinic_data = ClinicProfile.objects.filter(status=2)
+clds = ClinicProfile.objects.filter(status=2, detected_since_dm='01-01-')
+for cld in clds:
+    ClinicProfile.objects.filter(id=cld.id).update(detected_since_dm='')
+
+clds = ClinicProfile.objects.filter(status=2, detected_since_htn='01-01-')
+for cld in clds:
+    ClinicProfile.objects.filter(id=cld.id).update(detected_since_htn='')
+
+clds = ClinicProfile.objects.filter(status=2)
+for cld in clds:
+    if cld.detected_since_htn:
+        print(cld.detected_since_htn, len(cld.detected_since_htn), 'htn')
+    if cld.detected_since_dm:
+        print(cld.detected_since_dm, len(cld.detected_since_dm),'dm')
+    ClinicProfile.objects.filter(id=cld.id).update(detected_since_dm='') 
+
 for cd in clinic_data:
     curr_dt = datetime.datetime.now().strftime("%Y%m%d%H%M%S%f")
     uuid_id = str(curr_dt) + "-" + str(uuid.uuid4())
