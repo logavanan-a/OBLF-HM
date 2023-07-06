@@ -53,12 +53,13 @@ class Command(BaseCommand):
 
                         
 
-                    Health.objects.create(uuid=uuid_id, user_uuid=user_uuid, 
+                    hts = Health.objects.create(uuid=uuid_id, user_uuid=user_uuid, 
                     patient_uuid=patient_uuid, is_alcoholic=cd.alcohol or 0, is_tobacco=cd.tobacco or 0, is_smoker=cd.smoking or 0,
                     dm_check=2,ht_check=2,dm_status=dm or 0, ht_status=ht or 0, dm_source_treatment=cd.source_treatment or 0, 
                     ht_source_treatment=cd.source_treatment  or 0,hyper_diabetic=cd.family_history or 0,
                     ht_years=ht_years or None,dm_years=dm_years or None,
                     dm_detected_by=cd.detected_by_dm or 0,ht_detected_by=cd.detected_by_htn or 0)
+                    hts.save()
             except Patients.DoesNotExist:
                 patients_ids = None
                         

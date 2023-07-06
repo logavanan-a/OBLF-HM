@@ -97,11 +97,26 @@ for d in df.iterrows():
 
 from health_management.models import *
 import pandas as pd
-
-pf = pd.read_excel(r'/home/sb-010/Downloads/mistake data.xlsx')
+import datetime
+import math
+pf = pd.read_excel(r'/home/sb-010/Downloads/Patients-2023-07-08.xlsx')
 for i in pf.iterrows():
-    pts = Patients.objects.filter(patient_id=i[1]['patient'], status=2).values_list('uuid', flat=True).first()
-    print(pts,'----')
+    pts = Patients.objects.filter(patient_id=i[1]['patient_id'], status=i[1]['status']).first()
+    if i[1]['uuid'] and i[1]['patient_id'] and i[1]['user_uuid']:
+        if pts:
+            curr_dt = datetime.datetime.now().strftime("%Y%m%d%H%M%S%f")
+            uuid_id = str(curr_dt) + "-" + str(uuid.uuid4())
+            fee_obj = FeePayement.objects.create(uuid=uuid_id,user_uuid=pts.user_uuid, patient_uuid=pts.uuid)
+            if math.isnan(i[1]['fee_status']) != True:
+                s1 = int(i[1]['fee_status'])
+            fee_obj.fee_status = s1 or 0
+            if math.isnan(i[1]['fee_paid']) != True:
+                s2 = int(i[1]['fee_paid'])
+            fee_obj.fee_paid = s2 or 0 
+            if str(pd.to_datetime(i[1]['fee_date']))!= ('NaT'):
+                fee_obj.payment_date = pd.to_datetime(i[1]['fee_date'])
+            fee_obj.save()
+            print(pts,'----')
 
 from health_management.models import *
 dgs = Diagnosis.objects.exclude(years__icontains='-')
@@ -233,9 +248,12 @@ for pt in pts:
 
         print(future_date)
         
-            
-pts = Patients.objects.values('patient_id').annotate(Count('id')).order_by('-server_created_on').filter(id__count__gt=1)
+from health_management.models import *
+from django.db.models import Count
+pts = Patients.objects.values('patient_id').annotate(Count('id')).order_by('server_created_on').filter(id__count__gt=1)
+print(pts)
 for pt in pts:
+    print(pt['patient_id'])
     excp = Patients.objects.filter(patient_id=pt['patient_id']).first()
     Patients.objects.filter(patient_id=pt['patient_id']).exclude(id=excp.id).update(status=1)
 
@@ -244,5 +262,21 @@ for pt in pts:
 
 
 
+run the command in shell
 
+from health_management.models import *
+clds = ClinicProfile.objects.filter(status=2)
+for cld in clds:
+    if cld.detected_since_dm:
+        if len(cld.detected_since_dm) <= 7:
+            dm_date = '01-' + cld.detected_since_dm
+            ClinicProfile.objects.filter(id=cld.id).update(detected_since_dm=dm_date)
+    if cld.detected_since_htn:
+        if len(cld.detected_since_htn) <= 7:
+            htn_date = '01-' + cld.detected_since_htn
+            ClinicProfile.objects.filter(id=cld.id).update(detected_since_htn=htn_date)
+
+clds = ClinicProfile.objects.filter(status=2, detected_since_htn='01-01-')
+for cld in clds:
+    ClinicProfile.objects.filter(id=cld.id).update(detected_since_htn='')
         

@@ -58,7 +58,7 @@ class HealthAdmin(ImportExportModelAdmin, ImportExportFormat):
 
 @admin.register(FeePayement)
 class FeePayementAdmin(ImportExportModelAdmin, ImportExportFormat):
-    list_display = ['uuid', 'user_uuid', 'patient_uuid', 'fee_status', 'fee_paid', 'payment_date', 'status']
+    list_display = ['uuid', 'user_uuid', 'patient_uuid', 'fee_status', 'fee_paid', 'payment_date', 'server_created_on', 'server_modified_on', 'status']
     fields = ['uuid', 'user_uuid', 'patient_uuid', 'fee_status', 'fee_paid', 'payment_date', 'status']
     search_fields = ['uuid', 'patient_uuid']
     list_per_page = 15
