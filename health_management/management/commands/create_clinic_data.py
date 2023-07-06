@@ -17,8 +17,9 @@ class Command(BaseCommand):
             curr_dt = datetime.datetime.now().strftime("%Y%m%d%H%M%S%f")
             uuid_id = str(curr_dt) + "-" + str(uuid.uuid4())
             # print(uuid_id)
+            patient_code = ClinicProfile.objects.filter(code=cd.code).first().code
             try:
-                patients_ids=Patients.objects.get(status=2, patient_id=cd.code)
+                patients_ids=Patients.objects.get(status=2, patient_id=patient_code)
                 user_uuid = patients_ids.user_uuid
                 patient_uuid = patients_ids.uuid
                 treatment_details = Treatments.objects.filter(patient_uuid=patient_uuid, visit_date__date=cd.visit_date).exists()
