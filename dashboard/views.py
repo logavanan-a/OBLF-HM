@@ -167,7 +167,7 @@ def dashboard(request):
     village_name=""
     if village:
         village_name =  '''and pt.village_id='''+village
-    count_sql = """with a as (select distinct on (trmt.visit_date) trmt.visit_date as vst_date, vlg.id as vlg_id from health_management_treatments trmt inner join health_management_patients pt on trmt.patient_uuid=pt.uuid inner join application_masters_village vlg on pt.village_id = vlg.id where 1=1 and trmt.status = 2  order by trmt.visit_date desc), 
+    count_sql = """with a as (select distinct on (trmt.visit_date) trmt.visit_date as vst_date, pt.village_id as vlg_id from health_management_treatments trmt inner join health_management_patients pt on trmt.patient_uuid=pt.uuid  where 1=1 and trmt.status = 2 """+village_name+date_filter+""" order by trmt.visit_date desc), 
     b as (select distinct on (dgs.patient_uuid) dgs.patient_uuid as p_uuid, dgs.uuid as d_uuid, dgs.server_created_on as sc_date from health_management_diagnosis dgs 
     inner join health_management_patients pt on dgs.patient_uuid=pt.uuid where 1=1 and dgs.status=2 """+village_name+dgs_date_filter+""" order by dgs.patient_uuid, dgs.server_created_on desc), c as (select distinct((trmt.visit_date at time zone 'Asia/Kolkata')::date) as vst_date, pt.name as patient_name 
     from health_management_treatments trmt inner join health_management_patients pt on trmt.patient_uuid=pt.uuid inner join health_management_prescription psp on trmt.uuid=psp.treatment_uuid 
