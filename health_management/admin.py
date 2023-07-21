@@ -36,6 +36,7 @@ class TreatmentsAdmin(ImportExportModelAdmin, ImportExportFormat):
      'bp_sys3', 'bp_non_sys3', 'fbs', 'pp', 'random', 'weight', 
      'bmi', 'symptoms', 'remarks', 'is_controlled', 'status']
     search_fields = ['uuid', 'user_uuid', 'patient_uuid']
+    list_filter = ['status' ]
     date_hierarchy = 'visit_date'
     list_per_page = 15
 
@@ -53,6 +54,7 @@ class HealthAdmin(ImportExportModelAdmin, ImportExportFormat):
         'dm_check', 'ht_check', 'dm_status', 'ht_status', 'dm_source_treatment',
         'ht_source_treatment', 'dm_years', 'ht_years', 'dm_detected_by', 'ht_detected_by',
         'status']
+    list_filter = ['status' ]
     search_fields = ['uuid', 'user_uuid', 'patient_uuid']
     list_per_page = 15
 
@@ -70,7 +72,7 @@ class PrescriptionAdmin(ImportExportModelAdmin, ImportExportFormat):
     fields = ['medicines', 'user_uuid', 'uuid', 'patient_uuid', 'treatment_uuid',
     'dosage', 'no_of_days', 'medicine_type', 'qty', 'status']
     search_fields = ['medicines__name','uuid', 'user_uuid', 'patient_uuid', 'treatment_uuid']
-    list_filter = ['medicines', ]
+    list_filter = ['medicines', 'status' ]
     list_per_page = 15
 
 @admin.register(Diagnosis)
