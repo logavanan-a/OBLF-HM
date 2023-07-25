@@ -4,7 +4,6 @@
 *.swp
 __pycache__
 media/
-send_mail/
 *.settings.py
 /OBLH_HM/settings.py
 /home/sb-010/Desktop/Django projects/OBLF-HM/oblf-hm/OBLH_HM/settings.py
@@ -13,7 +12,6 @@ send_mail/
 */*/__pycache__/
 */__pycache__/
 /media/*
-/send_mail/*
 *.log
 *.log.*
 !.gitignore
