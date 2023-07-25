@@ -23,8 +23,13 @@ from django.utils import timezone
 from django.utils.timezone import localtime
 from collections import defaultdict
 import csv
+import  logging
+import sys, traceback
 from datetime import datetime, timedelta
+
 batch_rec = settings.BATCH_RECORDS
+
+logger = logging.getLogger(__name__)
 
 
 
@@ -344,7 +349,7 @@ def treatment_details_list(request):
         format_name = "'%"+patient_name+"%'"
         pnt_name = '''and pt.name ilike '''+format_name
         pnt_code = '''or pt.patient_id ilike '''+format_name
-    sql = '''select distinct on (trmt.uuid) trmt.uuid, phc.name as phc_name, sbc.name as sbc_name, vlg.name as village_name, pt.name as patient_name, pt.patient_id as patient_code, pt.registered_date, date_part('year',age(pt.dob))::int as age, 
+    sql = '''select  trmt.uuid, phc.name as phc_name, sbc.name as sbc_name, vlg.name as village_name, pt.name as patient_name, pt.patient_id as patient_code, pt.registered_date, date_part('year',age(pt.dob))::int as age, 
     case when pt.gender=1 then 'Male' when pt.gender=2 then 'Female' end as gender, 
     trmt.visit_date, case when hlt.is_alcoholic=1 then 'YES' when hlt.is_alcoholic=0 then 'NO' end as drinking, 
     case when hlt.is_smoker=1 then 'YES' when hlt.is_smoker=0 then 'NO' end as smoking, 
@@ -2033,6 +2038,7 @@ class LoginAPIView(APIView):
                 "message": "User is inactive please contact admin to login",
                 "status": 0,
             })
+
 
 class Phc_pull(APIView):
     permission_classes = ()
