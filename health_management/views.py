@@ -2451,7 +2451,7 @@ def health_details(self):
                     "dm_source_treatment":data.get('dm_source_treatment'),
                     "ht_source_treatment":data.get('ht_source_treatment'),
                     "dm_years":data.get('dm_years') if data.get('dm_years') != '0000-00-00' else None,
-                    "ht_years":data.get('ht_years') if data.get('ht_years') != '0000-00-00' else None,
+                    "ht_years":data.get('ht_years') if data.get('ht_years') != '' else None,
                     "dm_detected_by":data.get('dm_detected_by'),
                     "ht_detected_by":data.get('ht_detected_by'),
                     })
