@@ -114,7 +114,7 @@ def survey_responses():
     send_data_obj = MailData.objects.create(subject = subject,content = content,mail_to = to_,
                                         mail_cc =send_to_cc,mail_bcc =send_to_bcc,priority = 1,mail_status = 1, 
                                         template_name = template_obj )
-    # send_mail(subject,message,"mis@akrspi.org",to_,fail_silently=False,html_message=html_message)
+    # send_mail(subject,message,"loga.vanan@thesocialbytes.com",to_,fail_silently=False,html_message=html_message)
 
     return send_data_obj
 
@@ -123,7 +123,7 @@ def attachment_email():
     from datetime import timedelta
     today = datetime.date.today()
     prev_day = today-timedelta(days=1)
-    template_obj = MailTemplate.objects.get(template_name ="House Hold Activity Mailer")
+    template_obj = MailTemplate.objects.get(template_name ="OBLF-HM Activity Mailer")
     send_to_cc = ''
     send_to_bcc = ''
     subject = template_obj.subject
