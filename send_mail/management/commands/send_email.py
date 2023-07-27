@@ -5,7 +5,9 @@ from send_mail.models import MailData
 from send_mail.views import send_mail
 from django.conf import settings
 import sys, traceback
-import logging;
+import  logging
+
+logger = logging.getLogger(__name__)
 
 
 def sendmail():
