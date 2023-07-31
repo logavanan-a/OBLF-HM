@@ -180,7 +180,7 @@ def dashboard(request):
     diag_count as(select count(distinct(dgs.patient_uuid)) as dia_p_uuid
     from health_management_diagnosis dgs inner join health_management_patients pt on dgs.patient_uuid=pt.uuid 
     where 1=1 and dgs.status=2 """+village_name+dgs_date_filter+"""),
-    total_pat as(select count(pt.uuid) as t_puuid from health_management_patients pt where 1=1 and pt.status=2 """+village_name+dgs_date_filter+""")
+    total_pat as(select count(pt.uuid) as t_puuid from health_management_patients pt where 1=1 and pt.status=2 """+village_name+patient_date_filter+""")
     select 'TOTAL NUMBER OF CLINICS CONDUCTED' as name, count(vst_date) as count from a 
     union all select 'NUMBER OF CONSULTATIONS' as name, e.count from e 
     union all select 'NUMBER OF NCD CONSULTATION' as name, g.count from g 
