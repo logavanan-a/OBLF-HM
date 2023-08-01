@@ -18,7 +18,7 @@ class MailTemplateAdmin(admin.ModelAdmin):
 @admin.register(MailData)
 class MailDataAdmin(admin.ModelAdmin):
     list_display = ['template_name','subject','content', 'created_by', 'status']
-    fields = ['template_name','subject','content','created_by', 'status']
+    #fields = ['template_name','subject','content','created_by', 'status']
 
 #     def is_active(self, obj):
 #         return obj.active == 2 
