@@ -872,6 +872,148 @@ def verified_treatments_report(request):
         return response
     return render(request, 'reports/verified_treatments.html', locals())
 
+def health_list(request):
+    heading="Health Details"
+    heading="Treatment Details"
+    filter_values = request.GET.dict()
+    from dateutil.relativedelta import relativedelta
+    patient_value = True
+    phc_obj = PHC.objects.filter(status=2).order_by('name')
+    phc = request.GET.get('phc', '')
+    sub_center = request.GET.get('sub_center', '')
+    village = request.GET.get('village', '')
+    patient_name = request.GET.get('patient_name', '')
+    phc_ids = int(phc) if phc != '' else ''
+    sub_center_ids = int(sub_center) if sub_center != '' else ''
+    village_ids = int(village) if village != '' else ''
+    start_filter = request.GET.get('start_filter', '')
+    end_filter = request.GET.get('end_filter', '')
+    s_date=''
+    e_date=''
+    between_date = ""
+    if start_filter != '':
+        s_date = start_filter
+        e_date = end_filter
+        between_date = """and (hlt.server_created_on at time zone 'Asia/Kolkata')::date >= '"""+s_date + \
+            """' and (hlt.server_created_on at time zone 'Asia/Kolkata')::date <= '""" + \
+            e_date+"""' """
+    phc_id=""
+    if phc_ids:
+        get_phc_name = PHC.objects.get(id=phc_ids)
+        sub_center_obj = Subcenter.objects.filter(status=2, phc__id=phc_ids).order_by('name')
+        phc_id = '''and phc.id='''+phc
+    sbc_ids= ""
+    if sub_center_ids:
+        get_sbc_name = Subcenter.objects.get(id=sub_center_ids)
+        village_obj = Village.objects.filter(status=2, subcenter__id=sub_center_ids).order_by('name')
+        sbc_ids = '''and sbc.id='''+sub_center
+    village_id=""
+    if village_ids:
+        get_village_name = Village.objects.get(id=village_ids)
+        village_id = '''and vlg.id='''+village
+    pnt_name=""
+    pnt_code=""
+    if patient_name:
+        format_name = "'%"+patient_name+"%'"
+        pnt_name = '''and pt.name ilike '''+format_name
+        pnt_code = '''or pt.patient_id ilike '''+format_name
+    
+    sql = '''select phc.name as phc_name, 
+        sbc.name as sbc_name, vlg.name as village_name, pt.name as patient_name, pt.patient_id as pnt_code,
+        (pt.registered_date at time zone 'Asia/Kolkata')::date, date_part('year',age(pt.dob))::int as age, 
+        case when pt.gender=1 then 'Male' when pt.gender=2 then 'Female' end as gender,
+        case when hlt.hyper_diabetic=0 then 'NO' when hlt.hyper_diabetic=1 then 'Yes' end as hdt,
+        hlt.co_morbid_names as cmn,
+        case when hlt.is_alcoholic=0 then 'NO' when hlt.is_alcoholic=1 then 'Yes' end as alcoholic,
+        case when hlt.is_tobacco=0 then 'NO' when hlt.is_tobacco=1 then 'Yes' end as tobacco,
+        case when hlt.is_smoker=0 then 'NO' when hlt.is_smoker=1 then 'Yes' end as smoker,
+        case when hlt.dm_check=1 then 'PDM' when hlt.dm_check=2 then 'DM' end as dmc,
+        case when hlt.ht_check=1 then 'PHT' when hlt.ht_check=2 then 'HT' end as htc,
+        case when hlt.dm_status=1 then 'Inactive' when hlt.dm_status=2 then 'Active' end as dms,
+        case when hlt.ht_status=1 then 'Inactive' when hlt.ht_status=2 then 'Active' end as hts,
+        case when hlt.dm_source_treatment=1 then 'CLINIC' when hlt.dm_source_treatment=2 then 'OUTSIDE' when hlt.dm_source_treatment=2 then 'C & O' end as dmst,
+        case when hlt.ht_source_treatment=1 then 'CLINIC' when hlt.ht_source_treatment=2 then 'OUTSIDE' when hlt.ht_source_treatment=2 then 'C & O' end as htst,
+        to_char(hlt.dm_years, 'MM/YYYY') as dmy, to_char(hlt.ht_years, 'MM/YYYY') as hmy,
+        case when hlt.dm_detected_by=1 then 'CLINIC' when hlt.dm_detected_by=2 then 'OUTSIDE' end as ddb,
+        case when hlt.ht_detected_by=1 then 'CLINIC' when hlt.ht_detected_by=2 then 'OUTSIDE' end as hdb,
+        (hlt.server_created_on at time zone 'Asia/Kolkata')::date
+        from health_management_health hlt 
+        inner join health_management_patients pt on hlt.patient_uuid = pt.uuid 
+        inner join application_masters_village vlg on pt.village_id = vlg.id 
+        inner join application_masters_subcenter sbc on vlg.subcenter_id = sbc.id 
+        inner join application_masters_phc phc on sbc.phc_id = phc.id where 1=1 '''+phc_id+sbc_ids+village_id+between_date+''''''
+    cursor = connection.cursor()
+    cursor.execute(sql)
+    health_data = cursor.fetchall()
+    export_flag = True if request.POST.get('export') and request.POST.get( 'export').lower() == 'true' else False
+    if export_flag:
+        response = HttpResponse(content_type='text/csv',)
+        response['Content-Disposition'] = 'attachment; filename="Health worker home visit '+ str(localtime(timezone.now()).strftime("%m-%d-%Y %I-%M %p")) +'.csv"'
+        writer = csv.writer(response)
+        writer.writerow(['HEALTH WORKER HOME VISIT'])
+        writer.writerow([
+            'PHC Name',
+            'Sub Centre',
+            'Village',                                   
+            'Patient Name',
+            'Patient Code',
+            'Registered Date',
+            'Age(today)',
+            'Gender',
+            'Hyper diabetic',
+            'Co-morbid',
+            'Alcoholic',
+            'Tobacco',
+            'Smoker',
+            'DM Check',
+            'HT Check',
+            'DM Status',
+            'HT Status',
+            'DM Source Treatment',
+            'HT Source Treatment',
+            'DM Year',
+            'HT Year',
+            'DM Detected by',
+            'HT Detected by',
+            'Created On',
+            ])
+        for data in health_data:
+            writer.writerow([
+                data[0],
+                data[1],
+                data[2],
+                data[3],
+                data[4],
+                data[5],
+                data[6],
+                data[7],
+                data[8],
+                data[9],
+                data[10],
+                data[11],
+                data[12],
+                data[13],
+                data[14],
+                data[15],
+                data[16],
+                data[17],
+                data[18],
+                data[19],
+                data[20],
+                data[21],
+                data[22],
+                data[23],
+            ])
+        return response
+    data = pagination_function(request, health_data)
+    current_page = request.GET.get('page', 1)
+    page_number_start = int(current_page) - 2 if int(current_page) > 2 else 1
+    page_number_end = page_number_start + 5 if page_number_start + \
+        5 < data.paginator.num_pages else data.paginator.num_pages+1
+    display_page_range = range(page_number_start, page_number_end)
+    return render(request, 'patient_profile/health_list.html', locals())
+
+
 
 def home_visit_report(request):
     heading="HEALTH WORKERS HOME VISITS"
@@ -925,6 +1067,7 @@ def home_visit_report(request):
     inner join health_management_userprofile upf on hv.user_uuid=upf.uuid inner join auth_user hwn on upf.user_id = hwn.id
     where 1=1 '''+phc_id+sbc_ids+village_id+hwk_id+between_date+''' group by phc_name, sbc_name, village_name, patient_name, patient_code, health_worker_name order by vlg.name''')
     home_visit_data = cursor.fetchall()
+    
     export_flag = True if request.POST.get('export') and request.POST.get( 'export').lower() == 'true' else False
     if export_flag:
         response = HttpResponse(content_type='text/csv',)
@@ -1181,6 +1324,7 @@ def medicine_stock_list(request):
         5 < data.paginator.num_pages else data.paginator.num_pages+1
     display_page_range = range(page_number_start, page_number_end)
     return render(request, 'manage_stocks/medicine_stock/medicine_list.html', locals())
+
 
 def patient_registration_report(request):
     heading="Patients Report"

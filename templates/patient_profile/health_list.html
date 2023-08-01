@@ -1,0 +1,175 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block contents %}
+{% include 'partials/filter_report.html' %}
+
+<div class="row">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-body">
+                <form action=""  method="POST" >
+                    {% csrf_token %}
+                    <div class="d-flex justify-content-end mb-3"> 
+                        {% for key, values in filter_values.items %}
+                            <input type="hidden" id="__hd1__{{key}}" name='{{key}}' value="{{values}}"/>
+                        {% endfor %}
+                        <button type="submit" name='export'  class="btn btn-primary waves-effect justify-content-start" value="True">
+                             Export
+                         </button>  
+                    </div>
+                </form>
+                <div class="table-responsive mb-3" data-pattern="priority-columns">
+                    <table id="tech-companies-1" class="table table-bordered dt-responsive mb-0">
+                        <thead>
+                            <tr>
+                                <th>PHC Name</th>
+                                <th>Sub Centre</th>
+                                <th>Village</th>                                   
+                                <th>Patient Name</th>
+                                <th>Patient Code</th>
+                                <th>Registered Date</th>
+                                <th>Age(today)</th>
+                                <th>Gender</th>
+                                <th>Hyper diabetic</th>
+                                <th>Co-morbid</th>
+                                <th>Alcoholic</th>
+                                <th>Tobacco</th>
+                                <th>Smoker</th>
+                                <th>DM Check</th>
+                                <th>HT Check</th>
+                                <th>DM Status</th>
+                                <th>HT Status</th>
+                                <th>DM Source Treatment</th>
+                                <th>HT Source Treatment</th>
+                                <th>DM Year</th>
+                                <th>HT Year</th>
+                                <th>DM Detected by</th>
+                                <th>HT Detected by</th>
+                                <th>Created On</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for prr in data %}
+                            <tr>
+                                <td>{{prr.0|default_if_none:'-'}}</td>
+                                <td>{{prr.1|default_if_none:'-'}}</td>
+                                <td>{{prr.2|default_if_none:'-'}}</td>
+                                <td>{{prr.3|default_if_none:'-'}}</td>
+                                <td>{{prr.4|default_if_none:'-'}}</td>
+                                <td>{{prr.5|date:"d/m/Y"|default_if_none:'-'}}</td>
+                                <td>{{prr.6|default_if_none:'-'}}</td>
+                                <td>{{prr.7|default_if_none:'-'}}</td>
+                                <td>{{prr.8|default_if_none:'-'}}</td>
+                                <td>{{prr.9|default_if_none:'-'}}</td>
+                                <td>{{prr.10|default_if_none:'-'}}</td>
+                                <td>{{prr.11|default_if_none:'-'}}</td>
+                                <td>{{prr.12|default_if_none:'-'}}</td>
+                                <td>{{prr.13|default_if_none:'-'}}</td>
+                                <td>{{prr.14|default_if_none:'-'}}</td>
+                                <td>{{prr.15|default_if_none:'-'}}</td>
+                                <td>{{prr.16|default_if_none:'-'}}</td>
+                                <td>{{prr.17|default_if_none:'-'}}</td>
+                                <td>{{prr.18|default_if_none:'-'}}</td>
+                                <td>{{prr.19|default_if_none:'-'}}</td>
+                                <td>{{prr.20|default_if_none:'-'}}</td>
+                                <td>{{prr.21|default_if_none:'-'}}</td>
+                                <td>{{prr.22|default_if_none:'-'}}</td>
+                                <td>{{prr.23|date:"d/m/Y"|default_if_none:'-'}}</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                {% include 'partials/pagination.html' %}
+            </div>
+        </div>
+    </div> 
+</div> 
+{% endblock %}
+{% block extra_javascript %}
+<script src="{% static 'js/pages/form-validation.init.js' %}"></script>
+<script type="text/javascript">
+
+    function onselected_start_year(){
+        var start_month = document.getElementById("start_month");
+        var end_month = document.getElementById("end_month");
+        if (start_month != '' && end_month != ''){
+            document.querySelector('#start_month').required = true;
+            document.querySelector('#end_month').required = true;
+        }
+        else{
+            document.querySelector('#start_month').required = false;
+            document.querySelector('#end_month').required = false;
+            
+        }  
+    }
+     $("#start_month").on("change", function(event){
+           document.getElementById("end_month").min=$("#start_month").val()
+    });
+    $("#filter_reset").click(function() {
+        $('#phc').prop('selectedIndex', 0).change();
+        $('#sub_center').prop('selectedIndex', 0).change();
+        $('#village').prop('selectedIndex', 0).change();
+        $('#health_worker').prop('selectedIndex', 0).change();
+        $('#start_month').val('');
+        $('#end_month').val('');
+        $('#patient_name').val('');
+        this.form.submit();
+    });
+    document.addEventListener('DOMContentLoaded', function() { 
+        $('#phc').change(function () {
+            var optionSelected = $(this).find("option:selected");
+            var valueSelected  = optionSelected.val();
+            $.ajax({
+                type:"GET",
+                url: '/ajax/subcenter/'+valueSelected+'/',
+                success:function(result){
+                    $("#sub_center option").remove();
+                    a = '<option selected value="">Choose sub center Name</option>';
+                    $("#sub_center").append(a);
+                    if(JSON.parse(result) == 0){
+                        $("#sub_center option").remove();
+                        a = '<option selected value="">No sub center is mapped to this phc</option>';
+                        console.log(a)
+                        $("#sub_center").append(a);
+                    }
+                    else{
+                        $.each(JSON.parse(result),function(key, value)
+                        {
+                            a = '<option value=' + value['id']+'>' + value['name']+'</option>';
+                            $("#sub_center").append(a);
+                        });
+                    }
+                }
+            });
+        });
+        $('#sub_center').change(function () {
+            var optionSelected = $(this).find("option:selected");
+            var valueSelected  = optionSelected.val();
+            $.ajax({
+                type:"GET",
+                url: '/ajax/village/'+valueSelected+'/',
+                success:function(result){
+                    $("#village option").remove();
+                    a = '<option selected value="">Choose Village Name</option>';
+                    $("#village").append(a);
+                    if(JSON.parse(result) == 0){
+                        $("#village option").remove();
+                        a = '<option selected value="">No Village is mapped to this sub center</option>';
+                        console.log(a)
+                        $("#village").append(a);
+                    }
+                    else{
+                        $.each(JSON.parse(result),function(key, value)
+                        {
+                            a = '<option value=' + value['id']+'>' + value['name']+'</option>';
+                            $("#village").append(a);
+                        });
+                    }
+                }
+            });
+        });
+    })
+</script> 
+{% endblock %}
+

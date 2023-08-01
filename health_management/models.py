@@ -144,6 +144,13 @@ class Health(BaseContent):
     # def __str__(self):
     #     return self.uuid
 
+    def get_pnt_uuid(self):
+        try:
+            pnt_uuid = Patients.objects.get(uuid=self.patient_uuid)
+        except ObjectDoesNotExist:
+            pnt_uuid = None
+        return pnt_uuid
+
 
 class Prescription(BaseContent):
     uuid = models.CharField(max_length=150, unique=True, null=True, blank=True, db_index=True)
