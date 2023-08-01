@@ -50,7 +50,7 @@ class MailData(BaseContent):
     error_details = models.TextField(blank=True,null=True) 
     template_name      = models.ForeignKey(MailTemplate,on_delete=models.DO_NOTHING,blank=True,null=True)
     mode       = models.TextField(blank=True,null=True)
-    file_paths = models.JSONField(default=list,help_text="file info should be in this format [ {'file_path':'example path','file_type':'text','filename':'example.text'}] ")
+    file_paths = models.JSONField(default=list,help_text="file info should be in this format [ {'file_path':'example path','file_type':'text','filename':'example.text'}] ",blank=True,null=True)
 
     def __str__(self):
         return self.template_name.template_name
