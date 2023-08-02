@@ -874,7 +874,6 @@ def verified_treatments_report(request):
 
 def health_list(request):
     heading="Health Details"
-    heading="Treatment Details"
     filter_values = request.GET.dict()
     from dateutil.relativedelta import relativedelta
     patient_value = True
@@ -962,7 +961,7 @@ def health_list(request):
             'Gender',
             'Hyper diabetic',
             'Co-morbid',
-            'Alcoholic',
+            'Drinking',
             'Tobacco',
             'Smoker',
             'DM Check',
