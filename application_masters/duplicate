@@ -2,6 +2,8 @@ from health_management.models import *
 import uuid
 import datetime
 
+Patients.objects.values('patient_id').annotate(count=Count('id')).filter(count__gt=1)
+
 from health_management.models import *
 for i in Diagnosis.objects.all():
     i.save()
@@ -250,11 +252,11 @@ for pt in pts:
         
 from health_management.models import *
 from django.db.models import Count
-pts = Patients.objects.values('patient_id').annotate(Count('id')).order_by('server_created_on').filter(id__count__gt=1)
+pts = Patients.objects.values('patient_id').annotate(count=Count('id')).filter(count__gt=1)
 print(pts)
 for pt in pts:
     print(pt['patient_id'])
-    excp = Patients.objects.filter(patient_id=pt['patient_id']).first()
+    excp = Patients.objects.filter(patient_id=pt['patient_id']).order_by('-server_created_on').first()
     Patients.objects.filter(patient_id=pt['patient_id']).exclude(id=excp.id).update(status=1)
 
     

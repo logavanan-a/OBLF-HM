@@ -15,9 +15,9 @@ class Command(BaseCommand):
             curr_dt = datetime.datetime.now().strftime("%Y%m%d%H%M%S%f")
             uuid_id = str(curr_dt) + "-" + str(uuid.uuid4())
             try:
-                patients_ids=Patients.objects.filter(status=2, patient_id=clc_vlu.code).first()
-                user_uuid = patients_ids.user_uuid if patients_ids else None
-                patient_uuid = patients_ids.uuid if patients_ids else None
+                patients_ids=Patients.objects.get(status=2, patient_id=clc_vlu.code)
+                user_uuid = patients_ids.user_uuid
+                patient_uuid = patients_ids.uuid
                 health_details = Health.objects.filter(patient_uuid=patient_uuid).exists()
                 if user_uuid:
                     if not health_details:
