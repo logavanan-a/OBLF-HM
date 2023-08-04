@@ -926,10 +926,10 @@ def health_list(request):
         case when hlt.is_alcoholic=0 then 'NO' when hlt.is_alcoholic=1 then 'Yes' end as alcoholic,
         case when hlt.is_tobacco=0 then 'NO' when hlt.is_tobacco=1 then 'Yes' end as tobacco,
         case when hlt.is_smoker=0 then 'NO' when hlt.is_smoker=1 then 'Yes' end as smoker,
-        case when hlt.dm_check=1 then 'PDM' when hlt.dm_check=2 then 'DM' end as dmc,
-        case when hlt.ht_check=1 then 'PHT' when hlt.ht_check=2 then 'HT' end as htc,
-        case when hlt.dm_status=1 then 'Inactive' when hlt.dm_status=2 then 'Active' end as dms,
-        case when hlt.ht_status=1 then 'Inactive' when hlt.ht_status=2 then 'Active' end as hts,
+        case when hlt.dm_check=0 then 'NO' when hlt.dm_check=2 then 'YES' end as dmc,
+        case when hlt.ht_check=0 then 'NO' when hlt.ht_check=2 then 'YES' end as htc,
+        case when hlt.dm_status=1 then 'PDM' when hlt.dm_status=2 then 'DM' end as dms,
+        case when hlt.ht_status=1 then 'PHT' when hlt.ht_status=2 then 'HT' end as hts,
         case when hlt.dm_source_treatment=1 then 'CLINIC' when hlt.dm_source_treatment=2 then 'OUTSIDE' when hlt.dm_source_treatment=2 then 'C & O' end as dmst,
         case when hlt.ht_source_treatment=1 then 'CLINIC' when hlt.ht_source_treatment=2 then 'OUTSIDE' when hlt.ht_source_treatment=2 then 'C & O' end as htst,
         to_char(hlt.dm_years, 'MM/YYYY') as dmy, to_char(hlt.ht_years, 'MM/YYYY') as hmy,
@@ -940,7 +940,7 @@ def health_list(request):
         inner join health_management_patients pt on hlt.patient_uuid = pt.uuid 
         inner join application_masters_village vlg on pt.village_id = vlg.id 
         inner join application_masters_subcenter sbc on vlg.subcenter_id = sbc.id 
-        inner join application_masters_phc phc on sbc.phc_id = phc.id where 1=1 '''+phc_id+sbc_ids+village_id+between_date+''''''
+        inner join application_masters_phc phc on sbc.phc_id = phc.id where 1=1 '''+phc_id+sbc_ids+village_id+between_date+pnt_name+pnt_code+''''''
     cursor = connection.cursor()
     cursor.execute(sql)
     health_data = cursor.fetchall()
