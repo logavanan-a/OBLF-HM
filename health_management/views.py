@@ -935,7 +935,7 @@ def health_list(request):
         case when hlt.ht_status=1 then 'PHT' when hlt.ht_status=2 then 'HT' end as hts,
         case when hlt.ht_source_treatment=1 then 'CLINIC' when hlt.ht_source_treatment=2 then 'OUTSIDE' when hlt.ht_source_treatment=2 then 'C & O' end as htst,
         case when hlt.ht_detected_by=1 then 'CLINIC' when hlt.ht_detected_by=2 then 'OUTSIDE' end as hdb,
-        (hlt.server_created_on at time zone 'Asia/Kolkata')::date
+        (hlt.server_created_on at time zone 'Asia/Kolkata')::date,
         (hlt.server_modified_on at time zone 'Asia/Kolkata')::date
         from health_management_health hlt 
         inner join health_management_patients pt on hlt.patient_uuid = pt.uuid 
