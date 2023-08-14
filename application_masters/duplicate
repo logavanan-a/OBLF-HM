@@ -259,8 +259,18 @@ for pt in pts:
     excp = Patients.objects.filter(patient_id=pt['patient_id']).order_by('-server_created_on').first()
     Patients.objects.filter(patient_id=pt['patient_id']).exclude(id=excp.id).update(status=1)
 
+from health_management.models import *
+pts=Patients.objects.filter(status=2)
+for pt in pts:
+    try:
+        ht_obj = Health.objects.get(patient_uuid=pt.uuid)
+        ht_obj.server_created_on = pt.registered_date
+        ht_obj.save()
+    except Health.DoesNotExist:
+        ht_obj = None
     
 
+    
 
 
 

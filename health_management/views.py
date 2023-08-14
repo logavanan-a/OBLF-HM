@@ -936,6 +936,7 @@ def health_list(request):
         case when hlt.ht_source_treatment=1 then 'CLINIC' when hlt.ht_source_treatment=2 then 'OUTSIDE' when hlt.ht_source_treatment=2 then 'C & O' end as htst,
         case when hlt.ht_detected_by=1 then 'CLINIC' when hlt.ht_detected_by=2 then 'OUTSIDE' end as hdb,
         (hlt.server_created_on at time zone 'Asia/Kolkata')::date
+        (hlt.server_modified_on at time zone 'Asia/Kolkata')::date
         from health_management_health hlt 
         inner join health_management_patients pt on hlt.patient_uuid = pt.uuid 
         inner join application_masters_village vlg on pt.village_id = vlg.id 
@@ -975,6 +976,7 @@ def health_list(request):
             'HT Year',
             'HT Detected by',
             'Created On',
+            'Updated On',
             ])
         for data in health_data:
             writer.writerow([
@@ -1002,6 +1004,7 @@ def health_list(request):
                 data[21],
                 data[22],
                 data[23],
+                data[24],
             ])
         return response
     data = pagination_function(request, health_data)
