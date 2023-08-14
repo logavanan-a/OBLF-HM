@@ -264,7 +264,8 @@ pts=Patients.objects.filter(status=2)
 for pt in pts:
     try:
         ht_obj = Health.objects.get(patient_uuid=pt.uuid)
-        ht_obj.server_created_on = pt.registered_date
+        ht_obj.server_created_on = pt.registered_date if pt.registered_date !='' else pt.server_created_on
+        ht_obj.server_modified_on = pt.registered_date if pt.registered_date !='' else pt.server_modified_on
         ht_obj.save()
     except Health.DoesNotExist:
         ht_obj = None

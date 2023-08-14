@@ -31,10 +31,6 @@
                                 <th>Age(today)</th>
                                 <th>Gender</th>
                                 <th>Last visit date</th>
-                                <th>Drinking</th>
-                                <th>Smoking</th>
-                                <th>Tobacco</th>
-                                <th>Family history of Hypertension or diabetes</th>
                                 <th>Controlled</th>
                                 <th>SBP</th>
                                 <th>DBP</th>
@@ -48,27 +44,23 @@
                         <tbody>
                             {% for prr in data %}
                             <tr>
-                                <th>{{prr.1}}</th>
-                                <th>{{prr.2}}</th>
-                                <th>{{prr.3|default_if_none:'-'}}</th>
-                                <th>{{prr.4}}</th>
-                                <th>{{prr.5|default_if_none:'-'}}</th>
-                                <th>{{prr.6|date:"d/m/Y"|default_if_none:'-'}}</th>
-                                <th>{{prr.7|default_if_none:'-'}}</th>
-                                <th>{{prr.8|default_if_none:'-'}}</th>
-                                <th>{{prr.9|date:"d/m/Y"|default_if_none:'-'}}</th>
-                                <th>{{prr.10|default_if_none:'-'}}</th>
-                                <th>{{prr.11|default_if_none:'-'}}</th>
-                                <th>{{prr.12|default_if_none:'-'}}</th>
-                                <th>{{prr.13|default_if_none:'-'}}</th>
-                                <th>{{prr.14|default_if_none:'-'}}</th>
-                                <th>{{prr.15|default_if_none:'-'}}</th>
-                                <th>{{prr.16|default_if_none:'-'}}</th>
-                                <th>{{prr.17|default_if_none:'-'}}</th>
-                                <th>{{prr.18|default_if_none:'-'}}</th>
-                                <th>{{prr.19|default_if_none:'-'}}</th>
-                                <th>{{prr.20|default_if_none:'-'}}</th>
-                                <th>{{prr.21|default_if_none:'-'}}</th>
+                                <th>{{prr.phc_name}}</th>
+                                <th>{{prr.sbc_name}}</th>
+                                <th>{{prr.village_name|default_if_none:'-'}}</th>
+                                <th>{{prr.patient_name}}</th>
+                                <th>{{prr.patient_code|default_if_none:'-'}}</th>
+                                <th>{{prr.registered_date|date:"d/m/Y"|default_if_none:'-'}}</th>
+                                <th>{{prr.age|default_if_none:'-'}}</th>
+                                <th>{{prr.gender|default_if_none:'-'}}</th>
+                                <th>{{prr.visit_date|date:"d/m/Y"|default_if_none:'-'}}</th>
+                                <th>{{prr.controlled|default_if_none:'-'}}</th>
+                                <th>{{prr.sbp|default_if_none:'-'}}</th>
+                                <th>{{prr.dbp|default_if_none:'-'}}</th>
+                                <th>{{prr.fbs|default_if_none:'-'}}</th>
+                                <th>{{prr.pp|default_if_none:'-'}}</th>
+                                <th>{{prr.random|default_if_none:'-'}}</th>
+                                <th>{{prr.symptoms|default_if_none:'-'}}</th>
+                                <th>{{prr.remarks|default_if_none:'-'}}</th>
                             </tr>
                             {% endfor %}
                         </tbody>

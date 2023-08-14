@@ -19,184 +19,56 @@
                         </button>
                     </div>
                     <div class="col-auto mt-3 ">
-                        {% if pd.25 == 1 %}
-                        <button class='btn btn-success' onclick="Confirm('{{pd.24}}', 'Activate')">Activate</button>
+                        {% if pd.status_id == 1 %}
+                        <button class='btn btn-success' onclick="Confirm('{{pd.id}}', 'Activate')">Activate</button>
                         {% else %}
-                        <button class='btn btn-danger' onclick="Confirm('{{pd.24}}', 'Deactivate')">Deactivate</button>
+                        <button class='btn btn-danger' onclick="Confirm('{{pd.id}}', 'Deactivate')">Deactivate</button>
                         {% endif %}
                         <!-- <button type="button" class="form-control btn btn-primary waves-effect btn-xs float-right" onclick="location.href='/add//'">Add New {{patient_id}}</button> -->
                     </div>  
                 </div>
                 <div class=" row justify-content-evenly mt-3">
-                    <div class="col-md-4">
+                    <div class="col-md-10">
                         <div class="row">
-                            <p class="col-6"><b>Patient Name :</b></p><p class="col-6">{{pd.4|default_if_none:'-'}}</p>
-                        </div>
-                    </div>
-                    <div class="col-md-4">
-                        <div class="row">
-                            <p class="col-6"><b>Patient Code :</b></p><p class="col-6">{{pd.0|default_if_none:'-'}}</p>
-                        </div>
-                    </div>
-                </div>
-                <div class=" row justify-content-evenly mt-3">
-                    <div class="col-md-4">
-                        <div class="row">
-                            <p class="col-6"><b>Registered Date :</b></p><p class="col-6">{{pd.5|date:"d-m-Y"|default_if_none:'-'}}</p>
-                        </div>
-                    </div>
-                    <div class="col-md-4">
-                        <div class="row">
-                            <p class="col-6"><b>Age (today) :</b></p><p class="col-6">{{pd.6|default_if_none:'-'}}</p>
-                        </div>
-                    </div>
-                </div>
-                <div class=" row justify-content-evenly mt-3">
-                    <div class="col-md-4">
-                        <div class="row">
-                            <p class="col-6"><b>Gender :</b></p><p class="col-6">{{pd.7|default_if_none:'-'}}</p>
-                        </div>
-                    </div>
-                    <div class="col-md-4">
-                        <div class="row">
-                            <p class="col-6"><b>PHC Name :</b></p><p class="col-6">{{pd.1|default_if_none:'-'}}</p>
-                        </div>
-                    </div>
-                </div>
-                <div class=" row justify-content-evenly mt-3">
-                    <div class="col-md-4">
-                        <div class="row">
-                            <p class="col-6"><b>Sub Centre :</b></p><p class="col-6">{{pd.2|default_if_none:'-'}}</p>
-                        </div>
-                    </div>
-                    <div class="col-md-4">
-                        <div class="row">
-                            <p class="col-6"><b>Village :</b></p><p class="col-6">{{pd.3|default_if_none:'-'}}</p>
+                            <p class="col-3 pb-3"><b>Patient Name :</b></p><p class="col-3 pb-3">{{pd.patient_name|default_if_none:'-'}}</p>
+                            <p class="col-3 pb-3"><b>Patient Code :</b></p><p class="col-3 pb-3">{{pd.patient_id|default_if_none:'-'}}</p>
+                            <p class="col-3 pb-3"><b>Registered Date :</b></p><p class="col-3 pb-3">{{pd.r_date|date:"d-m-Y"|default_if_none:'-'}}</p>
+                            <p class="col-3 pb-3"><b>Age (today) :</b></p><p class="col-3 pb-3">{{pd.age|default_if_none:'-'}}</p>
+                            <p class="col-3 pb-3"><b>Gender :</b></p><p class="col-3 pb-3">{{pd.gender|default_if_none:'-'}}</p>
+                            <p class="col-3 pb-3"><b>PHC Name :</b></p><p class="col-3 pb-3">{{pd.phc_name|default_if_none:'-'}}</p>
+                            <p class="col-3 pb-3"><b>Sub Centre :</b></p><p class="col-3 pb-3">{{pd.sbc_name|default_if_none:'-'}}</p>
+                            <p class="col-3 pb-3"><b>Village :</b></p><p class="col-3 pb-3">{{pd.village_name|default_if_none:'-'}}</p>
+                            <p class="col-3 pb-3"><b>Status :</b></p><p class="col-3 pb-3">{{pd.status|default_if_none:'-'}}</p>
+                            <p class="col-3 pb-3"><b>Health :</b></p><p class="col-3 pb-3">{{pd.h_status|default_if_none:'-'}}</p>
+                            <p class="col-3 pb-3"><b>DM Check :</b></p><p class="col-3 pb-3">{{pd.dmc|default_if_none:'-'}}</p>
+                            <p class="col-3 pb-3"><b>DM Status:</b></p><p class="col-3 pb-3">{{pd.dms|default_if_none:'-'}}</p>
+                            <p class="col-3 pb-3"><b>DM Source Treatment:</b></p><p class="col-3 pb-3">{{pd.dmst|default_if_none:'-'}}</p>
+                            <p class="col-3 pb-3"><b>DM Year:</b></p><p class="col-3 pb-3">{{pd.ddb|default_if_none:'-'}}</p>
+                            <p class="col-3 pb-3"><b>DM Detected by:</b></p><p class="col-3 pb-3">{{pd.dm_years|default_if_none:'-'}}</p>
+                            <p class="col-3 pb-3"><b>HT Check :</b></p><p class="col-3 pb-3">{{pd.htc|default_if_none:'-'}}</p>
+                            <p class="col-3 pb-3"><b>HT Status:</b></p><p class="col-3 pb-3">{{pd.hts|default_if_none:'-'}}</p>
+                            <p class="col-3 pb-3"><b>HT Source Treatment:</b></p><p class="col-3 pb-3">{{pd.htst|default_if_none:'-'}}</p>
+                            <p class="col-3 pb-3"><b>HT Year:</b></p><p class="col-3 pb-3">{{pd.hdb|default_if_none:'-'}}</p>
+                            <p class="col-3 pb-3"><b>HT Detected by:</b></p><p class="col-3 pb-3">{{pd.ht_years|default_if_none:'-'}}</p>
+                            <p class="col-3 pb-3"><b>Treatment :</b></p><p class="col-3 pb-3">{{pd.trmt_status|default_if_none:'-'}}</p>
+                            <p class="col-3 pb-3"><b>Last visit date :</b></p><p class="col-3 pb-3">{{pd.v_date|date:"d-m-Y"|default_if_none:'-'}}</p>
+                            <p class="col-3 pb-3"><b>Drinking :</b></p><p class="col-3 pb-3">{{pd.drinking|default_if_none:'-'}}</p>
+                            <p class="col-3 pb-3"><b>Smoking :</b></p><p class="col-3 pb-3">{{pd.smoking|default_if_none:'-'}}</p>
+                            <p class="col-3 pb-3"><b>Tobacco :</b></p><p class="col-3 pb-3">{{pd.tobacco|default_if_none:'-'}}</p>
+                            <p class="col-3 pb-3"><b>Family history of Hypertension or diabetes :</b></p><p class="col-3 pb-3">{{pd.diabetes|default_if_none:'-'}}</p>
+                            <p class="col-3 pb-3"><b>Controlled :</b></p><p class="col-3 pb-3">{{pd.controlled|default_if_none:'-'}}</p>
+                            <p class="col-3 pb-3"><b>SBP :</b></p><p class="col-3 pb-3">{{pd.sbp|default_if_none:'-'}}</p>
+                            <p class="col-3 pb-3"><b>DBP :</b></p><p class="col-3 pb-3">{{pd.dbp|default_if_none:'-'}}</p>
+                            <p class="col-3 pb-3"><b>Blood Sugar Fasting :</b></p><p class="col-3 pb-3">{{pd.fbs|default_if_none:'-'}}</p>
+                            <p class="col-3 pb-3"><b>Blood Sugar PP :</b></p><p class="col-3 pb-3">{{pd.pp|default_if_none:'-'}}</p>
+                            <p class="col-3 pb-3"><b>Blood Sugar Random :</b></p><p class="col-3 pb-3">{{pd.random|default_if_none:'-'}}</p>
+                            <p class="col-3 pb-3"><b>Signs & symptoms :</b></p><p class="col-3 pb-3">{{pd.symptoms|default_if_none:'-'}}</p>
+                            <p class="col-3 pb-3"><b>Remarks :</b></p><p class="col-3 pb-3">{{pd.remarks|default_if_none:'-'}}</p>
+                            <p class="col-3 pb-3"><b>Prescription :</b></p><p class="col-3 pb-3">{{pd.m_status|default_if_none:'-'}}</p>
+                            <p class="col-3 pb-3"><b>Medicines :</b></p><p class="col-3 pb-3">{{pd.md_name|default_if_none:'-'}}</p>
                         </div>
                     </div>
                 </div>
-                <div class="row justify-content-evenly mt-3">
-                    <div class="col-md-4">
-                        <div class="row">
-                            <p class="col-6"><b>Status :</b></p><p class="col-6">{{pd.26|default_if_none:'-'}}</p>
-                        </div>
-                    </div>
-                    <div class="col-md-4">
-                        <div class="row">
-                            <p class="col-6"><b>Treatment :</b></p><p class="col-6">{{pd.29|default_if_none:'-'}}</p>
-                        </div>
-                    </div>
-                </div>
-                <div class=" row justify-content-evenly mt-3">
-                    <div class="col-md-4">
-                        <div class="row">
-                            <p class="col-6"><b>Last visit date :</b></p><p class="col-6">{{pd.8|date:"d-m-Y"|default_if_none:'-'}}</p>
-                        </div>
-                    </div>
-                    
-                    <div class="col-md-4">
-                        <div class="row">
-                            <p class="col-6"><b>Drinking :</b></p><p class="col-6">{{pd.9|default_if_none:'-'}}</p>
-                        </div>
-                    </div>
-                </div>
-                <div class=" row justify-content-evenly mt-3">
-                    <div class="col-md-4">
-                        <div class="row">
-                            <p class="col-6"><b>Smoking :</b></p><p class="col-6">{{pd.10|default_if_none:'-'}}</p>
-                        </div>
-                    </div>
-                    <div class="col-md-4">
-                        <div class="row">
-                            <p class="col-6"><b>Tobacco :</b></p><p class="col-6">{{pd.11|default_if_none:'-'}}</p>
-                        </div>
-                    </div>
-                </div>
-                <div class=" row justify-content-evenly mt-3">
-                    <div class="col-md-4">
-                        <div class="row">
-                            <p class="col-6"><b>Family history of Hypertension or diabetes :</b></p><p class="col-6">{{pd.12|default_if_none:'-'}}</p>
-                        </div>
-                    </div>
-                    <div class="col-md-4">
-                        <div class="row">
-                            <p class="col-6"><b>Controlled :</b></p><p class="col-6">{{pd.13|default_if_none:'-'}}</p>
-                        </div>
-                    </div>
-                </div>
-                <div class=" row justify-content-evenly mt-3">
-                    <div class="col-md-4">
-                        <div class="row">
-                            <p class="col-6"><b>SBP :</b></p><p class="col-6">{{pd.14|default_if_none:'-'}}</p>
-                        </div>
-                    </div>
-                    <div class="col-md-4">
-                        <div class="row">
-                            <p class="col-6"><b>DBP :</b></p><p class="col-6">{{pd.15|default_if_none:'-'}}</p>
-                        </div>
-                    </div>
-                </div>
-                <div class=" row justify-content-evenly mt-3">
-                    <div class="col-md-4">
-                        <div class="row">
-                            <p class="col-6"><b>Blood Sugar Fasting :</b></p><p class="col-6">{{pd.16|default_if_none:'-'}}</p>
-                        </div>
-                    </div>
-                    <div class="col-md-4">
-                        <div class="row">
-                            <p class="col-6"><b>Blood Sugar PP :</b></p><p class="col-6">{{pd.17|default_if_none:'-'}}</p>
-                        </div>
-                    </div>
-                </div>
-                <div class=" row justify-content-evenly mt-3">
-                    <div class="col-md-4">
-                        <div class="row">
-                            <p class="col-6"><b>Blood Sugar Random :</b></p><p class="col-6">{{pd.18|default_if_none:'-'}}</p>
-                        </div>
-                    </div>
-                    <div class="col-md-4">
-                        <div class="row">
-                            <p class="col-6"><b>Signs & symptoms :</b></p><p class="col-6">{{pd.19|default_if_none:'-'}}</p>
-                        </div>
-                    </div>
-                </div>
-                <div class=" row justify-content-evenly mt-3">
-                    <div class="col-md-4">
-                        <div class="row">
-                            <p class="col-6"><b>Remarks :</b></p><p class="col-6">{{pd.20|default_if_none:'-'}}</p>
-                        </div>
-                    </div>
-                    <div class="col-md-4">
-                        <div class="row">
-                            <p class="col-6"><b>Diagnosis :</b></p><p class="col-6">{{pd.27|default_if_none:'-'}}</p>
-                        </div>
-                    </div>
-                </div>
-                <div class="row justify-content-evenly mt-3">
-                    <div class="col-md-4">
-                        <div class="row">
-                            <p class="col-6"><b>NCD :</b></p><p class="col-6">{{pd.21|default_if_none:'-'}}</p>
-                        </div>
-                    </div>
-                    <div class="col-md-4">
-                        <div class="row">
-                            <p class="col-6"><b>Source of treatment :</b></p><p class="col-6">{{pd.22|default_if_none:'-'}}</p>
-                        </div>
-                    </div>
-                </div>
-                <div class="row justify-content-evenly mt-3">
-                    <div class="col-md-4">
-                        <div class="row">
-                            <p class="col-6"><b>Prescription :</b></p><p class="col-6">{{pd.28|default_if_none:'-'}}</p>
-                        </div>
-                    </div>
-                    <div class="col-md-4">
-                        <div class="row">
-                            <p class="col-6"><b>Medicines :</b></p><p class="col-6">{{pd.23|default_if_none:'-'}}</p>
-                        </div>
-                    </div>
-                </div>
-                
                 {% endfor %}
             </div>
         </div>
