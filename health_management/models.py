@@ -340,6 +340,41 @@ class ClinicProfile(BaseContent):
 
     def __str__(self):
         return self.code
+    
+
+
+
+class ClinicProfileTwo(BaseContent):
+    code = models.CharField(max_length=150, null=True, blank=True)
+    detected_by_ht = models.IntegerField(null=True, blank=True)
+    detected_since_ht = models.CharField(max_length=150, null=True, blank=True)
+    diagnosis_ht = models.IntegerField(null=True, blank=True)
+    sot_ht = models.IntegerField(null=True, blank=True)
+    detected_by_dm = models.IntegerField(null=True, blank=True)
+    detected_since_dm = models.CharField(max_length=150, null=True, blank=True)
+    diagnosis_dm = models.IntegerField(null=True, blank=True)
+    sot_dm = models.IntegerField(null=True, blank=True)
+    co_morbidities = models.CharField(max_length=1000, null=True, blank=True)
+    family_history = models.IntegerField(null=True, blank=True)
+    tobacco = models.IntegerField(null=True, blank=True)
+    alcohol = models.IntegerField(null=True, blank=True)
+    smoking = models.IntegerField(null=True, blank=True)
+    visit_date = models.DateField(blank=True, null=True)
+    height = models.CharField(max_length=150, null=True, blank=True)
+    weight = models.CharField(max_length=150, null=True, blank=True)
+    bmi = models.CharField(max_length=150, null=True, blank=True)
+    sbp = models.CharField(max_length=150, null=True, blank=True)
+    dbp = models.CharField(max_length=150, null=True, blank=True)
+    fbs = models.CharField(max_length=150, null=True, blank=True)
+    ppbs = models.CharField(max_length=150, null=True, blank=True)
+    rbs = models.CharField(max_length=150, null=True, blank=True)
+    symptoms = models.CharField(max_length=150, null=True, blank=True)
+    treatment = models.CharField(max_length=1000, null=True, blank=True)
+    remarks = models.CharField(max_length=500, null=True, blank=True)
+
+
+    def __str__(self):
+        return self.code
 
 
     

@@ -275,7 +275,6 @@ for pt in pts:
 
 
 
-run the command in shell
 
 from health_management.models import *
 clds = ClinicProfile.objects.filter(status=2)
@@ -295,8 +294,19 @@ for cld in clds:
 
 
 
-select distinct((trmt.visit_date at time zone 'Asia/Kolkata')::date) as vst_date, 
-pt.village_id as vlg_id from health_management_treatments trmt 
-inner join health_management_patients pt on trmt.patient_uuid=pt.uuid 
-where 1=1 and trmt.status = 2 
+
+from health_management.models import *
+clc_vlu = ClinicProfileTwo.objects.filter(status=2)
+for cld in clc_vlu:
+    if cld.detected_since_ht:
+        ht_moth = cld.detected_since_ht.split('-')[0]
+        ht_year = cld.detected_since_ht.split('-')[1]
+        
+    if cld.detected_since_dm:
+        dm_month = cld.detected_since_dm.split('-')[0]
+        dm_year = cld.detected_since_dm.split('-')[1]
+        print()
+
+
+
         
