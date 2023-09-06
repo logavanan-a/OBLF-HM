@@ -945,7 +945,7 @@ def health_list(request):
     
     sql = '''select phc.name as phc_name, 
         sbc.name as sbc_name, vlg.name as village_name, pt.name as patient_name, pt.patient_id as pnt_code,
-        (pt.registered_date at time zone 'Asia/Kolkata')::date, date_part('year',age(pt.dob))::int as age, 
+        (pt.registered_date at time zone 'Asia/Kolkata')::date as registered_date, date_part('year',age(pt.dob))::int as age, 
         case when pt.gender=1 then 'Male' when pt.gender=2 then 'Female' end as gender,
         case when hlt.hyper_diabetic=0 then 'NO' when hlt.hyper_diabetic=1 then 'Yes' end as hdt,
         hlt.co_morbid_names as cmn,
@@ -962,16 +962,14 @@ def health_list(request):
         case when hlt.ht_status=1 then 'PHT' when hlt.ht_status=2 then 'HT' end as hts,
         case when hlt.ht_source_treatment=1 then 'CLINIC' when hlt.ht_source_treatment=2 then 'OUTSIDE' when hlt.ht_source_treatment=2 then 'C & O' end as htst,
         case when hlt.ht_detected_by=1 then 'CLINIC' when hlt.ht_detected_by=2 then 'OUTSIDE' end as hdb,
-        (hlt.server_created_on at time zone 'Asia/Kolkata')::date,
-        (hlt.server_modified_on at time zone 'Asia/Kolkata')::date
+        (hlt.server_created_on at time zone 'Asia/Kolkata')::date as created_on,
+        (hlt.server_modified_on at time zone 'Asia/Kolkata')::date  as modified_on
         from health_management_health hlt 
         inner join health_management_patients pt on hlt.patient_uuid = pt.uuid 
         inner join application_masters_village vlg on pt.village_id = vlg.id 
         inner join application_masters_subcenter sbc on vlg.subcenter_id = sbc.id 
         inner join application_masters_phc phc on sbc.phc_id = phc.id where 1=1 '''+phc_id+sbc_ids+village_id+between_date+pnt_name+pnt_code+''''''
-    cursor = connection.cursor()
-    cursor.execute(sql)
-    health_data = cursor.fetchall()
+    health_data = SqlHeader(sql)
     export_flag = True if request.POST.get('export') and request.POST.get( 'export').lower() == 'true' else False
     if export_flag:
         response = HttpResponse(content_type='text/csv',)
@@ -993,45 +991,45 @@ def health_list(request):
             'Tobacco',
             'Smoker',
             'DM Check',
-            'DM Status',
             'DM Source Treatment',
-            'DM Year',
             'DM Detected by',
+            'DM Status',
+            'DM Year',
             'HT Check',
-            'HT Status',
             'HT Source Treatment',
-            'HT Year',
             'HT Detected by',
+            'HT Status',
+            'HT Year',
             'Created On',
             'Updated On',
             ])
         for data in health_data:
             writer.writerow([
-                data[0],
-                data[1],
-                data[2],
-                data[3],
-                data[4],
-                data[5],
-                data[6],
-                data[7],
-                data[8],
-                data[9],
-                data[10],
-                data[11],
-                data[12],
-                data[13],
-                data[14],
-                data[15],
-                data[16],
-                data[17],
-                data[18],
-                data[19],
-                data[20],
-                data[21],
-                data[22],
-                data[23],
-                data[24],
+                data['phc_name'],
+                data['sbc_name'],
+                data['village_name'],
+                data['patient_name'],
+                data['pnt_code'],
+                data['registered_date'],
+                data['age'],
+                data['gender'],
+                data['hdt'],
+                data['cmn'],
+                data['alcoholic'],
+                data['tobacco'],
+                data['smoker'],
+                data['dmc'],
+                data['dmst'],
+                data['ddb'],
+                data['dms'],
+                data['dmy'],
+                data['hmc'],
+                data['hmst'],
+                data['hdb'],
+                data['hms'],
+                data['hmy'],
+                data['created_on'],
+                data['modified_on'],
             ])
         return response
     data = pagination_function(request, health_data)

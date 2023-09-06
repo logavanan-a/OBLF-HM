@@ -307,6 +307,11 @@ for cld in clc_vlu:
         dm_year = cld.detected_since_dm.split('-')[1]
         print()
 
+from health_management.models import *
+pts = Patients.objects.filter(status=2)
+for pt in pts:
+    visit_date = Treatments.objects.filter(patient_uuid=pt.uuid).order_by('visit_date').first()
+    if visit_date:
+        Patients.objects.filter(status=2, uuid=visit_date.patient_uuid).update(registered_date=visit_date.visit_date)
 
-
-        
+Patients.objects.filter(server_modified_on__date='2023-08-30').count() 
