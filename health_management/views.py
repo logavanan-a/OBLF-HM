@@ -607,45 +607,33 @@ def diagnosis_ncd_count_report(request):
         ed_date = ed_date - relativedelta(months=1)
         start_date = sd_date.strftime("%Y-%m-%d")
         end_date = ed_date.strftime("%Y-%m-%d")
-        between_year = """and detected_years >= '"""+s_date + \
-                """' and detected_years < '""" + \
+        dm_year = """and dm_years >= '"""+s_date + \
+                """' and dm_years < '""" + \
+                e_date+"""' """
+        ht_year = """and ht_years >= '"""+s_date + \
+                """' and ht_years < '""" + \
                 e_date+"""' """
     sql="""select i::date, to_char(i, 'Month'), 
     case when mt.ht is not null then mt.ht else 0 end, 
-    case when mt.kht is not null then mt.kht else 0 end, 
     case when mt.pht is not null then mt.pht else 0 end, 
     case when mt.dm is not null then mt.dm else 0 end, 
-    case when mt.kdm is not null then mt.kdm else 0 end, 
     case when mt.pdm is not null then mt.pdm else 0 end, 
-    case when mt.Kht_dm is not null then mt.Kht_dm else 0 end, 
-    case when mt.kht_pdm is not null then mt.kht_pdm else 0 end, 
-    case when mt.kht_kdm is not null then mt.kht_kdm else 0 end, 
     case when mt.ht_dm is not null then mt.ht_dm else 0 end, 
     case when mt.ht_pdm is not null then mt.ht_pdm else 0 end, 
-    case when mt.ht_kdm is not null then mt.ht_kdm else 0 end, 
     case when mt.pht_dm is not null then mt.pht_dm else 0 end, 
-    case when mt.pht_pdm is not null then mt.pht_pdm else 0 end, 
-    case when mt.pht_kdm is not null then mt.pht_kdm else 0 end 
+    case when mt.pht_pdm is not null then mt.pht_pdm else 0 end
     from generate_series('"""+start_date+"""', '"""+end_date+"""', '1 month'::interval) i 
-    left outer join (select detected_years as mmyy, to_char(detected_years, 'Month') as month, 
-    coalesce(sum(case when ndc.name='HT' then 1 else 0 end),0) as ht, 
-    coalesce(sum(case when ndc.name='KHT' then 1 else 0 end),0) as kht, 
-    coalesce(sum(case when ndc.name='PHT' then 1 else 0 end),0) as pht, 
-    coalesce(sum(case when ndc.name='DM' then 1 else 0 end),0) as dm, 
-    coalesce(sum(case when ndc.name='KDM' then 1 else 0 end),0) as kdm, 
-    coalesce(sum(case when ndc.name='PDM' then 1 else 0 end),0) as pdm, 
-    coalesce(sum(case when ndc.name='KHT' and ndc.name='DM' then 1 else 0 end),0) as Kht_dm, 
-    coalesce(sum(case when ndc.name='KHT' and ndc.name='PDM' then 1 else 0 end),0) as kht_pdm, 
-    coalesce(sum(case when ndc.name='KHT' and ndc.name='KDM' then 1 else 0 end),0) as kht_kdm, 
-    coalesce(sum(case when ndc.name='HT' and ndc.name='DM' then 1 else 0 end),0) as ht_dm, 
-    coalesce(sum(case when ndc.name='HT' and ndc.name='PDM' then 1 else 0 end),0) as ht_pdm, 
-    coalesce(sum(case when ndc.name='HT' and ndc.name='KDM' then 1 else 0 end),0) as ht_kdm, 
-    coalesce(sum(case when ndc.name='PHT' and ndc.name='DM' then 1 else 0 end),0) as pht_dm, 
-    coalesce(sum(case when ndc.name='PHT' and ndc.name='PDM' then 1 else 0 end),0) as pht_pdm, 
-    coalesce(sum(case when ndc.name='PHT' and ndc.name='KDM' then 1 else 0 end),0) as pht_kdm 
-    from health_management_diagnosis dgs inner join health_management_patients pt on dgs.patient_uuid=pt.uuid
-    inner join application_masters_masterlookup ndc on dgs.ndc_id=ndc.id 
-    where 1=1 and detected_years is not null """+between_year+""" group by mmyy, month) as mt on i=mt.mmyy"""
+    left outer join (select dm_years as dmy, to_char(dm_years, 'Month') as dm_month, 
+    coalesce(sum(case when hlt.ht_status=2 then 1 else 0 end),0) as ht, 
+    coalesce(sum(case when hlt.ht_status=1 then 1 else 0 end),0) as pht, 
+    coalesce(sum(case when hlt.dm_status=2 then 1 else 0 end),0) as dm, 
+    coalesce(sum(case when hlt.dm_status=1 then 1 else 0 end),0) as pdm, 
+    coalesce(sum(case when hlt.ht_status=2 and hlt.dm_status=2 then 1 else 0 end),0) as ht_dm, 
+    coalesce(sum(case when hlt.ht_status=2 and hlt.dm_status=1 then 1 else 0 end),0) as ht_pdm, 
+    coalesce(sum(case when hlt.ht_status=1 and hlt.dm_status=2 then 1 else 0 end),0) as pht_dm, 
+    coalesce(sum(case when hlt.ht_status=1 and hlt.dm_status=1 then 1 else 0 end),0) as pht_pdm
+    from health_management_health hlt inner join health_management_patients pt on hlt.patient_uuid=pt.uuid
+    where 1=1 """+dm_year+""" group by dmy, dm_month) as mt on i=mt.dmy"""
     cursor = connection.cursor()
     cursor.execute(sql)
     diagnosis_ncd_count_list = cursor.fetchall()
@@ -658,20 +646,13 @@ def diagnosis_ncd_count_report(request):
         writer.writerow([
             'Diesease/Month',
             'HT',
-            'KHT',
             'PHT',
             'DM',
-            'KDM',
             'PDM',
-            'KHT & DM',
-            'KHT & PDM',
-            'KHT & KDM',
             'HT & DM',
             'HT & PDM',
-            'HT & KDM',
             'PHT & DM',
             'PHT & PDM',
-            'PHT & KDM',
             ])
         for patient in diagnosis_ncd_count_list:
             writer.writerow([
@@ -685,13 +666,6 @@ def diagnosis_ncd_count_report(request):
                 patient[7],
                 patient[8],
                 patient[9],
-                patient[10],
-                patient[11],
-                patient[12],
-                patient[13],
-                patient[14],
-                patient[15],
-                patient[16],
                 ])
         return response
     return render(request, 'reports/ncd_combination_to_prepare.html', locals())
@@ -1887,19 +1861,12 @@ def prevelance_of_ncd_list(request):
     coalesce(sum(case when date_part('year',age(dob))>=30 and date_part('year',age(dob))<=50 and gender=1 then 1 else 0 end),0) as men_30_between_50_age, 
     coalesce(sum(case when date_part('year',age(dob))>=30 and date_part('year',age(dob))<=50 and gender=2 then 1 else 0 end),0) as female_30_between_50_age, 
     coalesce(sum(case when date_part('year',age(dob))>50 and gender=1 then 1 else 0 end),0) as men_greater_50, 
-    coalesce(sum(case when date_part('year',age(dob))>50 and gender=2 then 1 else 0 end),0) as female_greater_50,
-    coalesce(sum(case when date_part('year',age(dob))<30 and gender=1 and (pt.registered_date at time zone 'Asia/Kolkata')::date=(dgs.server_created_on at time zone 'Asia/Kolkata')::date then 1 else 0 end),0) as new_men_less_30,
-    coalesce(sum(case when date_part('year',age(dob))<30 and gender=2 and (pt.registered_date at time zone 'Asia/Kolkata')::date=(dgs.server_created_on at time zone 'Asia/Kolkata')::date then 1 else 0 end),0) as new_female_less_30,
-    coalesce(sum(case when date_part('year',age(dob))>=30 and date_part('year',age(dob))<=50 and gender=1 and (pt.registered_date at time zone 'Asia/Kolkata')::date=(dgs.server_created_on at time zone 'Asia/Kolkata')::date then 1 else 0 end),0) as new_men_30_between_50_age,
-    coalesce(sum(case when date_part('year',age(dob))>=30 and date_part('year',age(dob))<=50 and gender=2 and (pt.registered_date at time zone 'Asia/Kolkata')::date=(dgs.server_created_on at time zone 'Asia/Kolkata')::date then 1 else 0 end),0) as new_female_30_between_50_age,
-    coalesce(sum(case when date_part('year',age(dob))>50 and gender=1 and (pt.registered_date at time zone 'Asia/Kolkata')::date=(dgs.server_created_on at time zone 'Asia/Kolkata')::date then 1 else 0 end),0) as new_men_greater_50, 
-    coalesce(sum(case when date_part('year',age(dob))>50 and gender=2 and (pt.registered_date at time zone 'Asia/Kolkata')::date=(dgs.server_created_on at time zone 'Asia/Kolkata')::date then 1 else 0 end),0) as new_female_greater_50 
-    from health_management_diagnosis dgs inner join health_management_patients pt on pt.uuid = dgs.patient_uuid inner join application_masters_masterlookup mtk on dgs.ndc_id = mtk.id inner join application_masters_village vlg on pt.village_id = vlg.id 
+    coalesce(sum(case when date_part('year',age(dob))>50 and gender=2 then 1 else 0 end),0) as female_greater_50
+    from health_management_health hlt inner join health_management_patients pt on pt.uuid = hlt.patient_uuid inner join application_masters_village vlg on pt.village_id = vlg.id 
     inner join application_masters_subcenter sbc on vlg.subcenter_id = sbc.id 
     inner join application_masters_phc phc on sbc.phc_id = phc.id where 1=1 '''+phc_id+sbc_ids+village_id+between_date+''' 
     group by phc.name, sbc.name, vlg.name order by vlg.name) select phc_name, sbc_name, vlg_name, men_less_30, female_less_30, men_30_between_50_age, female_30_between_50_age, men_greater_50, female_greater_50, 
-    (men_less_30 + female_less_30 + men_30_between_50_age + female_30_between_50_age + men_greater_50 + female_greater_50) as ncd_total, new_men_less_30, new_female_less_30, new_men_30_between_50_age, new_female_30_between_50_age, new_men_greater_50, new_female_greater_50, 
-    (new_men_less_30 + new_female_less_30 + new_men_30_between_50_age + new_female_30_between_50_age + new_men_greater_50 + new_female_greater_50) as new_ncd_total from a''')
+    (men_less_30 + female_less_30 + men_30_between_50_age + female_30_between_50_age + men_greater_50 + female_greater_50) as ncd_total from a''')
     prevelance_of_ncd_data = cursor.fetchall()
     export_flag = True if request.POST.get('export') and request.POST.get( 'export').lower() == 'true' else False
     if export_flag:
@@ -1919,18 +1886,10 @@ def prevelance_of_ncd_list(request):
             '>50 Men NCD',
             '>50 women NCD',
             'Total NCD',
-            '<30 Men New NCD',
-            '<30 women New NCD',
-            '>=30 and <=50 Men New NCD',
-            '>=30 and <=50 women New NCD',
-            '>50 Men New NCD',
-            '>50 women New NCD',
-            'Total New NCD',
             ])
         for data in prevelance_of_ncd_data:
             writer.writerow([
-                f'{s_date}/{e_date}',data[0],data[1],data[2],data[3],data[4],data[5],data[6],data[7],data[8],data[9],
-                data[10],data[11],data[12],data[13],data[14],data[15],data[16]
+                f'{s_date}/{e_date}',data[0],data[1],data[2],data[3],data[4],data[5],data[6],data[7],data[8],data[9]
                 ])
         return response
     data = pagination_function(request, prevelance_of_ncd_data  )
