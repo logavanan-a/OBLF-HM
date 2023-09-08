@@ -2557,12 +2557,14 @@ def treatment_details(self):
     datas = json.loads(self.get('treatment'))
     create_post_log(self,datas)
     for data in datas:
+        visit_date = data.get('visit_date')
+        visit_date = visit_date.replace(' ','T')
         obj,created = Treatments.objects.update_or_create(
             uuid = data.get('uuid'),
             patient_uuid = data.get('patient_uuid'),
             defaults = {
                     "user_uuid" : data.get('user_uuid'),
-                    "visit_date" : data.get('visit_date'),
+                    "visit_date" : visit_date,
                     "bp_sys1" : data.get('bp_sys1'),
                     "bp_non_sys1" : data.get('bp_non_sys1'),
                     "bp_sys2" : data.get('bp_sys2'),
