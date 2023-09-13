@@ -1000,7 +1000,7 @@ def health_list(request):
                 data['hmc'],
                 data['hmst'],
                 data['hdb'],
-                data['hms'],
+                data['hts'],
                 data['hmy'],
                 data['created_on'],
                 data['modified_on'],
