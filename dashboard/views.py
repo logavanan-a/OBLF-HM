@@ -151,6 +151,7 @@ def dashboard(request):
     home_date_filter=""
     patient_date_filter=""
     dgs_date_filter=""
+    hlt_date_filter=""
     if start_date != "":
             date_filter = """and (trmt.visit_date at time zone 'Asia/Kolkata')::date >= '"""+start_date + \
             """' and (trmt.visit_date at time zone 'Asia/Kolkata')::date <= '""" + \
@@ -164,39 +165,41 @@ def dashboard(request):
             dgs_date_filter = """and (dgs.server_created_on at time zone 'Asia/Kolkata')::date >= '"""+start_date + \
             """' and (dgs.server_created_on at time zone 'Asia/Kolkata')::date <= '""" + \
             end_date+"""' """
+            hlt_date_filter = """and (hlt.server_created_on at time zone 'Asia/Kolkata')::date >= '"""+start_date + \
+            """' and (hlt.server_created_on at time zone 'Asia/Kolkata')::date <= '""" + \
+            end_date+"""' """
     village_name=""
     if village:
         village_name =  '''and pt.village_id='''+village
     count_sql = """with a as (select distinct on (trmt.visit_date) trmt.visit_date as vst_date, pt.village_id as vlg_id from health_management_treatments trmt inner join health_management_patients pt on trmt.patient_uuid=pt.uuid  where 1=1 and trmt.status = 2 """+village_name+date_filter+""" order by trmt.visit_date desc), 
-    b as (select distinct on (dgs.patient_uuid) dgs.patient_uuid as p_uuid, dgs.uuid as d_uuid, dgs.server_created_on as sc_date from health_management_diagnosis dgs 
-    inner join health_management_patients pt on dgs.patient_uuid=pt.uuid where 1=1 and dgs.status=2 """+village_name+dgs_date_filter+""" order by dgs.patient_uuid, dgs.server_created_on desc), c as (select distinct((trmt.visit_date at time zone 'Asia/Kolkata')::date) as vst_date, pt.name as patient_name 
+    c as (select distinct((trmt.visit_date at time zone 'Asia/Kolkata')::date) as vst_date, pt.name as patient_name 
     from health_management_treatments trmt inner join health_management_patients pt on trmt.patient_uuid=pt.uuid inner join health_management_prescription psp on trmt.uuid=psp.treatment_uuid 
     inner join application_masters_medicines ms on psp.medicines_id=ms.id where 1=1 and trmt.status = 2 """+village_name+date_filter+"""), d as (select count(*) as home_count from health_management_homevisit hv 
     inner join health_management_patients pt on hv.patient_uuid=pt.uuid where 1=1 and hv.status=2 """+village_name+home_date_filter+"""), e as (select count(distinct(trmt.id)) as count from health_management_treatments trmt 
-    inner join health_management_patients pt on trmt.patient_uuid=pt.uuid where 1=1 and trmt.status = 2 """+village_name+date_filter+"""),f as (select count(distinct(dgs.id)) as count from health_management_diagnosis dgs 
-    inner join health_management_patients pt on dgs.patient_uuid=pt.uuid where 1=1 and dgs.status = 2 and pt.status=2 """+village_name+dgs_date_filter+"""), 
-    g as (select coalesce(sum(case when mtk.name='KHT' or mtk.name='KDM' or mtk.name='HT' or mtk.name='DM' then 1 else 0 end),0) as count from b 
-    inner join health_management_diagnosis dgs on b.d_uuid=dgs.uuid inner join application_masters_masterlookup mtk on dgs.ndc_id=mtk.id where 1=1 and dgs.status = 2),
-    diag_count as(select count(distinct(dgs.patient_uuid)) as dia_p_uuid
-    from health_management_diagnosis dgs inner join health_management_patients pt on dgs.patient_uuid=pt.uuid 
-    where 1=1 and dgs.status=2 """+village_name+dgs_date_filter+"""),
+    inner join health_management_patients pt on trmt.patient_uuid=pt.uuid where 1=1 and pt.status=2 and trmt.status = 2 """+village_name+date_filter+"""),f as (select coalesce(sum(case when hlt.dm_status > 0 or hlt.ht_status > 0 then 1 end),0) as count from health_management_health hlt 
+    inner join health_management_patients pt on hlt.patient_uuid=pt.uuid where 1=1 and hlt.status = 2 and pt.status=2 """+village_name+hlt_date_filter+"""), 
+    g as (select coalesce(sum(case when trmt.pp is not null or trmt.fbs is not null or trmt.random is not null or trmt.bp_sys1 is not null or trmt.bp_sys2 is not null or trmt.bp_sys3 is not null or trmt.bp_non_sys1 is not null or trmt.bp_non_sys2 is not null or trmt.bp_non_sys3 is not null then 1 else 0 end),0) as count 
+    from health_management_treatments trmt 
+    inner join health_management_patients pt on trmt.patient_uuid=pt.uuid where 1=1 and pt.status=2 and trmt.status = 2 """+village_name+date_filter+"""),
+    h as (select coalesce(sum(case when trmt.pp is null and trmt.fbs is null and trmt.random is null and trmt.bp_sys1 is null and trmt.bp_sys2 is null and trmt.bp_sys3 is null and trmt.bp_non_sys1 is null and trmt.bp_non_sys2 is null and trmt.bp_non_sys3 is null then 1 else 0 end),0) as count 
+    from health_management_treatments trmt 
+    inner join health_management_patients pt on trmt.patient_uuid=pt.uuid where 1=1 and pt.status=2 and trmt.status = 2),
     total_pat as(select count(pt.uuid) as t_puuid from health_management_patients pt where 1=1 and pt.status=2 """+village_name+patient_date_filter+""")
     select 'TOTAL NUMBER OF CLINICS CONDUCTED' as name, count(vst_date) as count from a 
     union all select 'NUMBER OF CONSULTATIONS' as name, e.count from e 
     union all select 'NUMBER OF NCD CONSULTATION' as name, g.count from g 
-    union all select 'NUMBER OF NON-NCD CONSULTATION' as name, (b.t_puuid-a.dia_p_uuid) from diag_count a join total_pat b on 1=1 
+    union all select 'NUMBER OF NON-NCD CONSULTATION' as name, h.count from h 
     union all select 'NUMBER OF PEOPLE TREATED', count(c.vst_date) as count from c 
     union all select 'TOTAL NUMBER OF NCD CASES' as name, f.count from f 
     union all select 'TOTAL NUMBER OF HOME VISITS MADE BY FLHWs' as home_name, d.home_count from d"""
     
-    percentage_sql= """with a as (select coalesce(sum(case when dgs.source_treatment=1 or dgs.source_treatment=2 or dgs.source_treatment=3 then 1 else 0 end),0) as all_data, 
-    coalesce(sum(case when dgs.source_treatment=1 or dgs.source_treatment=3 then 1 else 0 end),0) as not_outside_data 
-    from health_management_diagnosis dgs inner join health_management_patients pt on dgs.patient_uuid=pt.uuid where 1=1 and dgs.status = 2 """+village_name+dgs_date_filter+"""), 
+    percentage_sql= """with a as (select coalesce(sum(case when (hlt.dm_status > 0 or hlt.ht_status > 0) and (dm_source_treatment > 0 or ht_source_treatment > 0) then 1 else 0 end),0) as all_data, 
+    coalesce(sum(case when (hlt.dm_status > 0 or hlt.ht_status > 0) and (hlt.dm_source_treatment=1 or hlt.dm_source_treatment=3) and (hlt.ht_source_treatment=1 or hlt.ht_source_treatment=3) then 1 else 0 end),0) as not_outside_data 
+    from health_management_health hlt inner join health_management_patients pt on hlt.patient_uuid=pt.uuid where 1=1 and hlt.status = 2 """+village_name+hlt_date_filter+"""), 
     b as (select count(*) as all_data, coalesce(sum(case when ms.medicine_id=2 then 1 else 0 end),0) as generation_2, 
-    coalesce(sum(case when ms.medicine_id=1 then 1 else 0 end),0) as generation_1 from health_management_diagnosis dgs 
-    inner join health_management_prescription psp on dgs.patient_uuid=psp.patient_uuid 
+    coalesce(sum(case when ms.medicine_id=1 then 1 else 0 end),0) as generation_1 from health_management_prescription psp 
     inner join application_masters_medicines ms on psp.medicines_id=ms.id inner join health_management_patients pt on psp.patient_uuid=pt.uuid
-    where 1=1 and dgs.status = 2 """+village_name+dgs_date_filter+""") 
+    where 1=1 and psp.status = 2 """+village_name+dgs_date_filter+""") 
     select 'NUMBER OF NCD ON TREATMENT WITH OBLF', concat(ROUND(case when a.all_data!=0 then (a.not_outside_data::DECIMAL/a.all_data)*100 else a.not_outside_data end),'%')
     from a union all select 'PROPORTION OF NCD CASES ON FIRST GENERATION DRUGS', concat(ROUND(case when b.all_data!=0 then (b.generation_2::DECIMAL/b.all_data)*100 else b.generation_2 end),'%')
     from b union all select 'PROPORTION OF NCD CASES ON SECOND GENERATION DRUGS', concat(ROUND(case when b.all_data!=0 then (b.generation_1::DECIMAL/b.all_data)*100  else b.generation_1 end),'%') from b""" 
