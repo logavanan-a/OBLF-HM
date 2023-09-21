@@ -1,0 +1,213 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block contents %}
+{% include 'partials/filter_report.html' %}
+<link href="{% static 'libs/sweetalert2/dist/sweetalert2.min.css' %}" rel="stylesheet" type="text/css" />
+
+<div class="row">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-body">
+                <div class="table-responsive mb-3" data-pattern="priority-columns">
+                    <table id="tech-companies-1" class="table table-bordered dt-responsive mb-0">
+                        <thead>
+                            <tr>
+                                <th>PHC Name</th>
+                                <th>Sub Centre</th>
+                                <th>Village</th>                                   
+                                <th>Patient Name</th>
+                                <th>Patient Code</th>
+                                <th>Registered Date</th>
+                                <th>Age(today)</th>
+                                <th>Gender</th>
+                                <th>Status</th>
+                                <th>Health</th>
+                                <th>Family history of Hypertension or diabetes</th>
+                                <th>Drinking</th>
+                                <th>Smoking</th>
+                                <th>Tobacco</th>
+                                <th>DM Check</th>
+                                <th>DM Status</th>
+                                <th>DM Source Treatment</th>
+                                <th>DM Detected by</th>
+                                <th>DM Year</th>
+                                <th>HT Check</th>
+                                <th>HT Status</th>
+                                <th>HT Source Treatment</th>
+                                <th>HT Detected by</th>
+                                <th>HT Year</th>
+                                <th>Treatment</th>
+                                <th>Last visit date</th>
+                                <th>SBP</th>
+                                <th>DBP</th>
+                                <th>Blood Sugar Fasting</th>
+                                <th>Blood Sugar PP</th>
+                                <th>Blood Sugar Random</th>
+                                <th>Controlled</th>
+                                <th>Signs & symptoms</th>
+                                <th>Remarks</th>
+                                <th>Prescription</th>
+                                <th>Medicines</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for prr in data %}
+                            <tr>
+                                <th>{{prr.phc_name|default_if_none:'-'}}</th>
+                                <th>{{prr.sbc_name|default_if_none:'-'}}</th>
+                                <th>{{prr.village_name|default_if_none:'-'}}</th>
+                                <th>{{prr.patient_name|default_if_none:'-'}}</th>
+                                <th>{{prr.patient_id}}</th>
+                                <th>{{prr.r_date|date:"d/m/Y"|default_if_none:'-'}}</th>
+                                <th>{{prr.age|default_if_none:'-'}}</th>
+                                <th>{{prr.gender|default_if_none:'-'}}</th>
+                                <th>{{prr.status|default_if_none:'-'}}</th>
+                                <th>{{prr.h_status|default_if_none:'-'}}</th>
+                                <th>{{prr.diabetes|default_if_none:'-'}}</th>
+                                <th>{{prr.drinking|default_if_none:'-'}}</th>
+                                <th>{{prr.smoking|default_if_none:'-'}}</th>
+                                <th>{{prr.tobacco|default_if_none:'-'}}</th>
+                                <th>{{prr.dmc|default_if_none:'-'}}</th>
+                                <th>{{prr.dms|default_if_none:'-'}}</th>
+                                <th>{{prr.dmst|default_if_none:'-'}}</th>
+                                <th>{{prr.ddb|default_if_none:'-'}}</th>
+                                <th>{{prr.dmy|default_if_none:'-'}}</th>
+                                <th>{{prr.htc|default_if_none:'-'}}</th>
+                                <th>{{prr.hts|default_if_none:'-'}}</th>
+                                <th>{{prr.htst|default_if_none:'-'}}</th>
+                                <th>{{prr.hdb|default_if_none:'-'}}</th>
+                                <th>{{prr.hmy|default_if_none:'-'}}</th>
+                                <th>{{prr.trmt_status|default_if_none:'-'}}</th>
+                                <th>{{prr.v_date|date:"d/m/Y"|default_if_none:'-'}}</th>
+                                <th>{{prr.sbp|default_if_none:'-'}}</th>
+                                <th>{{prr.dbp|default_if_none:'-'}}</th>
+                                <th>{{prr.fbs|default_if_none:'-'}}</th>
+                                <th>{{prr.pp|default_if_none:'-'}}</th>
+                                <th>{{prr.random|default_if_none:'-'}}</th>
+                                <th>{{prr.controlled|default_if_none:'-'}}</th>
+                                <th>{{prr.symptoms|default_if_none:'-'}}</th>
+                                <th>{{prr.remarks|default_if_none:'-'}}</th>
+                                <th>{{prr.m_status|default_if_none:'-'}}</th>
+                                <th>{{prr.md_name|default_if_none:'-'}}</th>
+                                <th>
+                                    <button class='btn btn-danger' onclick="Confirm('{{prr.id}}', 'Delete')">Delete</button>
+                                </th>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                {% include 'partials/pagination.html' %}
+            </div>
+        </div>
+    </div> 
+</div> 
+{% endblock %}
+{% block extra_javascript %}
+<script src="{% static 'js/pages/form-validation.init.js' %}"></script>
+<script src="{% static 'libs/sweetalert2/dist/sweetalert2.min.js' %}"></script>
+
+<script type="text/javascript">
+    function Confirm(id, title) {
+        Swal.fire({
+            title: "Are you sure!",
+            text:"You want to "+ title +"?",
+            showCancelButton: !0,
+            confirmButtonColor: "#34c38f",
+            cancelButtonColor: "#f46a6a",
+            confirmButtonText: "Yes, "+ title +" it!",
+        }).then((result) => {
+            if (result.isConfirmed){
+                window.location.href = '/patient/'+id+'/delete/';
+            };
+                
+        })
+    };
+    function onselected_start_month(){
+        var start_month = document.getElementById("start_filter");
+        var end_month = document.getElementById("end_filter");
+        if (start_month != '' && end_month != ''){
+            document.querySelector('#start_filter').required = true;
+            document.querySelector('#end_filter').required = true;
+        }
+        else{
+            document.querySelector('#start_filter').required = false;
+            document.querySelector('#end_filter').required = false;
+            
+        }  
+    }
+     $("#start_filter").on("change", function(event){
+           document.getElementById("end_filter").min=$("#start_filter").val()
+    });
+    $("#filter_reset").click(function() {
+        $('#phc').prop('selectedIndex', 0).change();
+        $('#sub_center').prop('selectedIndex', 0).change();
+        $('#village').prop('selectedIndex', 0).change();
+        $('#health_worker').prop('selectedIndex', 0).change();
+        $('#start_filter').val('');
+        $('#end_filter').val('');
+        $('#patient_name').val('');
+        this.form.submit();
+    });
+    document.addEventListener('DOMContentLoaded', function() { 
+        $('#phc').change(function () {
+            var optionSelected = $(this).find("option:selected");
+            var valueSelected  = optionSelected.val();
+            $.ajax({
+                type:"GET",
+                url: '/ajax/subcenter/'+valueSelected+'/',
+                success:function(result){
+                    $("#sub_center option").remove();
+                    a = '<option selected value="">Choose sub center Name</option>';
+                    $("#sub_center").append(a);
+                    if(JSON.parse(result) == 0){
+                        $("#sub_center option").remove();
+                        a = '<option selected value="">No sub center is mapped to this phc</option>';
+                        console.log(a)
+                        $("#sub_center").append(a);
+                    }
+                    else{
+                        $.each(JSON.parse(result),function(key, value)
+                        {
+                            a = '<option value=' + value['id']+'>' + value['name']+'</option>';
+                            $("#sub_center").append(a);
+                        });
+                    }
+                }
+            });
+        });
+        $('#sub_center').change(function () {
+            var optionSelected = $(this).find("option:selected");
+            var valueSelected  = optionSelected.val();
+            $.ajax({
+                type:"GET",
+                url: '/ajax/village/'+valueSelected+'/',
+                success:function(result){
+                    $("#village option").remove();
+                    a = '<option selected value="">Choose Village Name</option>';
+                    $("#village").append(a);
+                    if(JSON.parse(result) == 0){
+                        $("#village option").remove();
+                        a = '<option selected value="">No Village is mapped to this sub center</option>';
+                        console.log(a)
+                        $("#village").append(a);
+                    }
+                    else{
+                        $.each(JSON.parse(result),function(key, value)
+                        {
+                            a = '<option value=' + value['id']+'>' + value['name']+'</option>';
+                            $("#village").append(a);
+                        });
+                    }
+                }
+            });
+        });
+    })
+</script> 
+<script type="text/javascript" >
+    
+
+</script>
+</script>
+{% endblock %}
+

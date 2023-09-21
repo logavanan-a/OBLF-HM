@@ -19,6 +19,8 @@ urlpatterns = [
     path('treatment-details/list/', treatment_details_list, name='treatment_details_list'),
     path('diagnosis-details/list/', diagnosis_details_list, name='diagnosis_details_list'),
     path('patient-detail/<patient_id>/', patient_profile_detail, name='patient_profile_detail'),
+    path('deactivate-patient-detail/', deactivate_patient_profile_detail, name='patient_profile_detail'),
+    path('patient/<id>/status/', update_status_for_patients, name='update_status_for_patients'),
     path('patient/<id>/delete/', delete_patients_record, name='delete_patients_record'),
     path('health/list/', health_list, name='health_list'),
 

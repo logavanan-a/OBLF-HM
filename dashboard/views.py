@@ -150,7 +150,7 @@ def dashboard(request):
     date_filter=""
     home_date_filter=""
     patient_date_filter=""
-    dgs_date_filter=""
+    psp_date_filter=""
     hlt_date_filter=""
     if start_date != "":
             date_filter = """and (trmt.visit_date at time zone 'Asia/Kolkata')::date >= '"""+start_date + \
@@ -162,8 +162,8 @@ def dashboard(request):
             patient_date_filter = """and (pt.server_created_on at time zone 'Asia/Kolkata')::date >= '"""+start_date + \
             """' and (pt.server_created_on at time zone 'Asia/Kolkata')::date <= '""" + \
             end_date+"""' """
-            dgs_date_filter = """and (dgs.server_created_on at time zone 'Asia/Kolkata')::date >= '"""+start_date + \
-            """' and (dgs.server_created_on at time zone 'Asia/Kolkata')::date <= '""" + \
+            psp_date_filter = """and (psp.server_created_on at time zone 'Asia/Kolkata')::date >= '"""+start_date + \
+            """' and (psp.server_created_on at time zone 'Asia/Kolkata')::date <= '""" + \
             end_date+"""' """
             hlt_date_filter = """and (hlt.server_created_on at time zone 'Asia/Kolkata')::date >= '"""+start_date + \
             """' and (hlt.server_created_on at time zone 'Asia/Kolkata')::date <= '""" + \
@@ -199,7 +199,7 @@ def dashboard(request):
     b as (select count(*) as all_data, coalesce(sum(case when ms.medicine_id=2 then 1 else 0 end),0) as generation_2, 
     coalesce(sum(case when ms.medicine_id=1 then 1 else 0 end),0) as generation_1 from health_management_prescription psp 
     inner join application_masters_medicines ms on psp.medicines_id=ms.id inner join health_management_patients pt on psp.patient_uuid=pt.uuid
-    where 1=1 and psp.status = 2 """+village_name+dgs_date_filter+""") 
+    where 1=1 and psp.status = 2 """+village_name+psp_date_filter+""") 
     select 'NUMBER OF NCD ON TREATMENT WITH OBLF', concat(ROUND(case when a.all_data!=0 then (a.not_outside_data::DECIMAL/a.all_data)*100 else a.not_outside_data end),'%')
     from a union all select 'PROPORTION OF NCD CASES ON FIRST GENERATION DRUGS', concat(ROUND(case when b.all_data!=0 then (b.generation_2::DECIMAL/b.all_data)*100 else b.generation_2 end),'%')
     from b union all select 'PROPORTION OF NCD CASES ON SECOND GENERATION DRUGS', concat(ROUND(case when b.all_data!=0 then (b.generation_1::DECIMAL/b.all_data)*100  else b.generation_1 end),'%') from b""" 
