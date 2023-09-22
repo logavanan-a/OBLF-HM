@@ -28,6 +28,7 @@
                                 <th>Patient Name</th>
                                 <th>Patient Code</th>
                                 <th>Registered Date</th>
+                                <th>Visit Date</th>
                                 <th>Age(today)</th>
                                 <th>Gender</th>
                                 <th>Medicines Name</th>
@@ -47,6 +48,7 @@
                                 <th>{{prr.patient_name}}</th>
                                 <th>{{prr.patient_code|default_if_none:'-'}}</th>
                                 <th>{{prr.registered_date|date:"d/m/Y"|default_if_none:'-'}}</th>
+                                <th>{{prr.trmt_date|date:"d/m/Y"|default_if_none:'-'}}</th>
                                 <th>{{prr.age|default_if_none:'-'}}</th>
                                 <th>{{prr.gender|default_if_none:'-'}}</th>
                                 <th>{{prr.medicines|default_if_none:'-'}}</th>
@@ -54,7 +56,7 @@
                                 <th>{{prr.medicine_type|default_if_none:'-'}}</th>
                                 <th>{{prr.qty|default_if_none:'-'}}</th>
                                 <th>{{prr.days|default_if_none:'-'}}</th>
-                                <th>{{prr.created_on|default_if_none:'-'}}</th>
+                                <th>{{prr.created_on|date:"d/m/Y"|default_if_none:'-'}}</th>
                             </tr>
                             {% endfor %}
                         </tbody>

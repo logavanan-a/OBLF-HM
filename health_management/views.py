@@ -994,7 +994,7 @@ def verified_prescription_report(request):
         pnt_name = '''and pt.name ilike '''+format_name
         pnt_code = '''or pt.patient_id ilike '''+format_name
     sql = '''select  phc.name as phc_name, sbc.name as sbc_name, vlg.name as village_name, pt.name as patient_name, 
-    pt.patient_id as patient_code, pt.registered_date, date_part('year',age(pt.dob))::int as age, 
+    pt.patient_id as patient_code, pt.registered_date, (trmt.visit_date at time zone 'Asia/Kolkata')::date as trmt_date, date_part('year',age(pt.dob))::int as age, 
     case when pt.gender=1 then 'Male' when pt.gender=2 then 'Female' end as gender, md.name as medicines, 
     case when md.medicine_id=1 then '1st' when md.medicine_id=2 then '2nd' end  as generation, 
     prsp.medicine_type as medicine_type, prsp.qty as qty, prsp.no_of_days as days, 
@@ -1023,6 +1023,7 @@ def verified_prescription_report(request):
             'Patient Name',
             'Patient Code',
             'Registered Date',
+            'Visit Date',
             'Age(today)',
             'Gender',
             'Medicines Name',
@@ -1040,6 +1041,7 @@ def verified_prescription_report(request):
                 prescription['patient_name'],
                 prescription['patient_code'],
                 prescription['registered_date'],
+                prescription['trmt_date'],
                 prescription['age'],
                 prescription['gender'],
                 prescription['medicines'],
