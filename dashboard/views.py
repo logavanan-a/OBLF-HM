@@ -198,11 +198,11 @@ def dashboard(request):
     from health_management_health hlt inner join health_management_patients pt on hlt.patient_uuid=pt.uuid where 1=1 and hlt.status = 2 """+village_name+hlt_date_filter+"""), 
     b as (select count(*) as all_data, coalesce(sum(case when ms.medicine_id=2 then 1 else 0 end),0) as generation_2, 
     coalesce(sum(case when ms.medicine_id=1 then 1 else 0 end),0) as generation_1 from health_management_prescription psp 
-    inner join application_masters_medicines ms on psp.medicines_id=ms.id inner join health_management_patients pt on psp.patient_uuid=pt.uuid
-    where 1=1 and psp.status = 2 """+village_name+psp_date_filter+""") 
+    inner join application_masters_medicines ms on psp.medicines_id=ms.id inner join health_management_treatments trmt on psp.treatment_uuid=trmt.uuid inner join health_management_patients pt on trmt.patient_uuid=pt.uuid
+    where 1=1 and pt.status=2 and psp.status = 2 """+village_name+psp_date_filter+""") 
     select 'NUMBER OF NCD ON TREATMENT WITH OBLF', concat(ROUND(case when a.all_data!=0 then (a.not_outside_data::DECIMAL/a.all_data)*100 else a.not_outside_data end),'%')
-    from a union all select 'PROPORTION OF NCD CASES ON FIRST GENERATION DRUGS', concat(ROUND(case when b.all_data!=0 then (b.generation_2::DECIMAL/b.all_data)*100 else b.generation_2 end),'%')
-    from b union all select 'PROPORTION OF NCD CASES ON SECOND GENERATION DRUGS', concat(ROUND(case when b.all_data!=0 then (b.generation_1::DECIMAL/b.all_data)*100  else b.generation_1 end),'%') from b""" 
+    from a union all select 'PROPORTION OF NCD CASES ON FIRST GENERATION DRUGS', concat(ROUND(case when b.all_data!=0 then (b.generation_1::DECIMAL/b.all_data)*100 else b.generation_2 end),'%')
+    from b union all select 'PROPORTION OF NCD CASES ON SECOND GENERATION DRUGS', concat(ROUND(case when b.all_data!=0 then (b.generation_2::DECIMAL/b.all_data)*100  else b.generation_1 end),'%') from b""" 
     count_data_for_top_indicator = set_table_chart_data(count_sql)
     percentage_data_for_top_indicator = set_table_chart_data(percentage_sql)
     try:

@@ -949,6 +949,116 @@ def verified_treatments_report(request):
         return response
     return render(request, 'reports/verified_treatments.html', locals())
 
+def verified_prescription_report(request):
+    heading="Prescription Details"
+    filter_values = request.GET.dict()
+    from dateutil.relativedelta import relativedelta
+    patient_value = True
+    phc_obj = PHC.objects.filter(status=2).order_by('name')
+    phc = request.GET.get('phc', '')
+    sub_center = request.GET.get('sub_center', '')
+    village = request.GET.get('village', '')
+    patient_name = request.GET.get('patient_name', '')
+    phc_ids = int(phc) if phc != '' else ''
+    sub_center_ids = int(sub_center) if sub_center != '' else ''
+    village_ids = int(village) if village != '' else ''
+    start_filter = request.GET.get('start_filter', '')
+    end_filter = request.GET.get('end_filter', '')
+    s_date=''
+    e_date=''
+    between_date = ""
+    if start_filter != '':
+        s_date = start_filter
+        e_date = end_filter
+        between_date = """and (prsp.server_created_on at time zone 'Asia/Kolkata')::date >= '"""+s_date + \
+            """' and (prsp.server_created_on at time zone 'Asia/Kolkata')::date <= '""" + \
+            e_date+"""' """
+    phc_id=""
+    if phc_ids:
+        get_phc_name = PHC.objects.get(id=phc_ids)
+        sub_center_obj = Subcenter.objects.filter(status=2, phc__id=phc_ids).order_by('name')
+        phc_id = '''and phc.id='''+phc
+    sbc_ids= ""
+    if sub_center_ids:
+        get_sbc_name = Subcenter.objects.get(id=sub_center_ids)
+        village_obj = Village.objects.filter(status=2, subcenter__id=sub_center_ids).order_by('name')
+        sbc_ids = '''and sbc.id='''+sub_center
+    village_id=""
+    if village_ids:
+        get_village_name = Village.objects.get(id=village_ids)
+        village_id = '''and vlg.id='''+village
+    pnt_name=""
+    pnt_code=""
+    if patient_name:
+        format_name = "'%"+patient_name+"%'"
+        pnt_name = '''and pt.name ilike '''+format_name
+        pnt_code = '''or pt.patient_id ilike '''+format_name
+    sql = '''select  phc.name as phc_name, sbc.name as sbc_name, vlg.name as village_name, pt.name as patient_name, 
+    pt.patient_id as patient_code, pt.registered_date, date_part('year',age(pt.dob))::int as age, 
+    case when pt.gender=1 then 'Male' when pt.gender=2 then 'Female' end as gender, md.name as medicines, 
+    case when md.medicine_id=1 then '1st' when md.medicine_id=2 then '2nd' end  as generation, 
+    prsp.medicine_type as medicine_type, prsp.qty as qty, prsp.no_of_days as days, 
+    (prsp.server_created_on at time zone 'Asia/Kolkata')::date as created_on 
+    from health_management_prescription prsp 
+    inner join health_management_treatments trmt on prsp.treatment_uuid=trmt.uuid
+    inner join health_management_patients pt on trmt.patient_uuid=pt.uuid
+    inner join application_masters_village vlg on pt.village_id = vlg.id
+    inner join application_masters_subcenter sbc on vlg.subcenter_id = sbc.id 
+    inner join application_masters_phc phc on sbc.phc_id = phc.id 
+    left join application_masters_medicines md on prsp.medicines_id=md.id 
+    where 1=1 and pt.status=2 and prsp.status = 2 '''+phc_id+sbc_ids+village_id+between_date+pnt_name+pnt_code+'''
+    order by  phc.name, sbc.name, vlg.name desc'''
+    
+    prescription_data = SqlHeader(sql)
+    export_flag = True if request.POST.get('export') and request.POST.get( 'export').lower() == 'true' else False
+    if export_flag:
+        response = HttpResponse(content_type='text/csv',)
+        response['Content-Disposition'] = 'attachment; filename="Prescription Details '+ str(localtime(timezone.now()).strftime("%m-%d-%Y %I-%M %p")) +'.csv"'
+        writer = csv.writer(response)
+        writer.writerow(['PRESCRIPTION DETAILS'])
+        writer.writerow([
+            'PHC Name',
+            'Sub Centre',
+            'Village',                                   
+            'Patient Name',
+            'Patient Code',
+            'Registered Date',
+            'Age(today)',
+            'Gender',
+            'Medicines Name',
+            'Generation',
+            'Medicines Type',
+            'Quantity',
+            'No of Days',
+            'Created On',
+            ])
+        for prescription in prescription_data:
+            writer.writerow([
+                prescription['phc_name'],
+                prescription['sbc_name'],
+                prescription['village_name'],
+                prescription['patient_name'],
+                prescription['patient_code'],
+                prescription['registered_date'],
+                prescription['age'],
+                prescription['gender'],
+                prescription['medicines'],
+                prescription['generation'],
+                prescription['medicine_type'],
+                prescription['qty'],
+                prescription['days'],
+                prescription['created_on'],
+                ])
+        return response
+    data = pagination_function(request, prescription_data)
+    current_page = request.GET.get('page', 1)
+    page_number_start = int(current_page) - 2 if int(current_page) > 2 else 1
+    page_number_end = page_number_start + 5 if page_number_start + \
+        5 < data.paginator.num_pages else data.paginator.num_pages+1
+    display_page_range = range(page_number_start, page_number_end)
+    return render(request, 'reports/verified_prescription.html', locals())
+
+
 def health_list(request):
     heading="Health Details"
     filter_values = request.GET.dict()
