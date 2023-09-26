@@ -38,26 +38,26 @@
                         <tbody>
                             {% for vd in verified_diagnosis_list %}
                             <tr>
-                                <th>{{vd.get_patients_uuid.village.subcenter.phc}}</th>
-                                <th>{{vd.get_patients_uuid.village.subcenter}}</th>
-                                <th>{{vd.get_patients_uuid.village}}</th>
-                                <th>{{vd.get_patients_uuid.name}}</th>
-                                <th>{{vd.get_patients_uuid.patient_id}}</th>
-                                <th>{{vd.get_patients_uuid.registered_date|date:"d-m-Y h:i a"}}</th>
-                                <th>{{vd.get_patients_uuid.calculate_age}}</th>
-                                <th>{{vd.get_patients_uuid.get_gender_display}}</th>
-                                <th>{{vd.ndc}}</th>
+                                <td>{{vd.get_patients_uuid.village.subcenter.phc}}</td>
+                                <td>{{vd.get_patients_uuid.village.subcenter}}</td>
+                                <td>{{vd.get_patients_uuid.village}}</td>
+                                <td>{{vd.get_patients_uuid.name}}</td>
+                                <td>{{vd.get_patients_uuid.patient_id}}</td>
+                                <td>{{vd.get_patients_uuid.registered_date|date:"d-m-Y h:i a"}}</td>
+                                <td>{{vd.get_patients_uuid.calculate_age}}</td>
+                                <td>{{vd.get_patients_uuid.get_gender_display}}</td>
+                                <td>{{vd.ndc}}</td>
                                 {% if vd.source_treatment == 1 %}
-                                    <th>Clinic</th>
+                                    <td>Clinic</td>
                                 {% elif vd.source_treatment == 2 %}
-                                    <th>Outside</th>
+                                    <td>Outside</td>
                                 {% elif vd.source_treatment == 3 %}
-                                    <th>C & O</th>
+                                    <td>C & O</td>
                                 {% else %}
-                                    <th>-</th>
+                                    <td>-</td>
                                 {% endif %}
-                                <th>{{vd.get_health_worker.user.first_name}}</th>
-                                <th>{{vd.server_created_on|date:"d-m-Y h:i a"}}</th>
+                                <td>{{vd.get_health_worker.user.first_name}}</td>
+                                <td>{{vd.server_created_on|date:"d-m-Y h:i a"}}</td>
                             </tr>
                             {% endfor %}
                         </tbody>

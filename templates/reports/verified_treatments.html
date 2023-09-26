@@ -44,24 +44,24 @@
                         <tbody>
                             {% for vt in verified_treatments %}
                             <tr>
-                                <th>{{vt.get_patients_uuid.village.subcenter.phc}}</th>
-                                <th>{{vt.get_patients_uuid.village.subcenter}}</th>
-                                <th>{{vt.get_patients_uuid.village}}</th>
-                                <th>{{vt.get_patients_uuid.name}}</th>
-                                <th>{{vt.get_patients_uuid.patient_id}}</th>
-                                <th>{{vt.get_patients_uuid.registered_date|date:"d-m-Y h:i a"}}</th>
-                                <th>{{vt.get_patients_uuid.calculate_age}}</th>
-                                <th>{{vt.get_patients_uuid.get_gender_display}}</th>
-                                <th>{{vt.bp_sys1|default_if_none:''}}</th>
-                                <th>{{vt.bp_sys2|default_if_none:''}}</th>
-                                <th>{{vt.bp_sys3|default_if_none:''}}</th>
-                                <th>{{vt.bp_non_sys1|default_if_none:''}}</th>
-                                <th>{{vt.bp_non_sys2|default_if_none:''}}</th>
-                                <th>{{vt.bp_non_sys3|default_if_none:''}}</th>
-                                <th>{{vt.fbs|default_if_none:''}}</th>
-                                <th>{{vt.pp|default_if_none:''}}</th>
-                                <th>{{vt.random|default_if_none:''}}</th>
-                                <th>{{vt.visit_date|date:"d-m-Y h:i a"|default_if_none:''}}</th>
+                                <td>{{vt.get_patients_uuid.village.subcenter.phc}}</td>
+                                <td>{{vt.get_patients_uuid.village.subcenter}}</td>
+                                <td>{{vt.get_patients_uuid.village}}</td>
+                                <td>{{vt.get_patients_uuid.name}}</td>
+                                <td>{{vt.get_patients_uuid.patient_id}}</td>
+                                <td>{{vt.get_patients_uuid.registered_date|date:"d-m-Y h:i a"}}</td>
+                                <td>{{vt.get_patients_uuid.calculate_age}}</td>
+                                <td>{{vt.get_patients_uuid.get_gender_display}}</td>
+                                <td>{{vt.bp_sys1|default_if_none:''}}</td>
+                                <td>{{vt.bp_sys2|default_if_none:''}}</td>
+                                <td>{{vt.bp_sys3|default_if_none:''}}</td>
+                                <td>{{vt.bp_non_sys1|default_if_none:''}}</td>
+                                <td>{{vt.bp_non_sys2|default_if_none:''}}</td>
+                                <td>{{vt.bp_non_sys3|default_if_none:''}}</td>
+                                <td>{{vt.fbs|default_if_none:''}}</td>
+                                <td>{{vt.pp|default_if_none:''}}</td>
+                                <td>{{vt.random|default_if_none:''}}</td>
+                                <td>{{vt.visit_date|date:"d-m-Y h:i a"|default_if_none:''}}</td>
                             </tr>
                             {% endfor %}
                         </tbody>

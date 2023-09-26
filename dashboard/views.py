@@ -6,6 +6,7 @@ from application_masters.models import *
 from application_masters.models import *
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from .models import ChartMeta, DashboardWidgetSummaryLog
+from django.contrib.auth.decorators import login_required
 from django.db import connection
 from datetime import datetime
 import json
@@ -140,6 +141,7 @@ def set_table_chart_data(sql):
     rows = cursor.fetchall()
     return rows
     
+@login_required(login_url='/login/')
 def dashboard(request):
     heading = 'Dashboard'
     village_obj = Village.objects.filter(status=2).order_by('name')
@@ -172,9 +174,9 @@ def dashboard(request):
     if village:
         village_name =  '''and pt.village_id='''+village
     count_sql = """with a as (select distinct on (trmt.visit_date) trmt.visit_date as vst_date, pt.village_id as vlg_id from health_management_treatments trmt inner join health_management_patients pt on trmt.patient_uuid=pt.uuid  where 1=1 and pt.status=2 and trmt.status = 2 """+village_name+date_filter+""" order by trmt.visit_date desc), 
-    c as (select distinct((trmt.visit_date at time zone 'Asia/Kolkata')::date) as vst_date, pt.name as patient_name 
-    from health_management_treatments trmt inner join health_management_patients pt on trmt.patient_uuid=pt.uuid inner join health_management_prescription psp on trmt.uuid=psp.treatment_uuid 
-    inner join application_masters_medicines ms on psp.medicines_id=ms.id where 1=1 and trmt.status = 2 """+village_name+date_filter+"""), d as (select count(*) as home_count from health_management_homevisit hv 
+    c as (select count(distinct(trmt.uuid)) as vst_date
+    from health_management_prescription psp inner join health_management_treatments trmt on psp.treatment_uuid=trmt.uuid inner join health_management_patients pt on trmt.patient_uuid=pt.uuid 
+    where 1=1 and pt.status=2 and psp.status = 2 """+village_name+psp_date_filter+"""), d as (select count(*) as home_count from health_management_homevisit hv 
     inner join health_management_patients pt on hv.patient_uuid=pt.uuid where 1=1 and hv.status=2 """+village_name+home_date_filter+"""), e as (select count(distinct(trmt.id)) as count from health_management_treatments trmt 
     inner join health_management_patients pt on trmt.patient_uuid=pt.uuid where 1=1 and pt.status=2 and trmt.status = 2 """+village_name+date_filter+"""),f as (select coalesce(sum(case when hlt.dm_status > 0 or hlt.ht_status > 0 then 1 end),0) as count from health_management_health hlt 
     inner join health_management_patients pt on hlt.patient_uuid=pt.uuid where 1=1 and hlt.status = 2 and pt.status=2 """+village_name+hlt_date_filter+"""), 
@@ -189,13 +191,13 @@ def dashboard(request):
     union all select 'NUMBER OF CONSULTATIONS' as name, e.count from e 
     union all select 'NUMBER OF NCD CONSULTATION' as name, g.count from g 
     union all select 'NUMBER OF NON-NCD CONSULTATION' as name, h.count from h 
-    union all select 'NUMBER OF PEOPLE TREATED', count(c.vst_date) as count from c 
+    union all select 'NUMBER OF PEOPLE TREATED', c.vst_date as count from c 
     union all select 'TOTAL NUMBER OF NCD CASES' as name, f.count from f 
     union all select 'TOTAL NUMBER OF HOME VISITS MADE BY FLHWs' as home_name, d.home_count from d"""
     
     percentage_sql= """with a as (select coalesce(sum(case when (hlt.dm_status > 0 or hlt.ht_status > 0) and (dm_source_treatment > 0 or ht_source_treatment > 0) then 1 else 0 end),0) as all_data, 
     coalesce(sum(case when (hlt.dm_status > 0 or hlt.ht_status > 0) and (hlt.dm_source_treatment=1 or hlt.dm_source_treatment=3) and (hlt.ht_source_treatment=1 or hlt.ht_source_treatment=3) then 1 else 0 end),0) as not_outside_data 
-    from health_management_health hlt inner join health_management_patients pt on hlt.patient_uuid=pt.uuid where 1=1 and hlt.status = 2 """+village_name+hlt_date_filter+"""), 
+    from health_management_prescription psp inner join health_management_treatments trmt on psp.treatment_uuid=trmt.uuid inner join health_management_health hlt on trmt.patient_uuid=hlt.patient_uuid inner join health_management_patients pt on hlt.patient_uuid=pt.uuid where 1=1 and pt.status=2 and psp.status = 2 """+village_name+psp_date_filter+"""), 
     b as (select count(*) as all_data, coalesce(sum(case when ms.medicine_id=2 then 1 else 0 end),0) as generation_2, 
     coalesce(sum(case when ms.medicine_id=1 then 1 else 0 end),0) as generation_1 from health_management_prescription psp 
     inner join application_masters_medicines ms on psp.medicines_id=ms.id inner join health_management_treatments trmt on psp.treatment_uuid=trmt.uuid inner join health_management_patients pt on trmt.patient_uuid=pt.uuid

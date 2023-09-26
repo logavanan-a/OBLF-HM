@@ -42,21 +42,21 @@
                         <tbody>
                             {% for prr in data %}
                             <tr>
-                                <th>{{prr.phc_name}}</th>
-                                <th>{{prr.sbc_name}}</th>
-                                <th>{{prr.village_name|default_if_none:'-'}}</th>
-                                <th>{{prr.patient_name}}</th>
-                                <th>{{prr.patient_code|default_if_none:'-'}}</th>
-                                <th>{{prr.registered_date|date:"d/m/Y"|default_if_none:'-'}}</th>
-                                <th>{{prr.trmt_date|date:"d/m/Y"|default_if_none:'-'}}</th>
-                                <th>{{prr.age|default_if_none:'-'}}</th>
-                                <th>{{prr.gender|default_if_none:'-'}}</th>
-                                <th>{{prr.medicines|default_if_none:'-'}}</th>
-                                <th>{{prr.generation|default_if_none:'-'}}</th>
-                                <th>{{prr.medicine_type|default_if_none:'-'}}</th>
-                                <th>{{prr.qty|default_if_none:'-'}}</th>
-                                <th>{{prr.days|default_if_none:'-'}}</th>
-                                <th>{{prr.created_on|date:"d/m/Y"|default_if_none:'-'}}</th>
+                                <td>{{prr.phc_name}}</td>
+                                <td>{{prr.sbc_name}}</td>
+                                <td>{{prr.village_name|default_if_none:'-'}}</td>
+                                <td>{{prr.patient_name}}</td>
+                                <td>{{prr.patient_code|default_if_none:'-'}}</td>
+                                <td>{{prr.registered_date|date:"d/m/Y"|default_if_none:'-'}}</td>
+                                <td>{{prr.trmt_date|date:"d/m/Y"|default_if_none:'-'}}</td>
+                                <td>{{prr.age|default_if_none:'-'}}</td>
+                                <td>{{prr.gender|default_if_none:'-'}}</td>
+                                <td>{{prr.medicines|default_if_none:'-'}}</td>
+                                <td>{{prr.generation|default_if_none:'-'}}</td>
+                                <td>{{prr.medicine_type|default_if_none:'-'}}</td>
+                                <td>{{prr.qty|default_if_none:'-'}}</td>
+                                <td>{{prr.days|default_if_none:'-'}}</td>
+                                <td>{{prr.created_on|date:"d/m/Y"|default_if_none:'-'}}</td>
                             </tr>
                             {% endfor %}
                         </tbody>

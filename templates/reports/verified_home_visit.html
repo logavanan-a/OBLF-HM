@@ -34,14 +34,14 @@
                         <tbody>
                             {% for vhv in verified_home_visit %}
                             <tr>
-                                <th>{{vhv.get_patient_uuid.village.subcenter.phc}}</th>
-                                <th>{{vhv.get_patient_uuid.village.subcenter}}</th>
-                                <th>{{vhv.get_patient_uuid.village}}</th>
-                                <th>{{vhv.get_patient_uuid.name}}</th>
-                                <th>{{vhv.get_patient_uuid.patient_id}}</th>
-                                <th>{{vhv.get_home_vist_display}}</th>
-                                <th>{{vhv.response_datetime}}</th>
-                                <th>{{vhv.get_health_worker.user.first_name}}</th>
+                                <td>{{vhv.get_patient_uuid.village.subcenter.phc}}</td>
+                                <td>{{vhv.get_patient_uuid.village.subcenter}}</td>
+                                <td>{{vhv.get_patient_uuid.village}}</td>
+                                <td>{{vhv.get_patient_uuid.name}}</td>
+                                <td>{{vhv.get_patient_uuid.patient_id}}</td>
+                                <td>{{vhv.get_home_vist_display}}</td>
+                                <td>{{vhv.response_datetime}}</td>
+                                <td>{{vhv.get_health_worker.user.first_name}}</td>
                             </tr>
                             {% endfor %}
                         </tbody>

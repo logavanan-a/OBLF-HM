@@ -34,7 +34,7 @@
                         <tbody>
                             {% for m in data %}
                             <tr>
-                                <th>{{m.medicine|default_if_none:''}}</th>
+                                <td>{{m.medicine|default_if_none:''}}</td>
                                 <td>{{m.no_of_units|default_if_none:''}}</td>
                                 <td>{{m.unit_price|default_if_none:''}}</td>
                                 <td>{{m.date_of_creation|default_if_none:''}}</td>

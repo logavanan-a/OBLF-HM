@@ -81,6 +81,7 @@ def logout_view(request):
     logout(request)
     return HttpResponseRedirect('/login/')
 
+@login_required(login_url='/login/')
 def deactivate_patient_profile_detail(request):
     heading="Patients detail"
     # sql='''select distinct on (pt.patient_id) pt.patient_id, phc.name as phc_name, 
@@ -152,6 +153,7 @@ def deactivate_patient_profile_detail(request):
     display_page_range = range(page_number_start, page_number_end)
     return render(request, 'patient_profile/deactivate_patient_detials.html', locals())
 
+@login_required(login_url='/login/')
 def patient_profile_detail(request, patient_id):
     heading="Patients detail"
     # sql='''select distinct on (pt.patient_id) pt.patient_id, phc.name as phc_name, 
@@ -217,6 +219,7 @@ def patient_profile_detail(request, patient_id):
     patient_data = SqlHeader(sql2)
     return render(request, 'patient_profile/patient_detials.html', locals())
 
+@login_required(login_url='/login/')
 def patient_profile_list(request):
     heading="Patients Profile"
     filter_values = request.GET.dict()
@@ -416,6 +419,7 @@ def patient_profile_list(request):
     display_page_range = range(page_number_start, page_number_end)
     return render(request, 'patient_profile/patient_profile_list.html', locals())
 
+@login_required(login_url='/login/')
 def treatment_details_list(request):
     heading="Treatment Details"
     filter_values = request.GET.dict()
@@ -529,6 +533,7 @@ def treatment_details_list(request):
     display_page_range = range(page_number_start, page_number_end)
     return render(request, 'patient_profile/treatment_details_list.html', locals())
 
+@login_required(login_url='/login/')
 def diagnosis_details_list(request):
     heading="Diagnosis Details"
     filter_values = request.GET.dict()
@@ -656,7 +661,8 @@ def diagnosis_details_list(request):
         5 < data.paginator.num_pages else data.paginator.num_pages+1
     display_page_range = range(page_number_start, page_number_end)
     return render(request, 'patient_profile/diagnosis_details_list.html', locals())
-    
+
+@login_required(login_url='/login/')
 def diagnosis_ncd_count_report(request):
     heading="NCD combination to prepare the report"
     from dateutil.relativedelta import relativedelta
@@ -741,12 +747,13 @@ def diagnosis_ncd_count_report(request):
         return response
     return render(request, 'reports/ncd_combination_to_prepare.html', locals())
 
+@login_required(login_url='/login/')
 def delete_patients_record(request,id):
     Patients.objects.filter(id=id).delete()
     return redirect('/deactivate-patient-detail/')
 
     
-
+@login_required(login_url='/login/')
 def update_status_for_patients(request,id):
     obj=Patients.objects.get(id=id)#.update(status=1)
     if obj.status == 2:
@@ -756,6 +763,7 @@ def update_status_for_patients(request,id):
     obj.save()
     return redirect('/patient-detail/'+id)
 
+@login_required(login_url='/login/')
 def drug_prescription_csv_export(request):
     response = HttpResponse(content_type='text/csv',)
     response['Content-Disposition'] = 'attachment; filename="Drug prescription'+ str(localtime(timezone.now()).strftime("%m-%d-%Y %I-%M %p")) +'.csv"'
@@ -787,8 +795,7 @@ def drug_prescription_csv_export(request):
              ])
     return response
 
-    
-
+@login_required(login_url='/login/')
 def distribution_village_wise_csv(request):
     response = HttpResponse(content_type='text/csv',)
     response['Content-Disposition'] = 'attachment; filename="distribution village wise medicine'+ str(localtime(timezone.now()).strftime("%m-%d-%Y %I-%M %p")) +'.csv"'
@@ -813,7 +820,7 @@ def distribution_village_wise_csv(request):
             ])
     return response 
 
-
+@login_required(login_url='/login/')
 def verified_diagnosis_report(request):
     heading="VERFIED DIAGNOSIS"
     verified_diagnosis_list = Diagnosis.objects.filter(status=2)
@@ -857,6 +864,8 @@ def verified_diagnosis_report(request):
         return response 
     return render(request, 'reports/verified_diagnosis.html', locals())
 
+
+@login_required(login_url='/login/')
 def verified_home_visit_report(request):
     heading="VERFIED HEALTH WORKERS HOME VISITS"
     verified_home_visit = HomeVisit.objects.filter(status=2)
@@ -894,7 +903,7 @@ def verified_home_visit_report(request):
 
 
 
-
+@login_required(login_url='/login/')
 def verified_treatments_report(request):
     heading="VERFIED TREATMENTS"
     verified_treatments = Treatments.objects.filter(status=2)
@@ -949,6 +958,8 @@ def verified_treatments_report(request):
         return response
     return render(request, 'reports/verified_treatments.html', locals())
 
+
+@login_required(login_url='/login/')
 def verified_prescription_report(request):
     heading="Prescription Details"
     filter_values = request.GET.dict()
@@ -1060,7 +1071,7 @@ def verified_prescription_report(request):
     display_page_range = range(page_number_start, page_number_end)
     return render(request, 'reports/verified_prescription.html', locals())
 
-
+@login_required(login_url='/login/')
 def health_list(request):
     heading="Health Details"
     filter_values = request.GET.dict()
@@ -1204,7 +1215,7 @@ def health_list(request):
     return render(request, 'patient_profile/health_list.html', locals())
 
 
-
+@login_required(login_url='/login/')
 def home_visit_report(request):
     heading="HEALTH WORKERS HOME VISITS"
     filter_values = request.GET.dict()
@@ -1294,7 +1305,7 @@ def home_visit_report(request):
     display_page_range = range(page_number_start, page_number_end)
     return render(request, 'reports/home_visit.html', locals())
 
-
+@login_required(login_url='/login/')
 def clinic_level_statistics_list(request):
     heading="CLINIC LEVEL STATISTICS"
     filter_values = request.GET.dict()
@@ -1376,6 +1387,8 @@ def clinic_level_statistics_list(request):
     display_page_range = range(page_number_start, page_number_end)
     return render(request, 'reports/clinic_level_statistics.html', locals())
 
+
+@login_required(login_url='/login/')
 def village_wise_drugs_list(request):
     heading="village wise drug dispensation"
     search = request.GET.get('search', '')
@@ -1391,6 +1404,7 @@ def village_wise_drugs_list(request):
     display_page_range = range(page_number_start, page_number_end)
     return render(request, 'manage_stocks/village_wise_drug_dispensation/village_wise_drug_list.html', locals())
 
+@login_required(login_url='/login/')
 def add_village_wise_drugs(request):
     heading="Add the village wise drug dispensation"
     now = datetime.now()
@@ -1418,6 +1432,7 @@ def add_village_wise_drugs(request):
         return redirect('/village-wise-drugs/list/')
     return render(request, 'manage_stocks/village_wise_drug_dispensation/add_village_wise_drugs.html', locals())
 
+@login_required(login_url='/login/')
 def drug_dispensation_stock_list(request):
     heading="Drugs Prescription"
     filter_values = request.GET.dict()
@@ -1500,6 +1515,7 @@ def drug_dispensation_stock_list(request):
     display_page_range = range(page_number_start, page_number_end)
     return render(request, 'reports/drug_dispensation_list.html', locals())
 
+@login_required(login_url='/login/')
 def medicine_stock_list(request):
     heading="Medicine stocks detatials"
     search = request.GET.get('search', '')
@@ -1515,7 +1531,7 @@ def medicine_stock_list(request):
     display_page_range = range(page_number_start, page_number_end)
     return render(request, 'manage_stocks/medicine_stock/medicine_list.html', locals())
 
-
+@login_required(login_url='/login/')
 def patient_registration_report(request):
     heading="Patients Report"
     filter_values = request.GET.dict()
@@ -1711,7 +1727,7 @@ def patient_registration_report(request):
     display_page_range = range(page_number_start, page_number_end)
     return render(request, 'reports/patient_registration_report.html', locals())
 
-
+@login_required(login_url='/login/')
 def patient_adherence_list(request):
     heading="PATIENTS ADHERENCE REPORT"
     from dateutil.relativedelta import relativedelta
@@ -1822,7 +1838,7 @@ def patient_adherence_list(request):
     display_page_range = range(page_number_start, page_number_end)
     return render(request, 'reports/patient_adherence.html', locals())
 
-
+@login_required(login_url='/login/')
 def utilisation_of_services_list(request):
     heading="UTILISATION OF SERVICES AT OBLF CLINICS"
     from dateutil.relativedelta import relativedelta
@@ -1932,7 +1948,7 @@ def utilisation_of_services_list(request):
     display_page_range = range(page_number_start, page_number_end)
     return render(request, 'reports/utilisation_of_services.html', locals())
 
-
+@login_required(login_url='/login/')
 def substance_abuse_list(request):
     heading="Substance abuse"
     filter_values = request.GET.dict()
@@ -2006,7 +2022,7 @@ def substance_abuse_list(request):
     return render(request, 'reports/substance_abuse.html', locals())
 
 
-
+@login_required(login_url='/login/')
 def prevelance_of_ncd_list(request):
     heading="Prevelance of NCD"
     filter_values = request.GET.dict()
@@ -2089,6 +2105,7 @@ def prevelance_of_ncd_list(request):
     display_page_range = range(page_number_start, page_number_end)
     return render(request, 'reports/prevelance_of_ncd.html', locals())
 
+@login_required(login_url='/login/')
 def village_profile_list(request):
     heading="Village Profile"
     filter_values = request.GET.dict()
@@ -2163,6 +2180,7 @@ def village_profile_list(request):
     display_page_range = range(page_number_start, page_number_end)
     return render(request, 'reports/village_profile.html', locals())
 
+@login_required(login_url='/login/')
 def get_sub_center(request, subcenter_id):
     if request.method == 'GET':
         result_set = []
@@ -2171,7 +2189,8 @@ def get_sub_center(request, subcenter_id):
             result_set.append(
                 {'id': sub_center.id, 'name': sub_center.name,})
         return HttpResponse(json.dumps(result_set))
-
+        
+@login_required(login_url='/login/')
 def get_village(request, village_id):
     if request.method == 'GET':
         result_set = []
@@ -2181,6 +2200,7 @@ def get_village(request, village_id):
                 {'id': village.id, 'name': village.name,})
         return HttpResponse(json.dumps(result_set))
 
+@login_required(login_url='/login/')
 def add_medicine_stock(request):
     heading="Add medicine stocks details"
     search = request.GET.get('search', '')
@@ -2206,6 +2226,7 @@ def add_medicine_stock(request):
         return redirect('/medicine/list/')
     return render(request, 'manage_stocks/medicine_stock/add_medicine.html', locals())
 
+@login_required(login_url='/login/')
 def user_add(request):
     heading='userprofile'
     if request.method == 'POST':
@@ -2232,6 +2253,7 @@ def user_add(request):
     user_type_chooces=UserProfile.USER_TYPE_CHOICES
     return render(request, 'user/add_user.html', locals())
 
+@login_required(login_url='/login/')
 def user_edit(request,id):
     heading='userprofile'
     user_profile=UserProfile.objects.get(id=id)
@@ -2260,7 +2282,7 @@ def user_edit(request,id):
     user_type_chooces=UserProfile.USER_TYPE_CHOICES
     return render(request, 'user/add_user.html', locals())
 
-
+@login_required(login_url='/login/')
 def master_add_form(request,model):
     if model == 'masterlookup':
         heading='diagnosis'
@@ -2276,7 +2298,7 @@ def master_add_form(request,model):
             return redirect('/list/'+str(model))
     return render(request, 'user/master_edit_form.html', locals())
 
-
+@login_required(login_url='/login/')
 def master_edit_form(request,model,id):
     if model == 'masterlookup':
         heading='diagnosis'
@@ -2295,6 +2317,7 @@ def master_edit_form(request,model,id):
         return redirect('/list/'+str(model))
     return render(request, 'user/master_edit_form.html', locals())
 
+@login_required(login_url='/login/')
 def delete_record(request,model,id):
     if model != 'userprofile':
         listing_model = apps.get_model(app_label= 'application_masters', model_name=model)
@@ -2309,6 +2332,7 @@ def delete_record(request,model,id):
     return redirect('/list/'+str(model))
 
 # from django.db.models import Q
+@login_required(login_url='/login/')
 def master_list_form(request,model):
     search = request.GET.get('search', '')
     headings={

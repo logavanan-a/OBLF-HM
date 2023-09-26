@@ -34,10 +34,10 @@
                         <tbody>
                             {% for dp in data %}
                             <tr>
-                                <th>{{dp.medicine|default_if_none:''}}</th>
-                                <th>{{dp.village|default_if_none:''}}</th>
-                                <th>{{dp.units_dispensed|default_if_none:''}}</th>
-                                <th>{{dp.date_of_dispensation|default_if_none:''}}</th>
+                                <td>{{dp.medicine|default_if_none:''}}</td>
+                                <td>{{dp.village|default_if_none:''}}</td>
+                                <td>{{dp.units_dispensed|default_if_none:''}}</td>
+                                <td>{{dp.date_of_dispensation|default_if_none:''}}</td>
                             </tr>
                             {% endfor %}
                         </tbody>
