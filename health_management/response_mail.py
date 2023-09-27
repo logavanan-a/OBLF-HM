@@ -22,7 +22,7 @@ def survey_responses():
     pcm_c = patients.filter(server_created_on__date__range=[current_month,prev_day])
     pcm_m = patients.filter(server_modified_on__date__range=[current_month,prev_day]).exclude(id__in=pcm_c.values_list('id', flat=True), server_created_on__in=pcm_c.values_list('server_created_on', flat=True))
 
-    treatments = Treatments.objects.filter(status=2)
+    treatments = Treatments.objects.filter(status=2, patient_uuid__in=patients.values_list('uuid', flat=True))
     ty_c = treatments.filter(server_created_on__date=prev_day)
     ty_m = treatments.filter(server_modified_on__date=prev_day).exclude(id__in=ty_c.values_list('id', flat=True), server_created_on__in=ty_c.values_list('server_created_on', flat=True))
     tcw_c = treatments.filter(server_created_on__date__range=[current_week,prev_day])
@@ -30,7 +30,7 @@ def survey_responses():
     tcm_c = treatments.filter(server_created_on__date__range=[current_month,prev_day])
     tcm_m = treatments.filter(server_modified_on__date__range=[current_month,prev_day]).exclude(id__in=tcm_c.values_list('id', flat=True), server_created_on__in=tcm_c.values_list('server_created_on', flat=True))
 
-    health = Health.objects.filter(status=2)
+    health = Health.objects.filter(status=2, patient_uuid__in=patients.values_list('uuid', flat=True))
     hy_c = health.filter(server_created_on__date=prev_day)
     hy_m = health.filter(server_modified_on__date=prev_day).exclude(id__in=hy_c.values_list('id', flat=True), server_created_on__in=hy_c.values_list('server_created_on', flat=True))
     hcw_c = health.filter(server_created_on__date__range=[current_week,prev_day])
@@ -38,7 +38,7 @@ def survey_responses():
     hcm_c = health.filter(server_created_on__date__range=[current_month,prev_day])
     hcm_m = health.filter(server_modified_on__date__range=[current_month,prev_day]).exclude(id__in=hcm_c.values_list('id', flat=True), server_created_on__in=hcm_c.values_list('server_created_on', flat=True))
 
-    prescription = Prescription.objects.filter(status=2)
+    prescription = Prescription.objects.filter(status=2, treatment_uuid__in=treatments.values_list('uuid', flat=True))
     pcy_c = prescription.filter(server_created_on__date=prev_day)
     pcy_m = prescription.filter(server_modified_on__date=prev_day).exclude(id__in=pcy_c.values_list('id', flat=True), server_created_on__in=pcy_c.values_list('server_created_on', flat=True))
     pccw_c = prescription.filter(server_created_on__date__range=[current_week,prev_day])
@@ -54,7 +54,7 @@ def survey_responses():
     dcm_c = diagnosis.filter(server_created_on__date__range=[current_month,prev_day])
     dcm_m = diagnosis.filter(server_modified_on__date__range=[current_month,prev_day]).exclude(id__in=dcm_c.values_list('id', flat=True), server_created_on__in=dcm_c.values_list('server_created_on', flat=True))
 
-    scanned_report = Scanned_Report.objects.filter(status=2)
+    scanned_report = Scanned_Report.objects.filter(status=2,patient_uuid__in=patients.values_list('uuid', flat=True))
     sry_c = scanned_report.filter(server_created_on__date=prev_day)
     sry_m = scanned_report.filter(server_modified_on__date=prev_day).exclude(id__in=sry_c.values_list('id', flat=True), server_created_on__in=sry_c.values_list('server_created_on', flat=True))
     srcw_c = scanned_report.filter(server_created_on__date__range=[current_week,prev_day])
@@ -62,7 +62,7 @@ def survey_responses():
     srcm_c = scanned_report.filter(server_created_on__date__range=[current_month,prev_day])
     srcm_m = scanned_report.filter(server_modified_on__date__range=[current_month,prev_day]).exclude(id__in=srcm_c.values_list('id', flat=True), server_created_on__in=srcm_c.values_list('server_created_on', flat=True))
 
-    home_visit = HomeVisit.objects.filter(status=2)
+    home_visit = HomeVisit.objects.filter(status=2,patient_uuid__in=patients.values_list('uuid', flat=True))
     hvy_c = home_visit.filter(server_created_on__date=prev_day)
     hvy_m = home_visit.filter(server_modified_on__date=prev_day).exclude(id__in=hvy_c.values_list('id', flat=True), server_created_on__in=hvy_c.values_list('server_created_on', flat=True))
     hvcw_c = home_visit.filter(server_created_on__date__range=[current_week,prev_day])
@@ -70,7 +70,7 @@ def survey_responses():
     hvcm_c = home_visit.filter(server_created_on__date__range=[current_month,prev_day])
     hvcm_m = home_visit.filter(server_modified_on__date__range=[current_month,prev_day]).exclude(id__in=hvcm_c.values_list('id', flat=True), server_created_on__in=hvcm_c.values_list('server_created_on', flat=True))
 
-    fee_payement = FeePayement.objects.filter(status=2)
+    fee_payement = FeePayement.objects.filter(status=2,patient_uuid__in=patients.values_list('uuid', flat=True))
     fpy_c = fee_payement.filter(server_created_on__date=prev_day)
     fpy_m = fee_payement.filter(server_modified_on__date=prev_day).exclude(id__in=fpy_c.values_list('id', flat=True), server_created_on__in=fpy_c.values_list('server_created_on', flat=True))
     fpcw_c = fee_payement.filter(server_created_on__date__range=[current_week,prev_day])
