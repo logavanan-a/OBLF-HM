@@ -1028,7 +1028,7 @@ def verified_prescription_report(request):
         writer = csv.writer(response)
         writer.writerow(['PRESCRIPTION DETAILS'])
         writer.writerow([
-            'Treatment ID'
+            'Treatment ID',
             'PHC Name',
             'Sub Centre',
             'Village',                                   
