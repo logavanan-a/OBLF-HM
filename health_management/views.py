@@ -1004,7 +1004,7 @@ def verified_prescription_report(request):
         format_name = "'%"+patient_name+"%'"
         pnt_name = '''and pt.name ilike '''+format_name
         pnt_code = '''or pt.patient_id ilike '''+format_name
-    sql = '''select  phc.name as phc_name, sbc.name as sbc_name, vlg.name as village_name, pt.name as patient_name, 
+    sql = '''select  trmt.uuid as t_uuid, phc.name as phc_name, sbc.name as sbc_name, vlg.name as village_name, pt.name as patient_name, 
     pt.patient_id as patient_code, pt.registered_date, (trmt.visit_date at time zone 'Asia/Kolkata')::date as trmt_date, date_part('year',age(pt.dob))::int as age, 
     case when pt.gender=1 then 'Male' when pt.gender=2 then 'Female' end as gender, md.name as medicines, 
     case when md.medicine_id=1 then '1st' when md.medicine_id=2 then '2nd' end  as generation, 
@@ -1028,6 +1028,7 @@ def verified_prescription_report(request):
         writer = csv.writer(response)
         writer.writerow(['PRESCRIPTION DETAILS'])
         writer.writerow([
+            'Treatment ID'
             'PHC Name',
             'Sub Centre',
             'Village',                                   
@@ -1046,6 +1047,7 @@ def verified_prescription_report(request):
             ])
         for prescription in prescription_data:
             writer.writerow([
+                prescription['t_uuid'],
                 prescription['phc_name'],
                 prescription['sbc_name'],
                 prescription['village_name'],
