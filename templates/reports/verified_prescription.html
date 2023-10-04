@@ -35,7 +35,6 @@
                                 <th>Generation</th>
                                 <th>Medicines Type</th>
                                 <th>Quantity</th>
-                                <th>No of Days</th>
                                 <th>Created On</th>
                             </tr>
                         </thead>
@@ -55,7 +54,6 @@
                                 <td>{{prr.generation|default_if_none:'-'}}</td>
                                 <td>{{prr.medicine_type|default_if_none:'-'}}</td>
                                 <td>{{prr.qty|default_if_none:'-'}}</td>
-                                <td>{{prr.days|default_if_none:'-'}}</td>
                                 <td>{{prr.created_on|date:"d/m/Y"|default_if_none:'-'}}</td>
                             </tr>
                             {% endfor %}

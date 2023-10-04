@@ -1008,7 +1008,7 @@ def verified_prescription_report(request):
     pt.patient_id as patient_code, pt.registered_date, (trmt.visit_date at time zone 'Asia/Kolkata')::date as trmt_date, date_part('year',age(pt.dob))::int as age, 
     case when pt.gender=1 then 'Male' when pt.gender=2 then 'Female' end as gender, md.name as medicines, 
     case when md.medicine_id=1 then '1st' when md.medicine_id=2 then '2nd' end  as generation, 
-    prsp.medicine_type as medicine_type, prsp.qty as qty, prsp.no_of_days as days, 
+    prsp.medicine_type as medicine_type, prsp.qty as qty, 
     (prsp.server_created_on at time zone 'Asia/Kolkata')::date as created_on 
     from health_management_prescription prsp 
     inner join health_management_treatments trmt on prsp.treatment_uuid=trmt.uuid
@@ -1042,7 +1042,6 @@ def verified_prescription_report(request):
             'Generation',
             'Medicines Type',
             'Quantity',
-            'No of Days',
             'Created On',
             ])
         for prescription in prescription_data:
@@ -1061,7 +1060,6 @@ def verified_prescription_report(request):
                 prescription['generation'],
                 prescription['medicine_type'],
                 prescription['qty'],
-                prescription['days'],
                 prescription['created_on'],
                 ])
         return response
