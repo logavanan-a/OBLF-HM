@@ -62,7 +62,7 @@ class Command(BaseCommand):
         #     except Patients.DoesNotExist:
         #         patients_ids = None
                 
-        clinic_data_two = ClinicProfileTwo.objects.filter(status=2)
+        clinic_data_two = ClinicProfileTwo.objects.filter()
 
         print(clinic_data_two.count(),'imported')
         patients_two=Patients.objects.filter(status=2, patient_id__in=clinic_data_two.values_list('code', flat=True))
@@ -76,21 +76,29 @@ class Command(BaseCommand):
             uuid_id = str(curr_dt) + "-" + str(uuid.uuid4())
             # print(uuid_id)
             patient_code = ClinicProfileTwo.objects.filter(code=cdw.code).first().code
-            try:
-                patients_ids=Patients.objects.get(status=2, patient_id=patient_code)
-                user_uuid = patients_ids.user_uuid
-                patient_uuid = patients_ids.uuid
-                treatment_details = Treatments.objects.filter(patient_uuid=patient_uuid, visit_date__date=cdw.visit_date).exists()
-                if not treatment_details:
-                    treatment_obj = Treatments.objects.create(uuid=uuid_id,
-                    user_uuid=user_uuid, patient_uuid=patient_uuid, 
-                    visit_date=cdw.visit_date, bp_sys1=cdw.sbp, bp_non_sys1=cdw.dbp,
-                    fbs=cdw.fbs, pp=cdw.ppbs, random=cdw.rbs, symptoms=cdw.symptoms,
-                    remarks=cdw.remarks, bmi=cdw.bmi, weight=cdw.weight, 
-                    )
-                    treatment_obj.save()
-            except Patients.DoesNotExist:
-                patients_ids = None
+            patients_ids=Patients.objects.filter( patient_id=patient_code)
+            if len(patients_ids)==1:
+                user_uuid = patients_ids[0].user_uuid
+                patient_uuid = patients_ids[0].uuid
+                obj, created = Treatments.objects.update_or_create(uuid=uuid_id,
+                user_uuid=user_uuid, patient_uuid=patient_uuid, 
+                visit_date=cdw.visit_date, 
+                defaults = { 
+                "bp_sys1":cdw.sbp, 
+                "bp_non_sys1":cdw.dbp,
+                "fbs":cdw.fbs, 
+                "pp":cdw.ppbs, 
+                "random":cdw.rbs,
+                "symptoms":cdw.symptoms,
+                "remarks":cdw.remarks, 
+                "bmi":cdw.bmi, 
+                "weight":cdw.weight, 
+                }
+                )
+            elif len(patients_ids)>1:
+                print('Duplicate PAteint code in system: ', patient_code)
+            else:
+                print('Patient ID missing: ',patient_code)
 
         
         print('Clinic data imported is done')

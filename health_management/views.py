@@ -472,11 +472,11 @@ def treatment_details_list(request):
     case when trmt.bp_non_sys3!='' then trmt.bp_non_sys3 when trmt.bp_non_sys2!='' then trmt.bp_non_sys2 when trmt.bp_non_sys1!='' then trmt.bp_non_sys1 else '-' end as dbp, 
     trmt.fbs as fbs, trmt.pp as pp, trmt.random as random, trmt.symptoms, trmt.remarks, case when pt.status=2 then 'Active' when pt.status=1 then 'Inactive' end as status 
     from health_management_treatments trmt  
-    inner join health_management_patients pt on trmt.patient_uuid=pt.uuid
+    inner join health_management_patients pt on trmt.patient_uuid=pt.uuid and pt.status=2 
     inner join application_masters_village vlg on pt.village_id = vlg.id
     inner join application_masters_subcenter sbc on vlg.subcenter_id = sbc.id 
     inner join application_masters_phc phc on sbc.phc_id = phc.id 
-    where 1=1 and pt.status=2 '''+phc_id+sbc_ids+village_id+between_date+pnt_name+pnt_code+'''
+    where 1=1 and trmt.status=2 '''+phc_id+sbc_ids+village_id+between_date+pnt_name+pnt_code+'''
     order by trmt.uuid, trmt.visit_date desc'''
     treatment_data = SqlHeader(sql)
     export_flag = True if request.POST.get('export') and request.POST.get( 'export').lower() == 'true' else False
@@ -709,8 +709,8 @@ def diagnosis_ncd_count_report(request):
     coalesce(sum(case when hlt.ht_status=2 and hlt.dm_status=1 then 1 else 0 end),0) as ht_pdm, 
     coalesce(sum(case when hlt.ht_status=1 and hlt.dm_status=2 then 1 else 0 end),0) as pht_dm, 
     coalesce(sum(case when hlt.ht_status=1 and hlt.dm_status=1 then 1 else 0 end),0) as pht_pdm
-    from health_management_health hlt inner join health_management_patients pt on hlt.patient_uuid=pt.uuid
-    where 1=1 and pt.status=2 """+dm_year+""" group by dmy, dm_month) as mt on i=mt.dmy"""
+    from health_management_health hlt inner join health_management_patients pt on hlt.patient_uuid=pt.uuid and pt.status=2
+    where 1=1 """+dm_year+""" group by dmy, dm_month) as mt on i=mt.dmy"""
     cursor = connection.cursor()
     cursor.execute(sql)
     diagnosis_ncd_count_list = cursor.fetchall()
@@ -1012,12 +1012,12 @@ def verified_prescription_report(request):
     (prsp.server_created_on at time zone 'Asia/Kolkata')::date as created_on 
     from health_management_prescription prsp 
     inner join health_management_treatments trmt on prsp.treatment_uuid=trmt.uuid
-    inner join health_management_patients pt on trmt.patient_uuid=pt.uuid
+    inner join health_management_patients pt on trmt.patient_uuid=pt.uuid and pt.status=2
     inner join application_masters_village vlg on pt.village_id = vlg.id
     inner join application_masters_subcenter sbc on vlg.subcenter_id = sbc.id 
     inner join application_masters_phc phc on sbc.phc_id = phc.id 
     left join application_masters_medicines md on prsp.medicines_id=md.id 
-    where 1=1 and pt.status=2 and prsp.status = 2 '''+phc_id+sbc_ids+village_id+between_date+pnt_name+pnt_code+'''
+    where 1=1 and prsp.status = 2 '''+phc_id+sbc_ids+village_id+between_date+pnt_name+pnt_code+'''
     order by  phc.name, sbc.name, vlg.name desc'''
     
     prescription_data = SqlHeader(sql)
@@ -1139,10 +1139,10 @@ def health_list(request):
         (hlt.server_created_on at time zone 'Asia/Kolkata')::date as created_on,
         (hlt.server_modified_on at time zone 'Asia/Kolkata')::date  as modified_on
         from health_management_health hlt 
-        inner join health_management_patients pt on hlt.patient_uuid = pt.uuid 
+        inner join health_management_patients pt on hlt.patient_uuid = pt.uuid and pt.status=2 
         inner join application_masters_village vlg on pt.village_id = vlg.id 
         inner join application_masters_subcenter sbc on vlg.subcenter_id = sbc.id 
-        inner join application_masters_phc phc on sbc.phc_id = phc.id where 1=1 and pt.status=2 '''+phc_id+sbc_ids+village_id+between_date+pnt_name+pnt_code+''''''
+        inner join application_masters_phc phc on sbc.phc_id = phc.id where 1=1 and hlt.status=2 '''+phc_id+sbc_ids+village_id+between_date+pnt_name+pnt_code+''''''
     health_data = SqlHeader(sql)
     export_flag = True if request.POST.get('export') and request.POST.get( 'export').lower() == 'true' else False
     if export_flag:
@@ -1263,10 +1263,10 @@ def home_visit_report(request):
     cursor = connection.cursor()
     cursor.execute('''select phc.name as phc_name, sbc.name as sbc_name, vlg.name as village_name, pt.name as patient_name, pt.patient_id as patient_code, 
     count(pt.patient_id) as no_of_visits, max(hv.response_datetime) as last_date_of_visit, hwn.first_name as health_worker_name from health_management_homevisit hv 
-    inner join health_management_patients pt on hv.patient_uuid = pt.uuid inner join application_masters_village vlg on pt.village_id=vlg.id 
+    inner join health_management_patients pt on hv.patient_uuid = pt.uuid and pt.status=2 inner join application_masters_village vlg on pt.village_id=vlg.id 
     inner join application_masters_subcenter sbc on vlg.subcenter_id = sbc.id inner join application_masters_phc phc on sbc.phc_id = phc.id 
     inner join health_management_userprofile upf on hv.user_uuid=upf.uuid inner join auth_user hwn on upf.user_id = hwn.id
-    where 1=1 and pt.status=2 '''+phc_id+sbc_ids+village_id+hwk_id+between_date+''' group by phc_name, sbc_name, village_name, patient_name, patient_code, health_worker_name order by phc.name, sbc.name, vlg.name''')
+    where 1=1 and hv.status=2  '''+phc_id+sbc_ids+village_id+hwk_id+between_date+''' group by phc_name, sbc_name, village_name, patient_name, patient_code, health_worker_name order by phc.name, sbc.name, vlg.name''')
     home_visit_data = cursor.fetchall()
     
     export_flag = True if request.POST.get('export') and request.POST.get( 'export').lower() == 'true' else False
@@ -1346,11 +1346,11 @@ def clinic_level_statistics_list(request):
     cursor = connection.cursor()
     cursor.execute('''select phc.name as phc_name, sbc.name as sbc_name , vlg.name as vlg_name, 
     (trmt.visit_date at time zone 'Asia/Kolkata')::date as date_of_clinic, count(trmt.uuid) as total, coalesce(sum(case when (trmt.visit_date at time zone 'Asia/Kolkata')::date=(pt.registered_date at time zone 'Asia/Kolkata')::date then 1 else 0 end),0) as rg_date 
-    from  health_management_treatments trmt left join health_management_patients as pt on trmt.patient_uuid=pt.uuid 
+    from  health_management_treatments trmt left join health_management_patients as pt on trmt.patient_uuid=pt.uuid and pt.status=2
     inner join application_masters_village vlg on pt.village_id = vlg.id 
     inner join application_masters_subcenter sbc on vlg.subcenter_id = sbc.id 
     inner join application_masters_phc phc on sbc.phc_id = phc.id 
-    where 1=1 and pt.status=2 '''+phc_id+sbc_ids+village_id+between_date+''' 
+    where 1=1 '''+phc_id+sbc_ids+village_id+between_date+''' 
     group by phc.name, sbc.name, vlg.name, (trmt.visit_date at time zone 'Asia/Kolkata')::date
     order by (trmt.visit_date at time zone 'Asia/Kolkata')::date desc''')
 
@@ -1778,8 +1778,8 @@ def patient_adherence_list(request):
     sql_query2 = """with a as (select phc.name as phc_name, sbc.name as sbc_name, vlg.name as village_name, pt.name as patient_name, pt.patient_id as patient_code, (pt.registered_date at time zone 'Asia/Kolkata')::date as reg_date, vlg_ct.vst_date as clinic_total_vst_date, count(trmt.uuid) as no_of_time_clinics_held 
     from health_management_treatments trmt inner join health_management_patients pt on trmt.patient_uuid = pt.uuid and pt.status=2 inner join application_masters_village vlg on pt.village_id=vlg.id inner join application_masters_subcenter sbc on vlg.subcenter_id = sbc.id 
     inner join application_masters_phc phc on sbc.phc_id = phc.id left outer join (select vlgs.name as village_name, count(distinct(trmt.visit_date)) as vst_date 
-    from health_management_treatments trmt inner join health_management_patients pt on trmt.patient_uuid = pt.uuid 
-    inner join application_masters_village vlgs on pt.village_id=vlgs.id where 1=1 and pt.status=2 """+between_date+""" group by village_name) as vlg_ct on vlg.name=vlg_ct.village_name where 1=1 and pt.status=2 """+phc_id+sbc_ids+village_id+between_date+""" group by phc_name, sbc_name, vlg.name, patient_name, patient_code, pt.uuid, vlg_ct.vst_date, reg_date order by phc.name, sbc.name, vlg.name) 
+    from health_management_treatments trmt inner join health_management_patients pt on trmt.patient_uuid = pt.uuid and pt.status=2 
+    inner join application_masters_village vlgs on pt.village_id=vlgs.id where 1=1  """+between_date+""" group by village_name) as vlg_ct on vlg.name=vlg_ct.village_name where 1=1 and pt.status=2 """+phc_id+sbc_ids+village_id+between_date+""" group by phc_name, sbc_name, vlg.name, patient_name, patient_code, pt.uuid, vlg_ct.vst_date, reg_date order by phc.name, sbc.name, vlg.name) 
     select phc_name, sbc_name, village_name, patient_name, patient_code, clinic_total_vst_date, coalesce(sum(case when reg_date<=vst_base.vst_date then 1 else 0 end),0) as vlg_patient_count, no_of_time_clinics_held, 
     concat(ROUND((case when coalesce(sum(case when reg_date<=vst_base.vst_date then 1 else 0 end),0)!=0 then no_of_time_clinics_held::DECIMAL/coalesce(sum(case when reg_date<=vst_base.vst_date then 1 else 0 end),0) else 0 end)*100), '%') as percentage from a left outer join 
     (select distinct (trmt.visit_date at time zone 'Asia/Kolkata')::date as vst_date, vlg.name as vg from health_management_treatments trmt 
@@ -1892,12 +1892,12 @@ def utilisation_of_services_list(request):
     coalesce(sum(case when prsc.treatment_uuid is not null and date_part('year',age(dob))>50 and gender=1 then 1 else 0 end),0) as treatment_men_greater_50, 
     coalesce(sum(case when prsc.treatment_uuid is not null and date_part('year',age(dob))>50 and gender=2 then 1 else 0 end),0) as treatment_female_greater_50 
     from health_management_treatments trmt 
-    inner join health_management_patients as pt on trmt.patient_uuid=pt.uuid
+    inner join health_management_patients as pt on trmt.patient_uuid=pt.uuid and pt.status=2
     inner join application_masters_village vlg on pt.village_id = vlg.id 
     inner join application_masters_subcenter sbc on vlg.subcenter_id = sbc.id 
     inner join application_masters_phc phc on sbc.phc_id = phc.id 
     left outer join (select distinct treatment_uuid from health_management_prescription) as prsc on prsc.treatment_uuid = trmt.uuid
-    where 1=1 and pt.status=2 '''+phc_id+sbc_ids+village_id+between_date+''' 
+    where 1=1 '''+phc_id+sbc_ids+village_id+between_date+''' 
     group by phc.name, sbc.name, vlg.name, (trmt.visit_date at time zone 'Asia/Kolkata')::date) 
     select date(trmt_date), phc_name, subcenter_name, village_name, consultation_men_less_30, consultation_female_less_30, 
     consultation_men_30_between_50_age, consultation_female_30_between_50_age, consultation_men_greater_50, consultation_female_greater_50, 
@@ -1990,9 +1990,9 @@ def substance_abuse_list(request):
     inner join health_management_patients pt on health.patient_uuid=pt.uuid and pt.status=2 where 1=1 order by p_uuid, hlt_date desc) 
     select phc.name as phc_name, sbc.name as sbc_name, vlg.name as vlg_name,coalesce(sum(case when health.is_alcoholic=1 then 1 else 0 end),0) as alcoholic, 
     coalesce(sum(case when health.is_smoker=1 then 1 else 0 end),0) as smoker, coalesce(sum(case when health.is_tobacco=1 then 1 else 0 end),0) as tobacco 
-    from a inner join  health_management_health health on health.uuid=t_uuid inner join health_management_patients pt on health.patient_uuid=pt.uuid 
+    from a inner join  health_management_health health on health.uuid=t_uuid inner join health_management_patients pt on health.patient_uuid=pt.uuid and pt.status=2
     inner join application_masters_village vlg on pt.village_id = vlg.id inner join application_masters_subcenter sbc on vlg.subcenter_id = sbc.id inner join application_masters_phc phc on sbc.phc_id = phc.id 
-    where 1=1 and pt.status=2 and health.status=2 '''+phc_id+sbc_ids+village_id+between_date+''' group by phc.name, sbc.name, vlg.name order by phc.name, sbc.name, vlg.name''')
+    where 1=1 and health.status=2 '''+phc_id+sbc_ids+village_id+between_date+''' group by phc.name, sbc.name, vlg.name order by phc.name, sbc.name, vlg.name''')
     substance_abuse_data = cursor.fetchall()
     export_flag = True if request.POST.get('export') and request.POST.get('export').lower() == 'true' else False
     if export_flag:
@@ -2069,7 +2069,7 @@ def prevelance_of_ncd_list(request):
     coalesce(sum(case when date_part('year',age(dob))>50 and gender=2 and (hlt.ht_status > 0 or hlt.dm_status > 0) then 1 else 0 end),0) as female_greater_50
     from health_management_health hlt inner join health_management_patients pt on pt.uuid = hlt.patient_uuid and pt.status=2 inner join application_masters_village vlg on pt.village_id = vlg.id 
     inner join application_masters_subcenter sbc on vlg.subcenter_id = sbc.id 
-    inner join application_masters_phc phc on sbc.phc_id = phc.id where 1=1 and pt.status=2'''+phc_id+sbc_ids+village_id+between_date+''' 
+    inner join application_masters_phc phc on sbc.phc_id = phc.id where 1=1 '''+phc_id+sbc_ids+village_id+between_date+''' 
     group by phc.name, sbc.name, vlg.name order by phc.name, sbc.name, vlg.name) select phc_name, sbc_name, vlg_name, men_less_30, female_less_30, men_30_between_50_age, female_30_between_50_age, men_greater_50, female_greater_50, 
     (men_less_30 + female_less_30 + men_30_between_50_age + female_30_between_50_age + men_greater_50 + female_greater_50) as ncd_total from a''')
     prevelance_of_ncd_data = cursor.fetchall()
@@ -2429,13 +2429,13 @@ class Phc_pull(APIView):
                 subcenter=Subcenter.objects.filter(status=2, id__in=subcenter_ids).order_by('server_modified_on')
                 phc_ids=subcenter.values_list('phc__id')
                 phc=PHC.objects.filter(status=2, id__in=phc_ids).order_by('server_modified_on')  
-                patient_smo_date = Patients.objects.filter(village__id__in=user_wise_village_ids, patient_visit_type__in=patient_visit_type).order_by('server_modified_on') 
+                patient_smo_date = Patients.objects.filter(status=2, village__id__in=user_wise_village_ids, patient_visit_type__in=patient_visit_type).order_by('server_modified_on') 
                 # patient_smo_date = Patients.objects.filter(village__id__in=user_wise_village_ids).order_by('server_modified_on') 
             else:
                 village=Village.objects.filter(status=2).order_by('server_modified_on')
                 subcenter=Subcenter.objects.filter(status=2).order_by('server_modified_on')   
                 phc=PHC.objects.filter(status=2).order_by('server_modified_on')   
-                patient_smo_date = Patients.objects.filter(patient_visit_type__in=patient_visit_type).order_by('server_modified_on')
+                patient_smo_date = Patients.objects.filter(status=2, patient_visit_type__in=patient_visit_type).order_by('server_modified_on')
                 # patient_smo_date = Patients.objects.filter().order_by('server_modified_on')
 
             if data.get('phc_date'):
@@ -2499,7 +2499,7 @@ class Phc_pull(APIView):
             categoryserializer=CategorySerializers(cat_date[:batch_rec], many=True)
 
             # patient data
-            patient_uuids=patient_smo_date.filter(status=2).values_list('uuid',flat=True)
+            patient_uuids=patient_smo_date.filter().values_list('uuid',flat=True)
             if data.get('patient_smo_date'):
                 patient_smo_date= patient_smo_date.filter(server_modified_on__gt =datetime.strptime(data.get('patient_smo_date'), '%Y-%m-%dT%H:%M:%S.%f%z'))
             patientSerializers = PatientSerializers(patient_smo_date[:batch_rec],many=True)
