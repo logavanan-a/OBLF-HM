@@ -80,21 +80,22 @@ class Command(BaseCommand):
             if len(patients_ids)==1:
                 user_uuid = patients_ids[0].user_uuid
                 patient_uuid = patients_ids[0].uuid
-                obj, created = Treatments.objects.update_or_create(uuid=uuid_id,
-                user_uuid=user_uuid, patient_uuid=patient_uuid, 
-                visit_date=cdw.visit_date, 
-                defaults = { 
-                "bp_sys1":cdw.sbp, 
-                "bp_non_sys1":cdw.dbp,
-                "fbs":cdw.fbs, 
-                "pp":cdw.ppbs, 
-                "random":cdw.rbs,
-                "symptoms":cdw.symptoms,
-                "remarks":cdw.remarks, 
-                "bmi":cdw.bmi, 
-                "weight":cdw.weight, 
-                }
-                )
+                if not Treatments.objects.filter(patient_uuid=patient_uuid, visit_date=cdw.visit_date).exists():
+                    obj, created = Treatments.objects.update_or_create(uuid=uuid_id,
+                    user_uuid=user_uuid, patient_uuid=patient_uuid, 
+                    visit_date=cdw.visit_date, 
+                    defaults = { 
+                    "bp_sys1":cdw.sbp, 
+                    "bp_non_sys1":cdw.dbp,
+                    "fbs":cdw.fbs, 
+                    "pp":cdw.ppbs, 
+                    "random":cdw.rbs,
+                    "symptoms":cdw.symptoms,
+                    "remarks":cdw.remarks, 
+                    "bmi":cdw.bmi, 
+                    "weight":cdw.weight, 
+                    }
+                    )
             elif len(patients_ids)>1:
                 print('Duplicate PAteint code in system: ', patient_code)
             else:
