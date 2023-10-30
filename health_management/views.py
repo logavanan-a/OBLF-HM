@@ -756,6 +756,12 @@ def delete_patients_record(request,id):
 @login_required(login_url='/login/')
 def update_status_for_patients(request,id):
     obj=Patients.objects.get(id=id)#.update(status=1)
+    trmt = Treatments.objects.filter(patient_uuid=obj.uuid).update(server_modified_on=datetime.now())
+    hlt = Health.objects.filter(patient_uuid=obj.uuid).update(server_modified_on=datetime.now())
+    prp = Prescription.objects.filter(patient_uuid=obj.uuid).update(server_modified_on=datetime.now())
+    scr = Scanned_Report.objects.filter(patient_uuid=obj.uuid).update(server_modified_on=datetime.now())
+    fp = FeePayement.objects.filter(patient_uuid=obj.uuid).update(server_modified_on=datetime.now())
+    hv = HomeVisit.objects.filter(patient_uuid=obj.uuid).update(server_modified_on=datetime.now())
     if obj.status == 2:
         obj.status=1
     else:
