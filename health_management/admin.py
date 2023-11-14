@@ -216,6 +216,15 @@ class ClinicProfileTwoAdmin(ImportExportModelAdmin, ImportExportFormat):
     search_fields = ['code']
     list_per_page = 15
 
+@admin.register(HealthProfile)
+class HealthProfileAdmin(ImportExportModelAdmin, ImportExportFormat):
+    list_display = ['code', 'date', 'detected_by_ht', 'detected_since_ht', 'diagnosis_ht', 'sot_ht', 'detected_by_dm', 'detected_since_dm',
+        'diagnosis_dm', 'sot_dm', 'server_created_on', 'server_modified_on', 'status']
+    fields = ['code', 'date', 'detected_by_ht', 'detected_since_ht', 'diagnosis_ht', 'sot_ht', 'detected_by_dm', 'detected_since_dm', 
+        'diagnosis_dm', 'sot_dm', 'status']
+    search_fields = ['code']
+    list_per_page = 15
+
 
 
 

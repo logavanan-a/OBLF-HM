@@ -375,13 +375,24 @@ class ClinicProfileTwo(BaseContent):
 
     def __str__(self):
         return self.code
-
-
     
 
 
 
-
+class HealthProfile(BaseContent):
+    code = models.CharField(max_length=150, null=True, blank=True)
+    date = models.DateField(blank=True, null=True)
+    detected_by_ht = models.IntegerField(null=True, blank=True)
+    detected_since_ht = models.CharField(max_length=150, null=True, blank=True)
+    diagnosis_ht = models.IntegerField(null=True, blank=True)
+    sot_ht = models.IntegerField(null=True, blank=True)
+    detected_by_dm = models.IntegerField(null=True, blank=True)
+    detected_since_dm = models.CharField(max_length=150, null=True, blank=True)
+    diagnosis_dm = models.IntegerField(null=True, blank=True)
+    sot_dm = models.IntegerField(null=True, blank=True)
+    
+    def __str__(self):
+        return self.code
 
 
 
