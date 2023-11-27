@@ -78,7 +78,7 @@ class MedicinesForm(forms.ModelForm):
     medicines_type = forms.CharField(
         widget=forms.Select(choices=medicine_type),
     )
-    medicine_id = forms.CharField(label='Generation', widget=forms.TextInput(attrs={'pattern':'[0-9]+','placeholder': 'Enter Medicine Name'}))
+    medicine_id = forms.CharField(required=False, label='Generation', widget=forms.TextInput(attrs={'pattern':'[0-9]+','placeholder': 'Enter Medicine Name'}))
 
     def __init__(self, *args, **kwargs):
         super(MedicinesForm, self).__init__(*args, **kwargs)
