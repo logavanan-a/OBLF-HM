@@ -112,8 +112,8 @@ class Command(BaseCommand):
                 "dm_detected_by":clc_vlu.detected_by_dm or 0,
                 "ht_detected_by":clc_vlu.detected_by_ht or 0
                 })
-                # obj.server_created_on = clc_vlu.visit_date
-                # obj.save()
+                obj.server_created_on = clc_vlu.visit_date
+                obj.save()
             elif len(patients_ids)>1:
                 print('Duplicate PAteint code in system: ', clc_vlu.code)
             else:

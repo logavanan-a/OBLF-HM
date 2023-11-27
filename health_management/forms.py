@@ -74,7 +74,7 @@ medicine_type=[
     ('Inhaler','Inhaler'),
 ]
 class MedicinesForm(forms.ModelForm):
-    name = forms.CharField(required=True, widget=forms.TextInput(attrs={'pattern':'[A-Za-z ]+','placeholder': 'Enter Name'}))
+    name = forms.CharField(required=True, widget=forms.TextInput(attrs={'placeholder': 'Enter Name'}))
     medicines_type = forms.CharField(
         widget=forms.Select(choices=medicine_type),
     )
