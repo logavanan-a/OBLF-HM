@@ -1153,9 +1153,9 @@ def health_list(request):
     export_flag = True if request.POST.get('export') and request.POST.get( 'export').lower() == 'true' else False
     if export_flag:
         response = HttpResponse(content_type='text/csv',)
-        response['Content-Disposition'] = 'attachment; filename="Health worker home visit '+ str(localtime(timezone.now()).strftime("%m-%d-%Y %I-%M %p")) +'.csv"'
+        response['Content-Disposition'] = 'attachment; filename="Health Details '+ str(localtime(timezone.now()).strftime("%m-%d-%Y %I-%M %p")) +'.csv"'
         writer = csv.writer(response)
-        writer.writerow(['HEALTH WORKER HOME VISIT'])
+        writer.writerow(['HEALTH DETAILS'])
         writer.writerow([
             'PHC Name',
             'Sub Centre',
