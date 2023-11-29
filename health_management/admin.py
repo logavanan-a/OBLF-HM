@@ -225,6 +225,13 @@ class HealthProfileAdmin(ImportExportModelAdmin, ImportExportFormat):
     search_fields = ['code']
     list_per_page = 15
 
+@admin.register(PrescriptionProfile)
+class PrescriptionProfileAdmin(ImportExportModelAdmin, ImportExportFormat):
+    list_display = ['code', 'date', 'medicine', 'dosage', 'qty', 'server_created_on', 'server_modified_on', 'status']
+    fields = ['code', 'date','medicine', 'dosage', 'qty', 'status']
+    search_fields = ['code']
+    list_per_page = 15
+
 
 
 

@@ -394,5 +394,14 @@ class HealthProfile(BaseContent):
     def __str__(self):
         return self.code
 
+class PrescriptionProfile(BaseContent):
+    code = models.CharField(max_length=150, null=True, blank=True)
+    date = models.DateField(blank=True, null=True)
+    medicine = models.IntegerField(blank=True, null=True)
+    dosage = models.IntegerField(blank=True, null=True)
+    qty = models.IntegerField(blank=True, null=True)
+    
+    def __str__(self):
+        return self.code
 
 

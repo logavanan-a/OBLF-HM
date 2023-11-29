@@ -20,15 +20,15 @@ class Command(BaseCommand):
                 patient_uuid = patients_ids[0].uuid
                 if hlt.detected_since_ht:
                     ht_day = hlt.detected_since_ht.split('-')[0]
-                    ht_month = hlt.detected_since_ht.split('-')[0]
-                    ht_year = hlt.detected_since_ht.split('-')[1]
+                    ht_month = hlt.detected_since_ht.split('-')[1]
+                    ht_year = hlt.detected_since_ht.split('-')[2]
                     ht_date = datetime.date(int(ht_year), int(ht_month), int(ht_day))
 
                     
                 if hlt.detected_since_dm:
                     dm_day = hlt.detected_since_dm.split('-')[0]
-                    dm_month = hlt.detected_since_dm.split('-')[0]
-                    dm_year = hlt.detected_since_dm.split('-')[1]
+                    dm_month = hlt.detected_since_dm.split('-')[1]
+                    dm_year = hlt.detected_since_dm.split('-')[2]
                     dm_date = datetime.date(int(dm_year), int(dm_month), int(dm_day))
                 obj, created = Health.objects.update_or_create(  
                     patient_uuid=patient_uuid,
