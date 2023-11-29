@@ -21,11 +21,11 @@ class Command(BaseCommand):
                 # import ipdb;ipdb.set_trace()
                 mds = Medicines.objects.filter(id=prp.medicine)
                 if len(trmt_vlu) == 1 and len(trmt_vlu) != 0:
-                    if not Prescription.objects.filter(treatment_uuid=trmt_vlu[0].uuid, patient_uuid=trmt_vlu[0].patient_uuid, user_uuid=trmt_vlu[0].user_uuid, server_created_on__date=prp.date, medicines_id=mds[0].id).exists():
+                    if not Prescription.objects.filter(treatment_uuid=trmt_vlu[0].uuid, patient_uuid=trmt_vlu[0].patient_uuid, server_created_on__date=prp.date, medicines_id=mds[0].id).exists():
                         prp_obj = Prescription.objects.create(  
-                            treatment_uuid=trmt_vlu[0].uuid,
-                            patient_uuid=trmt_vlu[0].patient_uuid,
-                            user_uuid=trmt_vlu[0].user_uuid,
+                                treatment_uuid=trmt_vlu[0].uuid,
+                                patient_uuid=trmt_vlu[0].patient_uuid,
+                                user_uuid=trmt_vlu[0].user_uuid,
                                 uuid=uuid_id,
                                 medicines_id=mds[0].id,
                                 dosage_id=prp.dosage or None,
