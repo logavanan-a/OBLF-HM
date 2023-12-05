@@ -421,7 +421,7 @@ def patient_profile_list(request):
 
 @login_required(login_url='/login/')
 def treatment_details_list(request):
-    heading="Treatment Details"
+    heading="Consultation Details"
     filter_values = request.GET.dict()
     from dateutil.relativedelta import relativedelta
     patient_value = True
@@ -482,9 +482,9 @@ def treatment_details_list(request):
     export_flag = True if request.POST.get('export') and request.POST.get( 'export').lower() == 'true' else False
     if export_flag:
         response = HttpResponse(content_type='text/csv',)
-        response['Content-Disposition'] = 'attachment; filename="Treatment Details '+ str(localtime(timezone.now()).strftime("%m-%d-%Y %I-%M %p")) +'.csv"'
+        response['Content-Disposition'] = 'attachment; filename="Consultation Details '+ str(localtime(timezone.now()).strftime("%m-%d-%Y %I-%M %p")) +'.csv"'
         writer = csv.writer(response)
-        writer.writerow(['TREATMENT DETAILS'])
+        writer.writerow(['CONSULTAION DETAILS'])
         writer.writerow([
             'PHC Name',
             'Sub Centre',
@@ -2555,6 +2555,11 @@ class Phc_pull(APIView):
                 fee_smo_date = fee_smo_date.filter(server_modified_on__gt = datetime.strptime(data.get('fee_smo_date'), '%Y-%m-%dT%H:%M:%S.%f%z'))
             feepayementserializer = FeePayementSerializer(fee_smo_date[:batch_rec],many=True)
 
+            patient_comorbids_smo_date = PatientComorbids.objects.filter(status=2,patient_uuid__in=patient_uuids).order_by('server_modified_on')
+            if data.get('patient_comorbids_smo_date'):
+                patient_comorbids_smo_date = patient_comorbids_smo_date.filter(server_modified_on__gt = datetime.strptime(data.get('patient_comorbids_smo_date'), '%Y-%m-%dT%H:%M:%S.%f%z'))
+            patientcomorbidserializer = PatientComorbidsSerializer(patient_comorbids_smo_date[:batch_rec],many=True)
+
             jsonresponse_full = {}
             jsonresponse_full['villages'] = villagesites_serializer.data #1
             jsonresponse_full['state'] = stateserializer.data #2
@@ -2575,6 +2580,7 @@ class Phc_pull(APIView):
             jsonresponse_full['home_visit'] = home_visit_serializers.data #18
             jsonresponse_full['health'] = healthserializer.data #19
             jsonresponse_full['fee_payement'] = feepayementserializer.data #20
+            jsonresponse_full['patient_comorbids'] = patientcomorbidserializer.data #21
             message = 'Data already sent'
             # for i in jsonresponse_full.values():
             if (len(patient_smo_date) != 0):
@@ -2600,6 +2606,7 @@ class Phc_push(APIView):
         home_visit_success =[]
         health_success =[]
         fee_payement_success =[]
+        patient_comorbids_success =[]
         try:
             data = request.build_absolute_uri()
             data = request.data
@@ -2613,6 +2620,7 @@ class Phc_push(APIView):
             home_visit_response = {'data':[]}
             health_response = {'data':[]}
             fee_payement_response = {'data':[]}
+            patient_comorbids_response = {'data':[]}
 
             try:
                 valid_user = UserProfile.objects.filter(uuid = pk)
@@ -2706,6 +2714,16 @@ class Phc_push(APIView):
                         fee_payement_info['sync_status'] = obj.sync_status
                         fee_payement_response['data'].append(fee_payement_info)
                         fee_payement_success =  fee_payement_response['data']
+                    
+                    patient_comorbids_data  = patient_comorbids_details(data)
+                    for obj in patient_comorbids_data:
+                        patient_comorbids_info ={}
+                        patient_comorbids_info['uuid']=obj.uuid
+                        patient_comorbids_info['SCO'] = obj.server_created_on
+                        patient_comorbids_info['SMO'] = obj.server_modified_on
+                        patient_comorbids_info['sync_status'] = obj.sync_status
+                        patient_comorbids_response['data'].append(patient_comorbids_info)
+                        patient_comorbids_success =  patient_comorbids_response['data']
 
             else :
                 return Response({
@@ -2723,6 +2741,7 @@ class Phc_push(APIView):
                 "home_visit_data" : home_visit_success,
                 "health_data" : health_success,
                 "fee_payement_data" : fee_payement_success,
+                "patient_comorbids_data" : patient_comorbids_success,
             })
 
         except Exception as e:
@@ -2890,6 +2909,21 @@ def fee_payement_details(self):
                     "fee_status" : data.get('fee_status'),
                     "fee_paid" : data.get('fee_paid'),
                     "payment_date" : data.get('payment_date'),
+                    })
+        objlist.append(obj)
+    return objlist
+
+def patient_comorbids_details(self):
+    objlist = []
+    datas = json.loads(self.get('patient_comorbids'))
+    create_post_log(self,datas)
+    for data in datas:
+        obj,created = PatientComorbids.objects.update_or_create(
+            uuid = data.get('uuid'),
+            patient_uuid = data.get('patient_uuid'),
+            defaults = {
+                    "month_year" : data.get('month_year'),
+                    "co_morbid_id" : data.get('co_morbid_id'),
                     })
         objlist.append(obj)
     return objlist

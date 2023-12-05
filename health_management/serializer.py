@@ -126,6 +126,10 @@ class FeePayementSerializer(serializers.ModelSerializer):
         model = FeePayement
         fields = '__all__'
 
+class PatientComorbidsSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = PatientComorbids
+        fields = '__all__'
 
 class UserProfileSerializers(serializers.ModelSerializer):
     username = serializers.CharField(source='user.username')

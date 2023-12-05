@@ -141,6 +141,20 @@ class Health(BaseContent):
     dm_detected_by = models.IntegerField(default=0)
     ht_detected_by = models.IntegerField(default=0)
 
+    #new
+    pdm_year = models.DateField(null=True, blank=True)
+    dm_year = models.DateField(null=True, blank=True)
+    pht_year = models.DateField(null=True, blank=True)
+    ht_year = models.DateField(null=True, blank=True)
+    pdm_source_treatment = models.IntegerField(default=0)
+    dm_source_treatment = models.IntegerField(default=0)
+    pht_source_treatment = models.IntegerField(default=0)
+    ht_source_treatment = models.IntegerField(default=0)
+    pdm_detected_by = models.IntegerField(default=0)
+    dm_detected_by = models.IntegerField(default=0)
+    pht_detected_by = models.IntegerField(default=0)
+    ht_detected_by = models.IntegerField(default=0)
+
     # def __str__(self):
     #     return self.uuid
 
@@ -150,6 +164,14 @@ class Health(BaseContent):
         except ObjectDoesNotExist:
             pnt_uuid = None
         return pnt_uuid
+
+class PatientComorbids(BaseContent):
+    uuid = models.CharField(max_length=150, null=True, blank=True, unique =True, db_index=True)
+    patient_uuid = models.CharField(max_length=150, null=True, blank=True, db_index=True)
+    month_year = models.DateField(null=True, blank=True)
+    co_morbid_id = models.IntegerField(null=True, blank=True)
+
+
 
 
 class Prescription(BaseContent):

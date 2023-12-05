@@ -47,6 +47,8 @@ class HealthAdmin(ImportExportModelAdmin, ImportExportFormat):
         'is_alcoholic', 'is_tobacco', 'is_smoker',
         'dm_check', 'ht_check', 'dm_status', 'ht_status', 'dm_source_treatment',
         'ht_source_treatment', 'dm_years', 'ht_years', 'dm_detected_by', 'ht_detected_by',
+        'pdm_year','dm_year','pht_year', 'ht_year', 'pdm_source_treatment', 'dm_source_treatment',
+        'pht_source_treatment', 'ht_source_treatment', 'pdm_detected_by', 'dm_detected_by', 'pht_detected_by', 'ht_detected_by',
         'server_created_on', 'server_modified_on', 'status']
     fields = ['uuid', 'user_uuid', 'patient_uuid',
         'hyper_diabetic',  'co_morbid_ids', 'co_morbid_names',
@@ -56,6 +58,14 @@ class HealthAdmin(ImportExportModelAdmin, ImportExportFormat):
         'status']
     list_filter = ['status' ]
     search_fields = ['uuid', 'user_uuid', 'patient_uuid']
+    list_per_page = 15
+
+@admin.register(PatientComorbids)
+class PatientComorbidsAdmin(ImportExportModelAdmin, ImportExportFormat):
+    list_display = ['uuid', 'patient_uuid', 'month_year', 'co_morbid_id', 'server_created_on', 'server_modified_on', 'status']
+    fields = ['uuid', 'patient_uuid','month_year', 'co_morbid_id', 'status']
+    list_filter = ['status' ]
+    search_fields = ['uuid', 'patient_uuid']
     list_per_page = 15
 
 @admin.register(FeePayement)
