@@ -135,7 +135,7 @@ class Health(BaseContent):
     dm_status = models.IntegerField(default=0)
     ht_status = models.IntegerField(default=0)
     dm_source_treatment = models.IntegerField(default=0)
-    ht_source_treatment = models.IntegerField(default=0)
+    ht_source_treatment = models.   IntegerField(default=0)
     dm_years = models.DateField(null=True, blank=True)
     ht_years = models.DateField(null=True, blank=True)
     dm_detected_by = models.IntegerField(default=0)

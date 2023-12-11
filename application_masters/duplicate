@@ -305,7 +305,7 @@ for cld in clc_vlu:
     if cld.detected_since_dm:
         dm_month = cld.detected_since_dm.split('-')[0]
         dm_year = cld.detected_since_dm.split('-')[1]
-        print()
+        # print()
 
 from health_management.models import *
 pts = Patients.objects.filter(status=2)
@@ -315,3 +315,39 @@ for pt in pts:
         Patients.objects.filter(status=2, uuid=visit_date.patient_uuid).update(registered_date=visit_date.visit_date)
 
 Patients.objects.filter(server_modified_on__date='2023-08-30').count() 
+
+#------------------------------------------------- #
+
+from health_management.models import *
+heath_data = Health.objects.filter()
+for hd in heath_data:
+    if hd.dm_status == 1:
+        Health.objects.filter(id=hd.id).update(pdm_year=hd.dm_years,pdm_source_treatment=hd.dm_source_treatment,pdm_detected_by=hd.dm_detected_by)
+    if hd.dm_status == 2:
+        Health.objects.filter(id=hd.id).update(dm_year=hd.dm_years,dm_source_treatment=hd.dm_source_treatment,dm_detected_by=hd.dm_detected_by)
+    if hd.ht_status == 1:
+        Health.objects.filter(id=hd.id).update(pht_year=hd.ht_years,pht_source_treatment=hd.ht_source_treatment,pht_detected_by=hd.ht_detected_by)
+    if hd.ht_status == 2:
+        Health.objects.filter(id=hd.id).update(ht_year=hd.ht_years,ht_source_treatment=hd.ht_source_treatment,ht_detected_by=hd.ht_detected_by)
+    # if
+
+
+from health_management.models import *
+import uuid
+import datetime
+heath_data = Health.objects.filter()
+for hd in heath_data:
+    if hd.co_morbid_ids:
+        number_list = [int(num) for num in hd.co_morbid_ids.split(',')]
+        for num in number_list:
+            curr_dt = datetime.datetime.now().strftime("%Y%m%d%H%M%S%f")
+            uuid_id = str(curr_dt) + "-" + str(uuid.uuid4())
+            obj,created = PatientComorbids.objects.update_or_create(
+                uuid = uuid_id,
+                patient_uuid = hd.patient_uuid,
+                co_morbid_id= num,
+                defaults = {
+                    'month_year':hd.dm_years or hd.ht_years
+                }
+            )
+        
