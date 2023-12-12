@@ -134,26 +134,24 @@ class Health(BaseContent):
     ht_check = models.IntegerField(default=0)
     dm_status = models.IntegerField(default=0)
     ht_status = models.IntegerField(default=0)
-    dm_source_treatment = models.IntegerField(default=0)
-    ht_source_treatment = models.   IntegerField(default=0)
     dm_years = models.DateField(null=True, blank=True)
     ht_years = models.DateField(null=True, blank=True)
-    dm_detected_by = models.IntegerField(default=0)
-    ht_detected_by = models.IntegerField(default=0)
 
     #new
     pdm_year = models.DateField(null=True, blank=True)
     dm_year = models.DateField(null=True, blank=True)
     pht_year = models.DateField(null=True, blank=True)
     ht_year = models.DateField(null=True, blank=True)
-    pdm_source_treatment = models.IntegerField(default=0)
+
     dm_source_treatment = models.IntegerField(default=0)
+    ht_source_treatment = models.   IntegerField(default=0)
+    pdm_source_treatment = models.IntegerField(default=0)
     pht_source_treatment = models.IntegerField(default=0)
-    ht_source_treatment = models.IntegerField(default=0)
-    pdm_detected_by = models.IntegerField(default=0)
+
     dm_detected_by = models.IntegerField(default=0)
-    pht_detected_by = models.IntegerField(default=0)
     ht_detected_by = models.IntegerField(default=0)
+    pdm_detected_by = models.IntegerField(default=0)
+    pht_detected_by = models.IntegerField(default=0)
 
     # def __str__(self):
     #     return self.uuid

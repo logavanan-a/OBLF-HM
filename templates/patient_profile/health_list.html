@@ -35,16 +35,18 @@
                                 <th>Drinking</th>
                                 <th>Tobacco</th>
                                 <th>Smoker</th>
-                                <th>DM Check</th>
                                 <th>DM Source Treatment</th>
+                                <th>PDM Source Treatment</th>
                                 <th>DM Detected by</th>
-                                <th>DM Status</th>
+                                <th>PDM Detected by</th>
                                 <th>DM Year</th>
-                                <th>HT Check</th>
+                                <th>PDM Year</th>
                                 <th>HT Source Treatment</th>
+                                <th>PHT Source Treatment</th>
                                 <th>HT Detected by</th>
-                                <th>HT Status</th>
+                                <th>PHT Detected by</th>
                                 <th>HT Year</th>
+                                <th>PHT Year</th>
                                 <th>Created On</th>
                                 <th>Updated On</th>
                             </tr>
@@ -65,16 +67,18 @@
                                 <td>{{prr.alcoholic|default_if_none:'-'}}</td>
                                 <td>{{prr.tobacco|default_if_none:'-'}}</td>
                                 <td>{{prr.smoker|default_if_none:'-'}}</td>
-                                <td>{{prr.dmc|default_if_none:'-'}}</td>
-                                <td>{{prr.dmst|default_if_none:'-'}}</td>
-                                <td>{{prr.ddb|default_if_none:'-'}}</td>
-                                <td>{{prr.dms|default_if_none:'-'}}</td>
-                                <td>{{prr.dmy|default_if_none:'-'}}</td>
-                                <td>{{prr.htc|default_if_none:'-'}}</td>
-                                <td>{{prr.htst|default_if_none:'-'}}</td>
-                                <td>{{prr.hdb|default_if_none:'-'}}</td>
-                                <td>{{prr.hts|default_if_none:'-'}}</td>
-                                <td>{{prr.hmy|default_if_none:'-'}}</td>
+                                <td>{{prr.pdm_st|default_if_none:'-'}}</td>
+                                <td>{{prr.dm_st|default_if_none:'-'}}</td>
+                                <td>{{prr.pdm_db|default_if_none:'-'}}</td>
+                                <td>{{prr.dm_db|default_if_none:'-'}}</td>
+                                <td>{{prr.pdm_my|default_if_none:'-'}}</td>
+                                <td>{{prr.dm_my|default_if_none:'-'}}</td>
+                                <td>{{prr.pht_st|default_if_none:'-'}}</td>
+                                <td>{{prr.ht_st|default_if_none:'-'}}</td>
+                                <td>{{prr.pht_db|default_if_none:'-'}}</td>
+                                <td>{{prr.ht_db|default_if_none:'-'}}</td>
+                                <td>{{prr.pht_my|default_if_none:'-'}}</td>
+                                <td>{{prr.ht_my|default_if_none:'-'}}</td>
                                 <td>{{prr.created_on|date:"d/m/Y"|default_if_none:'-'}}</td>
                                 <td>{{prr.modified_on|date:"d/m/Y"|default_if_none:'-'}}</td>
                             </tr>
