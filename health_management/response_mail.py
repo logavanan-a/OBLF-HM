@@ -128,7 +128,7 @@ def attachment_email():
     send_to_bcc = ''
     subject = template_obj.subject
     content = template_obj.content
-    content = content.replace("@@date",str(previous_day))
+    content = content.replace("@@date",str(prev_day))
     # to_ = ["girish.n.s@mahiti.org","pervin.d@mahiti.org","dmresearch@akrspi.org"]
     to_ = ';'.join(ACTIVITY_MAIL_RECIEVER)
     send_to_cc = ';'.join(ACTIVITY_MAIL_CC)
