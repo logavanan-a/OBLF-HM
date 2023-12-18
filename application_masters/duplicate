@@ -321,6 +321,7 @@ Patients.objects.filter(server_modified_on__date='2023-08-30').count()
 from health_management.models import *
 heath_data = Health.objects.filter()
 for hd in heath_data:
+    Health.objects.filter(id=hd.id).update(pdm_year=None,pdm_source_treatment=0,pdm_detected_by=0,dm_year=None,dm_source_treatment=0,dm_detected_by=0, pht_year=None,pht_source_treatment=0,pht_detected_by=0,ht_year=None,ht_source_treatment=0,ht_detected_by=0)
     if hd.dm_status == 1:
         Health.objects.filter(id=hd.id).update(pdm_year=hd.dm_years,pdm_source_treatment=hd.dm_source_treatment,pdm_detected_by=hd.dm_detected_by)
     if hd.dm_status == 2:
@@ -350,4 +351,62 @@ for hd in heath_data:
                     'month_year':hd.dm_years or hd.ht_years
                 }
             )
-        
+
+from health_management.models import *
+import uuid
+import datetime
+clinic_data = ClinicProfile.objects.filter()
+for cd in clinic_data:
+    curr_dt = datetime.datetime.now().strftime("%Y%m%d%H%M%S%f")
+    uuid_id = str(curr_dt) + "-" + str(uuid.uuid4())
+    # print(uuid_id)
+    patient = ClinicProfile.objects.filter(code=cd.code).order_by('-visit_date').first()
+    patients_ids=Patients.objects.filter(status=2, patient_id=patient.code)
+    if len(patients_ids)==1:
+        user_uuid = patients_ids[0].user_uuid
+        patient_uuid = patients_ids[0].uuid
+        if cd.detected_since_dm:
+            day =cd.detected_since_dm.split('-')[0]
+            month = cd.detected_since_dm.split('-')[1]
+            year = cd.detected_since_dm.split('-')[2]
+            dm_years = datetime.date(int(year), int(month), int(day))
+        else:
+            dm_years =''
+        if cd.detected_since_htn:
+            day =cd.detected_since_htn.split('-')[0]
+            month = cd.detected_since_htn.split('-')[1]
+            year = cd.detected_since_htn.split('-')[2]
+            ht_years = datetime.date(int(year), int(month), int(day))
+        else:
+            ht_years = ''
+        if patient.dm == 5 and Health.objects.filter(patient_uuid=patient_uuid, dm_years__isnull=True):
+            Health.objects.filter(patient_uuid=patient_uuid).update(pdm_year=dm_years or None, pdm_detected_by=patient.detected_by_dm)
+        if patient.dm == 8 and Health.objects.filter(patient_uuid=patient_uuid, dm_years__isnull=True):
+            Health.objects.filter(patient_uuid=patient_uuid).update(dm_year=dm_years or None,dm_detected_by=patient.detected_by_dm)
+        if patient.htn == 9 and Health.objects.filter(patient_uuid=patient_uuid, ht_years__isnull=True):
+            Health.objects.filter(patient_uuid=patient_uuid).update(ht_year=ht_years or None,ht_detected_by=patient.detected_by_htn)
+        if patient.htn == 7 and Health.objects.filter(patient_uuid=patient_uuid, ht_years__isnull=True):
+            Health.objects.filter(patient_uuid=patient_uuid).update(pht_year=ht_years or None,pht_detected_by=patient.detected_by_htn)
+    elif len(patients_ids)>1:
+        print('Duplicate PAteint code in system: ', patient.code)
+    else:
+        print('Patient ID missing: ',patient.code)
+
+
+
+from health_management.models import *
+import pandas as pd
+
+df = pd.read_excel(r'/home/sb030/Downloads/health.xlsx')
+for d in df.iterrows():
+    pts = Patients.objects.filter(patient_id=d[1]['code'], status=2).first()
+    if pts:
+        if d[1]['ht']==0:
+            ht_status=0
+        else:
+            ht_status=2
+        if d[1]['dm']==0:
+            dm_status=0
+        else:
+            dm_status=2
+        Health.objects.filter(patient_uuid=pts.uuid).update(pht_year= None if pd.isna(d[1]['ht_since']) else d[1]['ht_since'],pdm_year= None if pd.isna(d[1]['dm_since']) else d[1]['dm_since'],ht_detected_by=d[1]['detected_by_ht'],dm_detected_by=d[1]['detected_by_dm'],ht_years= None if pd.isna(d[1]['ht_since']) else d[1]['ht_since'],dm_years= None if pd.isna(d[1]['dm_since']) else d[1]['dm_since'],ht_status=ht_status,dm_status=dm_status)

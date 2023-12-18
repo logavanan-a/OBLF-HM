@@ -2869,11 +2869,17 @@ def health_details(self):
                     "dm_status":data.get('dm_status'),
                     "ht_status":data.get('ht_status'),
                     "dm_source_treatment":data.get('dm_source_treatment'),
+                    "pdm_source_treatment":data.get('pdm_source_treatment'),
                     "ht_source_treatment":data.get('ht_source_treatment'),
-                    "dm_years":data.get('dm_years') if data.get('dm_years') != '0000-00-00' else None,
-                    "ht_years":data.get('ht_years') if data.get('ht_years') != '' else None,
+                    "pht_source_treatment":data.get('pht_source_treatment'),
+                    "dm_year":data.get('dm_year'),
+                    "pdm_year":data.get('pdm_year'),
+                    "ht_year":data.get('ht_year'),
+                    "pht_year":data.get('pht_year'),
                     "dm_detected_by":data.get('dm_detected_by'),
+                    "pdm_detected_by":data.get('pdm_detected_by'),
                     "ht_detected_by":data.get('ht_detected_by'),
+                    "pht_detected_by":data.get('pht_detected_by'),
                     })
         objlist.append(obj)
 
