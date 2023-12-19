@@ -303,7 +303,6 @@ def patient_profile_list(request):
     case when pt.gender=1 then 'Male' when pt.gender=2 then 'Female' end as gender, (trmt.visit_date at time zone 'Asia/Kolkata')::date as v_date, case when hlt.is_alcoholic=1 then 'YES' when hlt.is_alcoholic=0 then 'NO' end as drinking, 
     case when hlt.is_smoker=1 then 'YES' when hlt.is_smoker=0 then 'NO' end as smoking, case when hlt.is_tobacco=1 then 'YES' when hlt.is_tobacco=0 then 'NO' end as tobacco, 
     case when hlt.hyper_diabetic=1 then 'YES' when hlt.hyper_diabetic=0 then 'NO' end as diabetes, 
-    to_char(hlt.dm_years, 'MM/YYYY') as dmy, 
     to_char(hlt.pdm_year, 'MM/YYYY') as pdm_my, 
     to_char(hlt.dm_year, 'MM/YYYY') as dm_my, 
     to_char(hlt.pht_year, 'MM/YYYY') as pht_my,
@@ -702,27 +701,70 @@ def diagnosis_ncd_count_report(request):
         ht_year = """and ht_years >= '"""+s_date + \
                 """' and ht_years < '""" + \
                 e_date+"""' """
+    # sql="""select i::date, to_char(i, 'Month'), 
+    # case when mt.ht is not null then mt.ht else 0 end, 
+    # case when mt.pht is not null then mt.pht else 0 end, 
+    # case when mt.dm is not null then mt.dm else 0 end, 
+    # case when mt.pdm is not null then mt.pdm else 0 end, 
+    # case when mt.ht_dm is not null then mt.ht_dm else 0 end, 
+    # case when mt.ht_pdm is not null then mt.ht_pdm else 0 end, 
+    # case when mt.pht_dm is not null then mt.pht_dm else 0 end, 
+    # case when mt.pht_pdm is not null then mt.pht_pdm else 0 end
+    # from generate_series('"""+start_date+"""', '"""+end_date+"""', '1 month'::interval) i 
+    # left outer join (select dm_years as dmy, to_char(dm_years, 'Month') as dm_month, 
+    # coalesce(sum(case when hlt.ht_status=2 then 1 else 0 end),0) as ht, 
+    # coalesce(sum(case when hlt.ht_status=1 then 1 else 0 end),0) as pht, 
+    # coalesce(sum(case when hlt.dm_status=2 then 1 else 0 end),0) as dm, 
+    # coalesce(sum(case when hlt.dm_status=1 then 1 else 0 end),0) as pdm, 
+    # coalesce(sum(case when hlt.ht_status=2 and hlt.dm_status=2 then 1 else 0 end),0) as ht_dm, 
+    # coalesce(sum(case when hlt.ht_status=2 and hlt.dm_status=1 then 1 else 0 end),0) as ht_pdm, 
+    # coalesce(sum(case when hlt.ht_status=1 and hlt.dm_status=2 then 1 else 0 end),0) as pht_dm, 
+    # coalesce(sum(case when hlt.ht_status=1 and hlt.dm_status=1 then 1 else 0 end),0) as pht_pdm
+    # from health_management_health hlt inner join health_management_patients pt on hlt.patient_uuid=pt.uuid and pt.status=2
+    # where 1=1 """+dm_year+""" group by dmy, dm_month) as mt on i=mt.dmy"""
+    # print(sql)
     sql="""select i::date, to_char(i, 'Month'), 
-    case when mt.ht is not null then mt.ht else 0 end, 
-    case when mt.pht is not null then mt.pht else 0 end, 
-    case when mt.dm is not null then mt.dm else 0 end, 
-    case when mt.pdm is not null then mt.pdm else 0 end, 
-    case when mt.ht_dm is not null then mt.ht_dm else 0 end, 
-    case when mt.ht_pdm is not null then mt.ht_pdm else 0 end, 
-    case when mt.pht_dm is not null then mt.pht_dm else 0 end, 
-    case when mt.pht_pdm is not null then mt.pht_pdm else 0 end
+    case when mr_ht.ht is not null then mr_ht.ht else 0 end, 
+    case when mr_pht.pht is not null then mr_pht.pht else 0 end, 
+    case when mr_dm.dm is not null then mr_dm.dm else 0 end, 
+    case when mr_pdm.pdm is not null then mr_pdm.pdm else 0 end, 
+    case when mr_ht_dm.ht_dm is not null then mr_ht_dm.ht_dm else 0 end, 
+    case when mr_ht_pdm.ht_pdm is not null then mr_ht_pdm.ht_pdm else 0 end, 
+    case when mr_pht_dm.pht_dm is not null then mr_pht_dm.pht_dm else 0 end, 
+    case when mr_pht_pdm.pht_pdm is not null then mr_pht_pdm.pht_pdm else 0 end  
     from generate_series('"""+start_date+"""', '"""+end_date+"""', '1 month'::interval) i 
-    left outer join (select dm_years as dmy, to_char(dm_years, 'Month') as dm_month, 
-    coalesce(sum(case when hlt.ht_status=2 then 1 else 0 end),0) as ht, 
-    coalesce(sum(case when hlt.ht_status=1 then 1 else 0 end),0) as pht, 
-    coalesce(sum(case when hlt.dm_status=2 then 1 else 0 end),0) as dm, 
-    coalesce(sum(case when hlt.dm_status=1 then 1 else 0 end),0) as pdm, 
-    coalesce(sum(case when hlt.ht_status=2 and hlt.dm_status=2 then 1 else 0 end),0) as ht_dm, 
-    coalesce(sum(case when hlt.ht_status=2 and hlt.dm_status=1 then 1 else 0 end),0) as ht_pdm, 
-    coalesce(sum(case when hlt.ht_status=1 and hlt.dm_status=2 then 1 else 0 end),0) as pht_dm, 
-    coalesce(sum(case when hlt.ht_status=1 and hlt.dm_status=1 then 1 else 0 end),0) as pht_pdm
-    from health_management_health hlt inner join health_management_patients pt on hlt.patient_uuid=pt.uuid and pt.status=2
-    where 1=1 """+dm_year+""" group by dmy, dm_month) as mt on i=mt.dmy"""
+    left outer join (select ht_year as ht_my, to_char(ht_year, 'Month') as ht_month, 
+    coalesce(sum(case when ht_year >= '"""+s_date+"""' and ht_year < '"""+e_date+"""' then 1 else 0 end),0) as ht 
+    from health_management_health hlt inner join health_management_patients pt on hlt.patient_uuid=pt.uuid and pt.status=2  
+    group by ht_my, ht_month) as mr_ht on i=mr_ht.ht_my 
+    left outer join (select pht_year as pht_my, to_char(pht_year, 'Month') as pht_month, 
+    coalesce(sum(case when pht_year >= '"""+s_date+"""' and pht_year < '"""+e_date+"""' then 1 else 0 end),0) as pht 
+    from health_management_health hlt inner join health_management_patients pt on hlt.patient_uuid=pt.uuid and pt.status=2  
+    group by pht_my, pht_month) as mr_pht on i=mr_pht.pht_my 
+    left outer join (select dm_year as dm_my, to_char(dm_year, 'Month') as dm_month, 
+    coalesce(sum(case when dm_year >= '"""+s_date+"""' and dm_year < '"""+e_date+"""' then 1 else 0 end),0) as dm 
+    from health_management_health hlt inner join health_management_patients pt on hlt.patient_uuid=pt.uuid and pt.status=2  
+    group by dm_my, dm_month) as mr_dm on i=mr_dm.dm_my 
+    left outer join (select pdm_year as pdm_my, to_char(pdm_year, 'Month') as pdm_month, 
+    coalesce(sum(case when pdm_year >= '"""+s_date+"""' and pdm_year < '"""+e_date+"""' then 1 else 0 end),0) as pdm 
+    from health_management_health hlt inner join health_management_patients pt on hlt.patient_uuid=pt.uuid and pt.status=2  
+    group by pdm_my, pdm_month) as mr_pdm on i=mr_pdm.pdm_my 
+    left outer join (select dm_year as dm_my, to_char(dm_year, 'Month') as dm_month, ht_year as ht_my, to_char(ht_year, 'Month') as ht_month, 
+    coalesce(sum(case when ht_year >= '"""+s_date+"""' and ht_year < '"""+e_date+"""' and dm_year >= '"""+s_date+"""' and dm_year < '"""+e_date+"""' then 1 else 0 end),0) as ht_dm 
+    from health_management_health hlt inner join health_management_patients pt on hlt.patient_uuid=pt.uuid and pt.status=2  
+    group by dm_my, dm_month,ht_my, ht_month) as mr_ht_dm on i=mr_ht_dm.ht_my and i=mr_ht_dm.dm_my 
+    left outer join (select pdm_year as pdm_my, to_char(pdm_year, 'Month') as pdm_month, ht_year as ht_my, to_char(ht_year, 'Month') as ht_month, 
+    coalesce(sum(case when ht_year >= '"""+s_date+"""' and ht_year < '"""+e_date+"""' and pdm_year >= '"""+s_date+"""' and pdm_year < '"""+e_date+"""' then 1 else 0 end),0) as ht_pdm 
+    from health_management_health hlt inner join health_management_patients pt on hlt.patient_uuid=pt.uuid and pt.status=2  
+    group by pdm_my, pdm_month,ht_my, ht_month) as mr_ht_pdm on i=mr_ht_pdm.ht_my and i=mr_ht_pdm.pdm_my 
+    left outer join (select dm_year as dm_my, to_char(dm_year, 'Month') as dm_month, pht_year as pht_my, to_char(pht_year, 'Month') as pht_month, 
+    coalesce(sum(case when pht_year >= '"""+s_date+"""' and pht_year < '"""+e_date+"""' and dm_year >= '"""+s_date+"""' and dm_year < '"""+e_date+"""' then 1 else 0 end),0) as pht_dm 
+    from health_management_health hlt inner join health_management_patients pt on hlt.patient_uuid=pt.uuid and pt.status=2  group by dm_my, dm_month,pht_my, pht_month) as mr_pht_dm on i=mr_pht_dm.pht_my and i=mr_pht_dm.dm_my 
+    left outer join (select pdm_year as pdm_my, to_char(pdm_year, 'Month') as pdm_month, pht_year as pht_my, to_char(pht_year, 'Month') as pht_month, 
+    coalesce(sum(case when pht_year >= '"""+s_date+"""' and pht_year < '"""+e_date+"""' and pdm_year >= '"""+s_date+"""' and pdm_year < '"""+e_date+"""' then 1 else 0 end),0) as pht_pdm 
+    from health_management_health hlt inner join health_management_patients pt on hlt.patient_uuid=pt.uuid and pt.status=2  group by pdm_my, pdm_month,pht_my, pht_month) 
+    as mr_pht_pdm on i=mr_pht_pdm.pht_my and i=mr_pht_pdm.pdm_my"""
+    
     cursor = connection.cursor()
     cursor.execute(sql)
     diagnosis_ncd_count_list = cursor.fetchall()
