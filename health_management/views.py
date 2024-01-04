@@ -2832,7 +2832,7 @@ def patient_details(self):
     # import ipdb; ipdb.set_trace()
 
     datas = json.loads(self.data.get('patients','[]'))
-    print(datas)
+    # print(datas)
     create_post_log(self,datas)
     for data in datas:
         obj, created = Patients.objects.update_or_create(
