@@ -397,16 +397,40 @@ for cd in clinic_data:
 from health_management.models import *
 import pandas as pd
 
-df = pd.read_excel(r'/home/sb030/Downloads/health.xlsx')
+df = pd.read_excel(r'/home/sb030/Downloads/village2.xlsx')
 for d in df.iterrows():
     pts = Patients.objects.filter(patient_id=d[1]['code'], status=2).first()
     if pts:
         if d[1]['ht']==0:
             ht_status=0
-        else:
+        elif d[1]['ht']==1:
             ht_status=2
+        else:
+            ht_status=1
         if d[1]['dm']==0:
             dm_status=0
-        else:
+        elif d[1]['dm']==1:
             dm_status=2
+        else:
+            dm_status=1
         Health.objects.filter(patient_uuid=pts.uuid).update(pht_year= None if pd.isna(d[1]['ht_since']) else d[1]['ht_since'],pdm_year= None if pd.isna(d[1]['dm_since']) else d[1]['dm_since'],ht_detected_by=d[1]['detected_by_ht'],dm_detected_by=d[1]['detected_by_dm'],ht_years= None if pd.isna(d[1]['ht_since']) else d[1]['ht_since'],dm_years= None if pd.isna(d[1]['dm_since']) else d[1]['dm_since'],ht_status=ht_status,dm_status=dm_status)
+
+from master_data.models import *
+import pandas as pd
+df = pd.read_excel(r'/home/sb030/Documents/village2.xl/home/sb030/Documents/village2.xlsxsx')
+for _, row in df.iterrows():
+    if pd.notna(row['district_id']): 
+        dst = District.objects.filter(state__ssmis_id=int(row['dst_state_id']),name__icontains=row['district_name']).update(ssmis_id=int(row['dst_state_id']))
+
+
+from sims.models import *
+partner_list = Patients.objects.values('name','village_id').annotate(Count('id')).order_by('name','village').filter(status=2, id__count__gt=1)
+pnt_list = Patients.objects.filter(village__id__in=[pl['village_id'] for pl in partner_list], name__in=[pl['name'] for pl in partner_list]).order_by('name','village')
+
+from csv import writer
+with open('duplicate2_list.csv', 'a') as f_object:
+    writer_object = writer(f_object)
+    writer_object.writerow(['Village','Name', 'Patient ID'])
+    for i in pnt_list:
+        writer_object.writerow([i.village,i.name,i.patient_id])
+    f_object.close()
