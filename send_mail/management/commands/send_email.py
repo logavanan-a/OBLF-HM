@@ -3,6 +3,7 @@ from django.core.management.base import BaseCommand
 import datetime 
 from send_mail.models import MailData
 from send_mail.views import send_mail
+from OBLH_HM.settings import DATABASE_HOST
 from django.conf import settings
 import sys, traceback
 import  logging
@@ -33,7 +34,7 @@ def sendmail():
                     x.error_details = 'Ignored because MODE is TEST and email ID not in TEST_MAIL_LIST'  
             #if not test mode and 
             if x.mail_status == 2:
-                mail_subject = x.subject
+                mail_subject = x.subject + ' ('+DATABASE_HOST.split('//')[1]+')'
                 mail_content = x.content
                 mail_template = x.template_name.html_template
                 response = send_mail(mail_to,mail_subject,mail_content,mail_template,cc=cc,filepaths=x.file_paths)

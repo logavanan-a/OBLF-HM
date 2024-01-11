@@ -397,22 +397,19 @@ for cd in clinic_data:
 from health_management.models import *
 import pandas as pd
 
-df = pd.read_excel(r'/home/sb030/Downloads/village2.xlsx')
+df = pd.read_excel(r'/home/sb030/Downloads/village1-oblfhm.xlsx')
 for d in df.iterrows():
     pts = Patients.objects.filter(patient_id=d[1]['code'], status=2).first()
     if pts:
-        if d[1]['ht']==0:
-            ht_status=0
-        elif d[1]['ht']==1:
-            ht_status=2
-        else:
-            ht_status=1
-        if d[1]['dm']==0:
-            dm_status=0
-        elif d[1]['dm']==1:
-            dm_status=2
-        else:
-            dm_status=1
+        if d[1]['ht']==1:
+            Health.objects.filter(patient_uuid=pts.uuid).update(ht_status=d[1]['ht'],ht_year=d[1]['ht_since'],ht_detected_by=d[1]['detected_by_ht'])
+        if d[1]['ht']==2:
+            Health.objects.filter(patient_uuid=pts.uuid).update(ht_status=d[1]['ht'],pht_year=d[1]['ht_since'],pht_detected_by=d[1]['detected_by_ht'])
+        if d[1]['dm']==1:
+            Health.objects.filter(patient_uuid=pts.uuid).update(dm_status=d[1]['dm'],dm_year=d[1]['dm_since'],dm_detected_by=d[1]['detected_by_dm'])
+        if d[1]['dm']==2:
+            Health.objects.filter(patient_uuid=pts.uuid).update(dm_status=d[1]['dm'],pdm_year=d[1]['dm_since'],pdm_detected_by=d[1]['detected_by_dm'])
+        
         Health.objects.filter(patient_uuid=pts.uuid).update(pht_year= None if pd.isna(d[1]['ht_since']) else d[1]['ht_since'],pdm_year= None if pd.isna(d[1]['dm_since']) else d[1]['dm_since'],ht_detected_by=d[1]['detected_by_ht'],dm_detected_by=d[1]['detected_by_dm'],ht_years= None if pd.isna(d[1]['ht_since']) else d[1]['ht_since'],dm_years= None if pd.isna(d[1]['dm_since']) else d[1]['dm_since'],ht_status=ht_status,dm_status=dm_status)
 
 from master_data.models import *
@@ -427,10 +424,56 @@ from sims.models import *
 partner_list = Patients.objects.values('name','village_id').annotate(Count('id')).order_by('name','village').filter(status=2, id__count__gt=1)
 pnt_list = Patients.objects.filter(village__id__in=[pl['village_id'] for pl in partner_list], name__in=[pl['name'] for pl in partner_list]).order_by('name','village')
 
-from csv import writer
 with open('duplicate2_list.csv', 'a') as f_object:
     writer_object = writer(f_object)
     writer_object.writerow(['Village','Name', 'Patient ID'])
     for i in pnt_list:
         writer_object.writerow([i.village,i.name,i.patient_id])
     f_object.close()
+
+from health_management.models import *
+from csv import writer
+pts = Patients.objects.filter(village_id=15).values_list('uuid',flat=True)
+dgs = Diagnosis.objects.filter(patient_uuid__in=pts,ndc_id__in=[9,7,8,5])
+with open('choodahalli_list.csv', 'a') as f_object:
+    writer_object = writer(f_object)
+    writer_object.writerow(['Village','Name', 'Patient ID', 'NCD','Detected by', 'Source treatment','Detected Years'])
+    for i in dgs:
+        pgs_list = Patients.objects.filter(uuid=i.patient_uuid).first()
+        writer_object.writerow([pgs_list.village.name,pgs_list.name,pgs_list.patient_id,i.ndc,i.detected_by,i.source_treatment,i.detected_years])
+    f_object.close()
+
+
+from health_management.models import *
+import pandas as pd
+
+df = pd.read_excel(r'/home/sb030/Downloads/icfnpdf.xlsx')
+for d in df.iterrows():
+    {"name": d[0]['pan_no'], "name": d[0]['name']}
+
+from health_management.models import *
+heath_data = Health.objects.filter()
+for hd in heath_data:
+    Health.objects.filter(id=hd.id).update(pdm_year=None,pdm_source_treatment=0,pdm_detected_by=0,dm_year=None,dm_source_treatment=0,dm_detected_by=0, pht_year=None,pht_source_treatment=0,pht_detected_by=0,ht_year=None,ht_source_treatment=0,ht_detected_by=0)
+
+hp_list = HealthProfile.objects.filter()
+for hp in hp_list:
+    pts = Patients.objects.filter(patient_id=hp.code, status=2).first()
+    if pts:
+        if hp.diagnosis_ht == 1:
+            Health.objects.filter(patient_uuid=pts.uuid).update(ht_year=hp.detected_since_ht,ht_detected_by=hp.detected_by_ht)
+        if hp.diagnosis_ht == 2:
+            Health.objects.filter(patient_uuid=pts.uuid).update(pht_year=hp.detected_since_ht,pht_detected_by=hp.detected_by_ht)
+        if hp.diagnosis_dm == 1:
+            Health.objects.filter(patient_uuid=pts.uuid).update(dm_year=hp.detected_since_dm,dm_detected_by=hp.detected_by_dm)
+        if hp.diagnosis_dm == 2:
+            Health.objects.filter(patient_uuid=pts.uuid).update(dm_year=hp.detected_since_dm,pdm_detected_by=hp.detected_by_dm)
+    
+
+
+
+
+
+
+
+
