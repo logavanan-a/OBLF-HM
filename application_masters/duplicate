@@ -467,7 +467,7 @@ for hp in hp_list:
         if hp.diagnosis_dm == 1:
             Health.objects.filter(patient_uuid=pts.uuid).update(dm_year=hp.detected_since_dm,dm_detected_by=hp.detected_by_dm)
         if hp.diagnosis_dm == 2:
-            Health.objects.filter(patient_uuid=pts.uuid).update(dm_year=hp.detected_since_dm,pdm_detected_by=hp.detected_by_dm)
+            Health.objects.filter(patient_uuid=pts.uuid).update(pdm_year=hp.detected_since_dm,pdm_detected_by=hp.detected_by_dm)
     
 
 

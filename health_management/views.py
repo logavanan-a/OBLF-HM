@@ -2135,11 +2135,11 @@ def prevelance_of_ncd_list(request):
     # '''+phc_id+sbc_ids+village_id+between_date+'''
     cursor = connection.cursor()
     cursor.execute('''with a as (select phc.name as phc_name, sbc.name as sbc_name, vlg.name as vlg_name, coalesce(sum(case when date_part('year',age(dob))<30 and gender=1 and (hlt.ht_year is not null or hlt.pht_year is not null or hlt.dm_year is not null or hlt.pdm_year is not null) then 1 else 0 end),0) as men_less_30, 
-    coalesce(sum(case when date_part('year',age(dob))<30 and gender=2 and (hlt.ht_year is not null or hlt.pht_year is not null or hlt.dm_year is not null or hlt.pdm_year is not null) then 1 else 0 end),0) as female_less_30,
-    coalesce(sum(case when date_part('year',age(dob))>=30 and date_part('year',age(dob))<=50 and gender=1 and (hlt.ht_year is not null or hlt.pht_year is not null or hlt.dm_year is not null or hlt.pdm_year is not null) then 1 else 0 end),0) as men_30_between_50_age, 
-    coalesce(sum(case when date_part('year',age(dob))>=30 and date_part('year',age(dob))<=50 and gender=2 and (hlt.ht_year is not null or hlt.pht_year is not null or hlt.dm_year is not null or hlt.pdm_year is not null) then 1 else 0 end),0) as female_30_between_50_age, 
-    coalesce(sum(case when date_part('year',age(dob))>50 and gender=1 and (hlt.ht_year is not null or hlt.pht_year is not null or hlt.dm_year is not null or hlt.pdm_year is not null) then 1 else 0 end),0) as men_greater_50, 
-    coalesce(sum(case when date_part('year',age(dob))>50 and gender=2 and (hlt.ht_year is not null or hlt.pht_year is not null or hlt.dm_year is not null or hlt.pdm_year is not null) then 1 else 0 end),0) as female_greater_50
+    coalesce(sum(case when date_part('year',age(dob))<30 and gender=2 and (hlt.ht_year is not null or hlt.dm_year is not null) then 1 else 0 end),0) as female_less_30,
+    coalesce(sum(case when date_part('year',age(dob))>=30 and date_part('year',age(dob))<=50 and gender=1 and (hlt.ht_year is not null or hlt.dm_year is not null) then 1 else 0 end),0) as men_30_between_50_age, 
+    coalesce(sum(case when date_part('year',age(dob))>=30 and date_part('year',age(dob))<=50 and gender=2 and (hlt.ht_year is not null or hlt.dm_year is not null) then 1 else 0 end),0) as female_30_between_50_age, 
+    coalesce(sum(case when date_part('year',age(dob))>50 and gender=1 and (hlt.ht_year is not null or hlt.dm_year is not null) then 1 else 0 end),0) as men_greater_50, 
+    coalesce(sum(case when date_part('year',age(dob))>50 and gender=2 and (hlt.ht_year is not null or hlt.dm_year is not null) then 1 else 0 end),0) as female_greater_50
     from health_management_health hlt inner join health_management_patients pt on pt.uuid = hlt.patient_uuid and pt.status=2 inner join application_masters_village vlg on pt.village_id = vlg.id 
     inner join application_masters_subcenter sbc on vlg.subcenter_id = sbc.id 
     inner join application_masters_phc phc on sbc.phc_id = phc.id where 1=1 '''+phc_id+sbc_ids+village_id+between_date+''' 
