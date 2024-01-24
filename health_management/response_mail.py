@@ -16,35 +16,35 @@ def survey_responses():
     current_month = datetime.date.today().replace(day=1)
     patients = Patients.objects.filter(status=2)
     py_c = patients.filter(server_created_on__date=prev_day)
-    py_m = patients.filter(server_modified_on__date=prev_day).exclude(id__in=py_c.values_list('id', flat=True),server_modified_on__date__in=py_c.values_list('server_created_on__date', flat=True), server_modified_on__hour__in=py_c.values_list('server_created_on__hour', flat=True), server_modified_on__minute__in=py_c.values_list('server_created_on__minute', flat=True))
+    py_m = [pt.id for pt in patients.filter(server_modified_on__date=prev_day) if pt.server_created_on.strftime("%Y-%m-%d %H:%M:%S") != pt.server_modified_on.strftime("%Y-%m-%d %H:%M:%S")]
     pcw_c = patients.filter(server_created_on__date__range=[current_week,prev_day])
-    pcw_m = patients.filter(server_modified_on__date__range=[current_week,prev_day]).exclude(id__in=pcw_c.values_list('id', flat=True), server_modified_on__date__in=pcw_c.values_list('server_created_on__date', flat=True), server_modified_on__hour__in=pcw_c.values_list('server_created_on__hour', flat=True), server_modified_on__minute__in=pcw_c.values_list('server_created_on__minute', flat=True))
+    pcw_m = [pt.id for pt in patients.filter(server_modified_on__date__range=[current_week,prev_day]) if pt.server_created_on.strftime("%Y-%m-%d %H:%M:%S") != pt.server_modified_on.strftime("%Y-%m-%d %H:%M:%S")]
     pcm_c = patients.filter(server_created_on__date__range=[current_month,prev_day])
-    pcm_m = patients.filter(server_modified_on__date__range=[current_month,prev_day]).exclude(id__in=pcm_c.values_list('id', flat=True), server_modified_on__date__in=pcm_c.values_list('server_created_on__date', flat=True), server_modified_on__hour__in=pcm_c.values_list('server_created_on__hour', flat=True), server_modified_on__minute__in=pcm_c.values_list('server_created_on__minute', flat=True))
+    pcm_m = [pt.id for pt in patients.filter(server_modified_on__date__range=[current_month,prev_day]) if pt.server_created_on.strftime("%Y-%m-%d %H:%M:%S") != pt.server_modified_on.strftime("%Y-%m-%d %H:%M:%S")]
 
     treatments = Treatments.objects.filter(status=2, patient_uuid__in=patients.values_list('uuid', flat=True))
     ty_c = treatments.filter(server_created_on__date=prev_day)
-    ty_m = treatments.filter(server_modified_on__date=prev_day).exclude(id__in=ty_c.values_list('id', flat=True), server_modified_on__date__in=ty_c.values_list('server_created_on__date', flat=True), server_modified_on__hour__in=ty_c.values_list('server_created_on__hour', flat=True), server_modified_on__minute__in=ty_c.values_list('server_created_on__minute', flat=True))
+    ty_m = [tm.id for tm in treatments.filter(server_modified_on__date=prev_day) if tm.server_created_on.strftime("%Y-%m-%d %H:%M:%S") != tm.server_modified_on.strftime("%Y-%m-%d %H:%M:%S")]
     tcw_c = treatments.filter(server_created_on__date__range=[current_week,prev_day])
-    tcw_m = treatments.filter(server_modified_on__date__range=[current_week,prev_day]).exclude(id__in=tcw_c.values_list('id', flat=True), server_modified_on__date__in=tcw_c.values_list('server_created_on__date', flat=True), server_modified_on__hour__in=tcw_c.values_list('server_created_on__hour', flat=True), server_modified_on__minute__in=tcw_c.values_list('server_created_on__minute', flat=True))
+    tcw_m = [tm.id for tm in treatments.filter(server_modified_on__date__range=[current_week,prev_day]) if tm.server_created_on.strftime("%Y-%m-%d %H:%M:%S") != tm.server_modified_on.strftime("%Y-%m-%d %H:%M:%S")]
     tcm_c = treatments.filter(server_created_on__date__range=[current_month,prev_day])
-    tcm_m = treatments.filter(server_modified_on__date__range=[current_month,prev_day]).exclude(id__in=tcm_c.values_list('id', flat=True), server_modified_on__date__in=tcm_c.values_list('server_created_on__date', flat=True), server_modified_on__hour__in=tcm_c.values_list('server_created_on__hour', flat=True), server_modified_on__minute__in=tcm_c.values_list('server_created_on__minute', flat=True))
+    tcm_m = [tm.id for tm in treatments.filter(server_modified_on__date__range=[current_month,prev_day]) if tm.server_created_on.strftime("%Y-%m-%d %H:%M:%S") != tm.server_modified_on.strftime("%Y-%m-%d %H:%M:%S")]
 
     health = Health.objects.filter(status=2, patient_uuid__in=patients.values_list('uuid', flat=True))
     hy_c = health.filter(server_created_on__date=prev_day)
-    hy_m = health.filter(server_modified_on__date=prev_day).exclude(id__in=hy_c.values_list('id', flat=True),  server_modified_on__date__in=hy_c.values_list('server_created_on__date', flat=True), server_modified_on__hour__in=hy_c.values_list('server_created_on__hour', flat=True), server_modified_on__minute__in=hy_c.values_list('server_created_on__minute', flat=True))
+    hy_m = [hc.id for hc in health.filter(server_modified_on__date=prev_day) if hc.server_created_on.strftime("%Y-%m-%d %H:%M:%S") != hc.server_modified_on.strftime("%Y-%m-%d %H:%M:%S")]
     hcw_c = health.filter(server_created_on__date__range=[current_week,prev_day])
-    hcw_m = health.filter(server_modified_on__date__range=[current_week,prev_day]).exclude(id__in=hcw_c.values_list('id', flat=True), server_modified_on__date__in=hcw_c.values_list('server_created_on__date', flat=True), server_modified_on__hour__in=hcw_c.values_list('server_created_on__hour', flat=True), server_modified_on__minute__in=hcw_c.values_list('server_created_on__minute', flat=True))
+    hcw_m = [hc.id for hc in health.filter(server_modified_on__date__range=[current_week,prev_day]) if hc.server_created_on.strftime("%Y-%m-%d %H:%M:%S") != hc.server_modified_on.strftime("%Y-%m-%d %H:%M:%S")]
     hcm_c = health.filter(server_created_on__date__range=[current_month,prev_day])
-    hcm_m = health.filter(server_modified_on__date__range=[current_month,prev_day]).exclude(id__in=hcm_c.values_list('id', flat=True), server_modified_on__date__in=hcm_c.values_list('server_created_on__date', flat=True), server_modified_on__hour__in=hcm_c.values_list('server_created_on__hour', flat=True), server_modified_on__minute__in=hcm_c.values_list('server_created_on__minute', flat=True))
+    hcm_m = [hc.id for hc in health.filter(server_modified_on__date__range=[current_month,prev_day]) if hc.server_created_on.strftime("%Y-%m-%d %H:%M:%S") != hc.server_modified_on.strftime("%Y-%m-%d %H:%M:%S")]
 
     prescription = Prescription.objects.filter(status=2, treatment_uuid__in=treatments.values_list('uuid', flat=True))
     pcy_c = prescription.filter(server_created_on__date=prev_day)
-    pcy_m = prescription.filter(server_modified_on__date=prev_day).exclude(id__in=pcy_c.values_list('id', flat=True), server_modified_on__date__in=pcy_c.values_list('server_created_on__date', flat=True), server_modified_on__hour__in=pcy_c.values_list('server_created_on__hour', flat=True), server_modified_on__minute__in=pcy_c.values_list('server_created_on__minute', flat=True))
+    pcy_m = [pc.id for pc in prescription.filter(server_modified_on__date=prev_day) if pc.server_created_on.strftime("%Y-%m-%d %H:%M:%S") != pc.server_modified_on.strftime("%Y-%m-%d %H:%M:%S")]
     pccw_c = prescription.filter(server_created_on__date__range=[current_week,prev_day])
-    pccw_m = prescription.filter(server_modified_on__date__range=[current_week,prev_day]).exclude(id__in=pccw_c.values_list('id', flat=True), server_modified_on__date__in=pccw_c.values_list('server_created_on__date', flat=True), server_modified_on__hour__in=pccw_c.values_list('server_created_on__hour', flat=True), server_modified_on__minute__in=pccw_c.values_list('server_created_on__minute', flat=True))
+    pccw_m = [pc.id for pc in prescription.filter(server_modified_on__date__range=[current_week,prev_day]) if pc.server_created_on.strftime("%Y-%m-%d %H:%M:%S") != pc.server_modified_on.strftime("%Y-%m-%d %H:%M:%S")]
     pccm_c = prescription.filter(server_created_on__date__range=[current_month,prev_day])
-    pccm_m = prescription.filter(server_modified_on__date__range=[current_month,prev_day]).exclude(id__in=pccm_c.values_list('id', flat=True), server_modified_on__date__in=pccm_c.values_list('server_created_on__date', flat=True), server_modified_on__hour__in=pccm_c.values_list('server_created_on__hour', flat=True), server_modified_on__minute__in=pccm_c.values_list('server_created_on__minute', flat=True))
+    pccm_m = [pc.id for pc in prescription.filter(server_modified_on__date__range=[current_month,prev_day]) if pc.server_created_on.strftime("%Y-%m-%d %H:%M:%S") != pc.server_modified_on.strftime("%Y-%m-%d %H:%M:%S")]
 
     diagnosis = Diagnosis.objects.filter(status=2)
     dy_c = diagnosis.filter(server_created_on__date=prev_day)
@@ -54,38 +54,40 @@ def survey_responses():
     dcm_c = diagnosis.filter(server_created_on__date__range=[current_month,prev_day])
     dcm_m = diagnosis.filter(server_modified_on__date__range=[current_month,prev_day]).exclude(id__in=dcm_c.values_list('id', flat=True), server_modified_on__date__in=dcm_c.values_list('server_created_on__date', flat=True), server_modified_on__hour__in=dcm_c.values_list('server_created_on__hour', flat=True), server_modified_on__minute__in=dcm_c.values_list('server_created_on__minute', flat=True))
 
+
     scanned_report = Scanned_Report.objects.filter(status=2,patient_uuid__in=patients.values_list('uuid', flat=True))
     sry_c = scanned_report.filter(server_created_on__date=prev_day)
-    sry_m = scanned_report.filter(server_modified_on__date=prev_day).exclude(id__in=sry_c.values_list('id', flat=True), server_modified_on__date__in=sry_c.values_list('server_created_on__date', flat=True), server_modified_on__hour__in=sry_c.values_list('server_created_on__hour', flat=True), server_modified_on__minute__in=sry_c.values_list('server_created_on__minute', flat=True))
+    sry_m = [sc.id for sc in scanned_report.filter(server_modified_on__date=prev_day) if sc.server_created_on.strftime("%Y-%m-%d %H:%M:%S") != sc.server_modified_on.strftime("%Y-%m-%d %H:%M:%S")]
     srcw_c = scanned_report.filter(server_created_on__date__range=[current_week,prev_day])
-    srcw_m = scanned_report.filter(server_modified_on__date__range=[current_week,prev_day]).exclude(id__in=srcw_c.values_list('id', flat=True), server_modified_on__date__in=srcw_c.values_list('server_created_on__date', flat=True), server_modified_on__hour__in=srcw_c.values_list('server_created_on__hour', flat=True), server_modified_on__minute__in=srcw_c.values_list('server_created_on__minute', flat=True))
+    srcw_m = [sc.id for sc in scanned_report.filter(server_modified_on__date__range=[current_week,prev_day]) if sc.server_created_on.strftime("%Y-%m-%d %H:%M:%S") != sc.server_modified_on.strftime("%Y-%m-%d %H:%M:%S")]
     srcm_c = scanned_report.filter(server_created_on__date__range=[current_month,prev_day])
-    srcm_m = scanned_report.filter(server_modified_on__date__range=[current_month,prev_day]).exclude(id__in=srcm_c.values_list('id', flat=True), server_modified_on__date__in=srcm_c.values_list('server_created_on__date', flat=True), server_modified_on__hour__in=srcm_c.values_list('server_created_on__hour', flat=True), server_modified_on__minute__in=srcm_c.values_list('server_created_on__minute', flat=True))
+    srcm_m = [sc.id for sc in scanned_report.filter(server_modified_on__date__range=[current_month,prev_day]) if sc.server_created_on.strftime("%Y-%m-%d %H:%M:%S") != sc.server_modified_on.strftime("%Y-%m-%d %H:%M:%S")]
 
     home_visit = HomeVisit.objects.filter(status=2,patient_uuid__in=patients.values_list('uuid', flat=True))
     hvy_c = home_visit.filter(server_created_on__date=prev_day)
-    hvy_m = home_visit.filter(server_modified_on__date=prev_day).exclude(id__in=hvy_c.values_list('id', flat=True), server_modified_on__date__in=hvy_c.values_list('server_created_on__date', flat=True), server_modified_on__hour__in=hvy_c.values_list('server_created_on__hour', flat=True), server_modified_on__minute__in=hvy_c.values_list('server_created_on__minute', flat=True))
+    hvy_m = [fv.id for fv in home_visit.filter(server_modified_on__date=prev_day) if fv.server_created_on.strftime("%Y-%m-%d %H:%M:%S") != fv.server_modified_on.strftime("%Y-%m-%d %H:%M:%S")]
     hvcw_c = home_visit.filter(server_created_on__date__range=[current_week,prev_day])
-    hvcw_m = home_visit.filter(server_modified_on__date__range=[current_week,prev_day]).exclude(id__in=hvcw_c.values_list('id', flat=True), server_modified_on__date__in=hvcw_c.values_list('server_created_on__date', flat=True), server_modified_on__hour__in=hvcw_c.values_list('server_created_on__hour', flat=True), server_modified_on__minute__in=hvcw_c.values_list('server_created_on__minute', flat=True))
+    hvcw_m = [fv.id for fv in home_visit.filter(server_modified_on__date__range=[current_week,prev_day]) if fv.server_created_on.strftime("%Y-%m-%d %H:%M:%S") != fv.server_modified_on.strftime("%Y-%m-%d %H:%M:%S")]
     hvcm_c = home_visit.filter(server_created_on__date__range=[current_month,prev_day])
-    hvcm_m = home_visit.filter(server_modified_on__date__range=[current_month,prev_day]).exclude(id__in=hvcm_c.values_list('id', flat=True), server_modified_on__date__in=hvcm_c.values_list('server_created_on__date', flat=True), server_modified_on__hour__in=hvcm_c.values_list('server_created_on__hour', flat=True), server_modified_on__minute__in=hvcm_c.values_list('server_created_on__minute', flat=True))
+    hvcm_m = [fv.id for fv in home_visit.filter(server_modified_on__date__range=[current_month,prev_day]) if fv.server_created_on.strftime("%Y-%m-%d %H:%M:%S") != fv.server_modified_on.strftime("%Y-%m-%d %H:%M:%S")]
+
 
     fee_payement = FeePayement.objects.filter(status=2,patient_uuid__in=patients.values_list('uuid', flat=True))
     fpy_c = fee_payement.filter(server_created_on__date=prev_day)
-    fpy_m = fee_payement.filter(server_modified_on__date=prev_day).exclude(id__in=fpy_c.values_list('id', flat=True), server_modified_on__date__in=fpy_c.values_list('server_created_on__date', flat=True), server_modified_on__hour__in=fpy_c.values_list('server_created_on__hour', flat=True), server_modified_on__minute__in=fpy_c.values_list('server_created_on__minute', flat=True))
+    fpy_m = [fp.id for fp in fee_payement.filter(server_modified_on__date=prev_day) if fp.server_created_on.strftime("%Y-%m-%d %H:%M:%S") != fp.server_modified_on.strftime("%Y-%m-%d %H:%M:%S")]
     fpcw_c = fee_payement.filter(server_created_on__date__range=[current_week,prev_day])
-    fpcw_m = fee_payement.filter(server_modified_on__date__range=[current_week,prev_day]).exclude(id__in=fpcw_c.values_list('id', flat=True), server_modified_on__date__in=fpcw_c.values_list('server_created_on__date', flat=True), server_modified_on__hour__in=fpcw_c.values_list('server_created_on__hour', flat=True), server_modified_on__minute__in=fpcw_c.values_list('server_created_on__minute', flat=True))
+    fpcw_m = [fp.id for fp in fee_payement.filter(server_modified_on__date__range=[current_month,prev_day]) if fp.server_created_on.strftime("%Y-%m-%d %H:%M:%S") != fp.server_modified_on.strftime("%Y-%m-%d %H:%M:%S")]
     fpcm_c = fee_payement.filter(server_created_on__date__range=[current_month,prev_day])
-    fpcm_m = fee_payement.filter(server_modified_on__date__range=[current_month,prev_day]).exclude(id__in=fpcm_c.values_list('id', flat=True), server_modified_on__date__in=fpcm_c.values_list('server_created_on__date', flat=True), server_modified_on__hour__in=fpcm_c.values_list('server_created_on__hour', flat=True), server_modified_on__minute__in=fpcm_c.values_list('server_created_on__minute', flat=True))
+    fpcm_m = [fp.id for fp in fee_payement.filter(server_modified_on__date__range=[current_month,prev_day]) if fp.server_created_on.strftime("%Y-%m-%d %H:%M:%S") != fp.server_modified_on.strftime("%Y-%m-%d %H:%M:%S")]
    
     form_column = [
-    {"name":"Patient", "y_c": py_c.count(), "y_m": py_m.count(), "cw_c": pcw_c.count(), "cw_m": pcw_m.count(), "cm_c": pcm_c.count(), "cm_m": pcm_m.count(), "t": patients.count()},
-    {"name":"Treatment", "y_c": ty_c.count(), "y_m": ty_m.count(), "cw_c": tcw_c.count(), "cw_m": tcw_m.count(), "cm_c": tcm_c.count(), "cm_m": tcm_m.count(), "t": treatments.count()},
-    {"name":"Health", "y_c": hy_c.count(), "y_m": hy_m.count(), "cw_c": hcw_c.count(), "cw_m": hcw_m.count(), "cm_c": hcm_c.count(), "cm_m": hcm_m.count(), "t": health.count()},
-    {"name":"Prescription", "y_c": pcy_c.count(), "y_m": pcy_m.count(), "cw_c": pccw_c.count(), "cw_m": pccw_m.count(), "cm_c": pccm_c.count(), "cm_m": pccm_m.count(), "t": prescription.count()},
-    {"name":"Scanned Report", "y_c": sry_c.count(), "y_m": sry_m.count(), "cw_c": srcw_c.count(), "cw_m": srcw_m.count(), "cm_c": srcm_c.count(), "cm_m": srcm_m.count(), "t": scanned_report.count()},
-    {"name":"Home Visit", "y_c": hvy_c.count(), "y_m": hvy_m.count(), "cw_c": hvcw_c.count(), "cw_m": hvcw_m.count(), "cm_c": hvcm_c.count(), "cm_m": hvcm_m.count(), "t": home_visit.count()},
-    {"name":"Fee Payement", "y_c": fpy_c.count(), "y_m": fpy_m.count(), "cw_c": fpcw_c.count(), "cw_m": fpcw_m.count(), "cm_c": fpcm_c.count(), "cm_m": fpcm_m.count(), "t": fee_payement.count()},
+    {"name":"Patient", "y_c": py_c.count(), "y_m": len(py_m), "cw_c": pcw_c.count(), "cw_m": len(pcw_m), "cm_c": pcm_c.count(), "cm_m": len(pcm_m), "t": patients.count()},
+    {"name":"Treatment", "y_c": ty_c.count(), "y_m": len(ty_m), "cw_c": tcw_c.count(), "cw_m": len(tcw_m), "cm_c": tcm_c.count(), "cm_m": len(tcm_m), "t": treatments.count()},
+    {"name":"Health", "y_c": hy_c.count(), "y_m": len(hy_m), "cw_c": hcw_c.count(), "cw_m": len(hcw_m), "cm_c": hcm_c.count(), "cm_m": len(hcm_m), "t": health.count()},
+    {"name":"Prescription", "y_c": pcy_c.count(), "y_m": len(pcy_m), "cw_c": pccw_c.count(), "cw_m": len(pccw_m), "cm_c": pccm_c.count(), "cm_m": len(pccm_m), "t": prescription.count()},
+    {"name":"Scanned Report", "y_c": sry_c.count(), "y_m": len(sry_m), "cw_c": srcw_c.count(), "cw_m": len(srcw_m), "cm_c": srcm_c.count(), "cm_m": len(srcm_m), "t": scanned_report.count()},
+    {"name":"Home Visit", "y_c": hvy_c.count(), "y_m": len(hvy_m), "cw_c": hvcw_c.count(), "cw_m": len(hvcw_m), "cm_c": hvcm_c.count(), "cm_m": len(hvcm_m), "t": home_visit.count()},
+    {"name":"Fee Payement", "y_c": fpy_c.count(), "y_m": len(fpy_m), "cw_c": fpcw_c.count(), "cw_m": len(fpcw_m), "cm_c": fpcm_c.count(), "cm_m": len(fpcm_m), "t": fee_payement.count()},
     ]
 
         

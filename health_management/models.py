@@ -137,6 +137,7 @@ class Health(BaseContent):
     dm_years = models.DateField(null=True, blank=True)
     ht_years = models.DateField(null=True, blank=True)
 
+
     #new
     pdm_year = models.DateField(null=True, blank=True)
     dm_year = models.DateField(null=True, blank=True)
@@ -410,6 +411,11 @@ class HealthProfile(BaseContent):
     detected_since_dm = models.DateField(max_length=150, null=True, blank=True)
     diagnosis_dm = models.IntegerField(null=True, blank=True)
     sot_dm = models.IntegerField(null=True, blank=True)
+    is_alcoholic = models.IntegerField(default=0)
+    is_tobacco = models.IntegerField(default=0)
+    is_smoker = models.IntegerField(default=0)
+    hyper_diabetic = models.IntegerField(default=0)
+    co_morbidities = models.CharField(max_length=1000, null=True, blank=True)
     
     def __str__(self):
         return self.code

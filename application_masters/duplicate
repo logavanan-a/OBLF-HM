@@ -451,23 +451,38 @@ df = pd.read_excel(r'/home/sb030/Downloads/icfnpdf.xlsx')
 for d in df.iterrows():
     {"name": d[0]['pan_no'], "name": d[0]['name']}
 
-from health_management.models import *
+Health.objects.filter(server_created_on__date='2024-01-24').delete()
 heath_data = Health.objects.filter()
 for hd in heath_data:
     Health.objects.filter(id=hd.id).update(pdm_year=None,pdm_source_treatment=0,pdm_detected_by=0,dm_year=None,dm_source_treatment=0,dm_detected_by=0, pht_year=None,pht_source_treatment=0,pht_detected_by=0,ht_year=None,ht_source_treatment=0,ht_detected_by=0)
 
+from health_management.models import *
 hp_list = HealthProfile.objects.filter()
+hel = []
 for hp in hp_list:
-    pts = Patients.objects.filter(patient_id=hp.code, status=2).first()
+    pts = Patients.objects.filter(patient_id=hp.code).first()
     if pts:
-        if hp.diagnosis_ht == 1:
-            Health.objects.filter(patient_uuid=pts.uuid).update(ht_year=hp.detected_since_ht,ht_detected_by=hp.detected_by_ht)
-        if hp.diagnosis_ht == 2:
-            Health.objects.filter(patient_uuid=pts.uuid).update(pht_year=hp.detected_since_ht,pht_detected_by=hp.detected_by_ht)
-        if hp.diagnosis_dm == 1:
-            Health.objects.filter(patient_uuid=pts.uuid).update(dm_year=hp.detected_since_dm,dm_detected_by=hp.detected_by_dm)
-        if hp.diagnosis_dm == 2:
-            Health.objects.filter(patient_uuid=pts.uuid).update(pdm_year=hp.detected_since_dm,pdm_detected_by=hp.detected_by_dm)
+        if not Health.objects.filter(patient_uuid=pts.uuid).exists():
+            import uuid
+            import datetime
+            curr_dt = datetime.datetime.now().strftime("%Y%m%d%H%M%S%f")
+            uuid_id = str(curr_dt) + "-" + str(uuid.uuid4())
+            health_obj = Health.objects.create(uuid=uuid_id, 
+            patient_uuid=pts.uuid)  
+            health_obj.save()
+        else:
+            if hp.diagnosis_ht == 1:
+                Health.objects.filter(patient_uuid=pts.uuid).update(ht_year=hp.detected_since_ht,ht_detected_by=hp.detected_by_ht, is_alcoholic=hp.is_alcoholic,is_tobacco=hp.is_tobacco, is_smoker=hp.is_smoker, hyper_diabetic=hp.hyper_diabetic)
+            if hp.diagnosis_ht == 2:
+                Health.objects.filter(patient_uuid=pts.uuid).update(pht_year=hp.detected_since_ht,pht_detected_by=hp.detected_by_ht, is_alcoholic=hp.is_alcoholic,is_tobacco=hp.is_tobacco, is_smoker=hp.is_smoker, hyper_diabetic=hp.hyper_diabetic)
+            if hp.diagnosis_dm == 1:
+                Health.objects.filter(patient_uuid=pts.uuid).update(dm_year=hp.detected_since_dm,dm_detected_by=hp.detected_by_dm, is_alcoholic=hp.is_alcoholic,is_tobacco=hp.is_tobacco, is_smoker=hp.is_smoker, hyper_diabetic=hp.hyper_diabetic)
+            if hp.diagnosis_dm == 2:
+                Health.objects.filter(patient_uuid=pts.uuid).update(pdm_year=hp.detected_since_dm,pdm_detected_by=hp.detected_by_dm, is_alcoholic=hp.is_alcoholic,is_tobacco=hp.is_tobacco, is_smoker=hp.is_smoker, hyper_diabetic=hp.hyper_diabetic)
+    else:
+        hel.append(hp.code)
+len(hel)  
+hel   
     
 
 
