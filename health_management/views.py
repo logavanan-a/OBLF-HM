@@ -83,7 +83,50 @@ def logout_view(request):
 
 @login_required(login_url='/login/')
 def deactivate_patient_profile_detail(request):
-    heading="Patients detail"
+    heading="Deactivated Patients detail"
+    filter_values = request.GET.dict()
+    from dateutil.relativedelta import relativedelta
+    patient_value = True
+    phc_obj = PHC.objects.filter(status=2).order_by('name')
+    phc = request.GET.get('phc', '')
+    sub_center = request.GET.get('sub_center', '')
+    village = request.GET.get('village', '')
+    patient_name = request.GET.get('patient_name', '')
+    phc_ids = int(phc) if phc != '' else ''
+    sub_center_ids = int(sub_center) if sub_center != '' else ''
+    village_ids = int(village) if village != '' else ''
+    start_filter = request.GET.get('start_filter', '')
+    end_filter = request.GET.get('end_filter', '')
+    s_date=''
+    e_date=''
+    between_date = ""
+    if start_filter != '':
+        s_date = start_filter
+        e_date = end_filter
+        between_date = """and (pt.registered_date at time zone 'Asia/Kolkata')::date >= '"""+s_date + \
+            """' and (pt.registered_date at time zone 'Asia/Kolkata')::date <= '""" + \
+            e_date+"""' """
+    phc_id=""
+    if phc_ids:
+        get_phc_name = PHC.objects.get(id=phc_ids)
+        sub_center_obj = Subcenter.objects.filter(status=2, phc__id=phc_ids).order_by('name')
+        phc_id = '''and phc.id='''+phc
+    sbc_ids= ""
+    if sub_center_ids:
+        get_sbc_name = Subcenter.objects.get(id=sub_center_ids)
+        village_obj = Village.objects.filter(status=2, subcenter__id=sub_center_ids).order_by('name')
+        sbc_ids = '''and sbc.id='''+sub_center
+    village_id=""
+    if village_ids:
+        get_village_name = Village.objects.get(id=village_ids)
+        village_id = '''and vlg.id='''+village
+    pnt_name=""
+    pnt_code=""
+    if patient_name:
+        format_name = "'%"+patient_name+"%'"
+        pnt_name = '''and pt.name ilike '''+format_name
+        pnt_code = '''or pt.patient_id ilike '''+format_name
+    
     # sql='''select distinct on (pt.patient_id) pt.patient_id, phc.name as phc_name, 
     # sbc.name as sbc_name, vlg.name as village_name, pt.name as patient_name, 
     # pt.registered_date, date_part('year',age(pt.dob))::int as age, 
@@ -145,7 +188,7 @@ def deactivate_patient_profile_detail(request):
     left join health_management_treatments trmt on pt.uuid=trmt.patient_uuid 
     left join health_management_health hlt on pt.uuid=hlt.patient_uuid 
     left join b on trmt.uuid=b.ptn
-    where 1=1 and pt.status=1
+    where 1=1 and pt.status=1 '''+phc_id+sbc_ids+village_id+between_date+pnt_name+pnt_code+'''
     order by pt.patient_id, (trmt.visit_date at time zone 'Asia/Kolkata')::date desc'''
     patient_data = SqlHeader(sql2)
     data = pagination_function(request, patient_data)
