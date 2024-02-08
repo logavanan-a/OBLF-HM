@@ -20,7 +20,7 @@ class Patients(BaseContent):
         )
     uuid = models.CharField(max_length=150, unique =True, blank=True, null=True, db_index=True)
     user_uuid = models.CharField(max_length=150, null=True, blank=True, db_index=True)
-    patient_id = models.CharField(max_length=150, blank=True, null=True, unique =True, db_index=True)
+    patient_id = models.CharField(max_length=150, blank=True, null=True, db_index=True)
     name = models.CharField(max_length=150)
     dob = models.DateField(blank=True, null=True)
     # age = models.PositiveIntegerField(blank=True, null=True)
