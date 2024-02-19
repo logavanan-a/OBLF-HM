@@ -1709,7 +1709,7 @@ def patient_registration_report(request):
     left join application_masters_medicines md on pst.medicines_id=md.id 
     left join health_management_diagnosis dgs on pt.uuid=dgs.patient_uuid 
     left join application_masters_masterlookup ndc on dgs.ndc_id=ndc.id 
-    where 1=1 and pt.status=2 and pt.patient_visit_type_id=12 '''+phc_id+sbc_ids+village_id+between_date+''' 
+    where 1=1 and trmt.visit_date is not null and pt.status=2 and pt.patient_visit_type_id=12 '''+phc_id+sbc_ids+village_id+between_date+''' 
     order by pt.patient_id, trmt.visit_date desc'''
     cursor = connection.cursor()
     
@@ -1750,7 +1750,7 @@ def patient_registration_report(request):
     left join health_management_treatments trmt on pt.uuid=trmt.patient_uuid 
     left join health_management_health hlt on pt.uuid=hlt.patient_uuid 
     left join b on trmt.uuid=b.ptn
-    where pt.status=2 and pt.patient_visit_type_id=12 '''+phc_id+sbc_ids+village_id+between_date+pnt_name+pnt_code+'''
+    where trmt.visit_date is not null and pt.status=2 and pt.patient_visit_type_id=12 '''+phc_id+sbc_ids+village_id+between_date+pnt_name+pnt_code+'''
     order by pt.patient_id, (trmt.visit_date at time zone 'Asia/Kolkata')::date desc) select * from c order by v_date desc'''
     patient_data = SqlHeader(sql2)
     export_flag = True if request.POST.get('export') and request.POST.get( 'export').lower() == 'true' else False
