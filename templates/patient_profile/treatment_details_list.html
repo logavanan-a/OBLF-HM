@@ -31,9 +31,12 @@
                                 <th>Age(today)</th>
                                 <th>Gender</th>
                                 <th>Visit date</th>
+                                <th>Height</th>
+                                <th>Weight</th>
                                 <th>Controlled</th>
                                 <th>SBP</th>
                                 <th>DBP</th>
+                                <th>BMI</th>
                                 <th>Blood Sugar Fasting</th>
                                 <th>Blood Sugar PP</th>
                                 <th>Blood Sugar Random</th>
@@ -53,9 +56,12 @@
                                 <td>{{prr.age|default_if_none:'-'}}</td>
                                 <td>{{prr.gender|default_if_none:'-'}}</td>
                                 <td>{{prr.visit_date|date:"d/m/Y"|default_if_none:'-'}}</td>
+                                <td>{{prr.height|default_if_none:'-'}}</td>
+                                <td>{{prr.weight|default_if_none:'-'}}</td>
                                 <td>{{prr.controlled|default_if_none:'-'}}</td>
                                 <td>{{prr.sbp|default_if_none:'-'}}</td>
                                 <td>{{prr.dbp|default_if_none:'-'}}</td>
+                                <td>{{prr.bmi|default_if_none:'-'}}</td>
                                 <td>{{prr.fbs|default_if_none:'-'}}</td>
                                 <td>{{prr.pp|default_if_none:'-'}}</td>
                                 <td>{{prr.random|default_if_none:'-'}}</td>

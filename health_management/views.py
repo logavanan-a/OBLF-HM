@@ -175,7 +175,7 @@ def deactivate_patient_profile_detail(request):
     case when trmt.is_controlled=1 then 'YES' when trmt.is_controlled=0 then 'NO' end as controlled, 
     case when trmt.bp_sys3!='' then trmt.bp_sys3 when trmt.bp_sys2!='' then trmt.bp_sys2 when trmt.bp_sys1!='' then trmt.bp_sys1 else '-' end as sbp, 
     case when trmt.bp_non_sys3!='' then trmt.bp_non_sys3 when trmt.bp_non_sys2!='' then trmt.bp_non_sys2 when trmt.bp_non_sys1!='' then trmt.bp_non_sys1 else '-' end as dbp, 
-    trmt.fbs as fbs, trmt.pp as pp, trmt.random as random, trmt.symptoms, trmt.remarks,b.md_name, pt.id, 
+    trmt.fbs as fbs, trmt.pp as pp, trmt.bmi, trmt.weight, pt.height, trmt.random as random, trmt.symptoms, trmt.remarks,b.md_name, pt.id, 
     case when pt.status=2 then 'Active' when pt.status=1 then 'Inactive' end as status,
     case when b.md_name!='' then 'YES' else 'NO' end as m_status,
     case when (hlt.server_created_on at time zone 'Asia/Kolkata')::date is not null then 'YES' else 'NO' end as h_status,
@@ -249,7 +249,7 @@ def patient_profile_detail(request, patient_id):
     case when trmt.is_controlled=1 then 'YES' when trmt.is_controlled=0 then 'NO' end as controlled, 
     case when trmt.bp_sys3!='' then trmt.bp_sys3 when trmt.bp_sys2!='' then trmt.bp_sys2 when trmt.bp_sys1!='' then trmt.bp_sys1 else '-' end as sbp, 
     case when trmt.bp_non_sys3!='' then trmt.bp_non_sys3 when trmt.bp_non_sys2!='' then trmt.bp_non_sys2 when trmt.bp_non_sys1!='' then trmt.bp_non_sys1 else '-' end as dbp, 
-    trmt.fbs as fbs, trmt.pp as pp, trmt.random as random, trmt.symptoms, trmt.remarks,b.md_name, pt.id, 
+    trmt.fbs as fbs, trmt.pp as pp, trmt.bmi, trmt.weight, pt.height, trmt.random as random, trmt.symptoms, trmt.remarks,b.md_name, pt.id, 
     case when pt.status=2 then 'Active' when pt.status=1 then 'Inactive' end as status,
     case when b.md_name!='' then 'YES' else 'NO' end as m_status,
     case when (hlt.server_created_on at time zone 'Asia/Kolkata')::date is not null then 'YES' else 'NO' end as h_status,
@@ -361,7 +361,7 @@ def patient_profile_list(request):
     case when trmt.is_controlled=1 then 'YES' when trmt.is_controlled=0 then 'NO' end as controlled, 
     case when trmt.bp_sys3!='' then trmt.bp_sys3 when trmt.bp_sys2!='' then trmt.bp_sys2 when trmt.bp_sys1!='' then trmt.bp_sys1 else '-' end as sbp, 
     case when trmt.bp_non_sys3!='' then trmt.bp_non_sys3 when trmt.bp_non_sys2!='' then trmt.bp_non_sys2 when trmt.bp_non_sys1!='' then trmt.bp_non_sys1 else '-' end as dbp, 
-    trmt.fbs as fbs, trmt.pp as pp, trmt.random as random, trmt.symptoms, trmt.remarks,b.md_name, pt.id, 
+    trmt.fbs as fbs, trmt.pp as pp, trmt.bmi, trmt.weight, pt.height, trmt.random as random, trmt.symptoms, trmt.remarks,b.md_name, pt.id, 
     case when pt.status=2 then 'Active' when pt.status=1 then 'Inactive' end as status,
     case when b.md_name!='' then 'YES' else 'NO' end as m_status,
     case when (hlt.server_created_on at time zone 'Asia/Kolkata')::date is not null then 'YES' else 'NO' end as h_status,
@@ -412,8 +412,11 @@ def patient_profile_list(request):
             'PHT Year',
             'Treatment',
             'Visit Date',
+            'Height',
+            'Weight',
             'SBP',
             'DBP',
+            'BMI',
             'Blood Sugar Fasting',
             'Blood Sugar PP',
             'Blood Sugar Random',
@@ -453,8 +456,11 @@ def patient_profile_list(request):
                 patient['pht_my'],
                 patient['trmt_status'],
                 patient['v_date'],
+                patient['height'],
+                patient['weight'],
                 patient['sbp'],
                 patient['dbp'],
+                patient['bmi'],
                 patient['fbs'],
                 patient['pp'],
                 patient['random'],
@@ -524,7 +530,7 @@ def treatment_details_list(request):
     case when trmt.is_controlled=1 then 'YES' when trmt.is_controlled=0 then 'NO' end as controlled, 
     case when trmt.bp_sys3!='' then trmt.bp_sys3 when trmt.bp_sys2!='' then trmt.bp_sys2 when trmt.bp_sys1!='' then trmt.bp_sys1 else '-' end as sbp, 
     case when trmt.bp_non_sys3!='' then trmt.bp_non_sys3 when trmt.bp_non_sys2!='' then trmt.bp_non_sys2 when trmt.bp_non_sys1!='' then trmt.bp_non_sys1 else '-' end as dbp, 
-    trmt.fbs as fbs, trmt.pp as pp, trmt.random as random, trmt.symptoms, trmt.remarks, case when pt.status=2 then 'Active' when pt.status=1 then 'Inactive' end as status 
+    trmt.fbs as fbs, trmt.pp as pp, trmt.bmi, trmt.weight, pt.height,  trmt.random as random, trmt.symptoms, trmt.remarks, case when pt.status=2 then 'Active' when pt.status=1 then 'Inactive' end as status 
     from health_management_treatments trmt  
     inner join health_management_patients pt on trmt.patient_uuid=pt.uuid and pt.status=2 and pt.patient_visit_type_id=12
     inner join application_masters_village vlg on pt.village_id = vlg.id
@@ -549,9 +555,12 @@ def treatment_details_list(request):
             'Age(today)',
             'Gender',
             'Visit Date',
+            'Height',
+            'Weight',
             'Controlled',
             'SBP',
             'DBP',
+            'BMI',
             'Blood Sugar Fasting',
             'Blood Sugar PP',
             'Blood Sugar Random',
@@ -569,9 +578,12 @@ def treatment_details_list(request):
                 treatment['age'],
                 treatment['gender'],
                 treatment['visit_date'],
+                treatment['height'],
+                treatment['weight'],
                 treatment['controlled'],
                 treatment['sbp'],
                 treatment['dbp'],
+                treatment['bmi'],
                 treatment['fbs'],
                 treatment['pp'],
                 treatment['random'],
@@ -1371,7 +1383,7 @@ def home_visit_report(request):
         hwk_id = '''and upf.user_id='''+health_worker
     cursor = connection.cursor()
     cursor.execute('''select phc.name as phc_name, sbc.name as sbc_name, vlg.name as village_name, pt.name as patient_name, pt.patient_id as patient_code, 
-    count(pt.patient_id) as no_of_visits, max(hv.response_datetime) as last_date_of_visit, hwn.first_name as health_worker_name from health_management_homevisit hv 
+    count(pt.patient_id) as no_of_visits, to_char(max(hv.response_datetime) at time zone 'Asia/Kolkata', 'DD-MM-YYYY HH12:MI:SS AM') as last_date_of_visit, hwn.first_name as health_worker_name from health_management_homevisit hv 
     inner join health_management_patients pt on hv.patient_uuid = pt.uuid and pt.status=2 and pt.patient_visit_type_id=12 inner join application_masters_village vlg on pt.village_id=vlg.id 
     inner join application_masters_subcenter sbc on vlg.subcenter_id = sbc.id inner join application_masters_phc phc on sbc.phc_id = phc.id 
     inner join health_management_userprofile upf on hv.user_uuid=upf.uuid inner join auth_user hwn on upf.user_id = hwn.id
@@ -1699,7 +1711,7 @@ def patient_registration_report(request):
     case when trmt.is_controlled=1 then 'YES' when trmt.is_controlled=0 then 'NO' end as controlled, 
     case when trmt.bp_sys3!='' then trmt.bp_sys3 when trmt.bp_sys2!='' then trmt.bp_sys2 when trmt.bp_sys1!='' then trmt.bp_sys1 else '-' end as sbp, 
     case when trmt.bp_non_sys3!='' then trmt.bp_non_sys3 when trmt.bp_non_sys2!='' then trmt.bp_non_sys2 when trmt.bp_non_sys1!='' then trmt.bp_non_sys1 else '-' end as dbp, 
-    trmt.fbs as fbs, trmt.pp as pp, trmt.random as random, trmt.symptoms, trmt.remarks, ndc.name as diagnosis, 
+    trmt.fbs as fbs, trmt.pp as pp, trmt.bmi, trmt.weight, pt.height, trmt.random as random, trmt.symptoms, trmt.remarks, ndc.name as diagnosis, 
     case when dgs.source_treatment=1 then 'CLINIC' when dgs.source_treatment=2 then 'OUTSIDE' when dgs.source_treatment=3 then 'C&O' end as source_of_tretement, md.name 
     from health_management_patients pt inner join application_masters_village vlg on pt.village_id = vlg.id 
     inner join application_masters_subcenter sbc on vlg.subcenter_id = sbc.id 
@@ -1786,8 +1798,11 @@ def patient_registration_report(request):
             'HT Year',
             'PHT Year',
             'Visit Date',
+            'Height',
+            'Weight',
             'SBP',
             'DBP',
+            'BMI',
             'Blood Sugar Fasting',
             'Blood Sugar PP',
             'Blood Sugar Random',
@@ -1824,8 +1839,11 @@ def patient_registration_report(request):
                 patient['ht_my'],
                 patient['pht_my'],
                 patient['v_date'],
+                patient['height'],
+                patient['weight'],
                 patient['sbp'],
                 patient['dbp'],
+                patient['bmi'],
                 patient['fbs'],
                 patient['pp'],
                 patient['random'],

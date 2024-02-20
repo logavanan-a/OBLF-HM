@@ -50,8 +50,11 @@
                                 <th>PHT Year</th>
                                 <th>Treatment</th>
                                 <th>Last visit date</th>
+                                <th>Height</th>
+                                <th>Weight</th>
                                 <th>SBP</th>
                                 <th>DBP</th>
+                                <th>BMI</th>
                                 <th>Blood Sugar Fasting</th>
                                 <th>Blood Sugar PP</th>
                                 <th>Blood Sugar Random</th>
@@ -93,8 +96,11 @@
                                 <td>{{prr.pht_my|default_if_none:'-'}}</td>
                                 <td>{{prr.trmt_status|default_if_none:'-'}}</td>
                                 <td>{{prr.v_date|date:"d/m/Y"|default_if_none:'-'}}</td>
+                                <td>{{prr.height|default_if_none:'-'}}</td>
+                                <td>{{prr.weight|default_if_none:'-'}}</td>
                                 <td>{{prr.sbp|default_if_none:'-'}}</td>
                                 <td>{{prr.dbp|default_if_none:'-'}}</td>
+                                <td>{{prr.bmi|default_if_none:'-'}}</td>
                                 <td>{{prr.fbs|default_if_none:'-'}}</td>
                                 <td>{{prr.pp|default_if_none:'-'}}</td>
                                 <td>{{prr.random|default_if_none:'-'}}</td>
