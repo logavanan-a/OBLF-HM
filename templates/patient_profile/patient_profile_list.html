@@ -36,20 +36,20 @@
                                 <th>Drinking</th>
                                 <th>Smoking</th>
                                 <th>Tobacco</th>
-                                <th>DM Source Treatment</th>
-                                <th>PDM Source Treatment</th>
+                                <!-- <th>DM Source Treatment</th>
+                                <th>PDM Source Treatment</th> -->
                                 <th>DM Detected by</th>
                                 <th>PDM Detected by</th>
                                 <th>DM Year</th>
                                 <th>PDM Year</th>
-                                <th>HT Source Treatment</th>
-                                <th>PHT Source Treatment</th>
+                                <!-- <th>PHT Source Treatment</th> -->
                                 <th>HT Detected by</th>
                                 <th>PHT Detected by</th>
                                 <th>HT Year</th>
                                 <th>PHT Year</th>
                                 <th>Treatment</th>
                                 <th>Last visit date</th>
+                                <th>Source of Treatment</th>
                                 <th>Height</th>
                                 <th>Weight</th>
                                 <th>SBP</th>
@@ -82,20 +82,22 @@
                                 <td>{{prr.drinking|default_if_none:'-'}}</td>
                                 <td>{{prr.smoking|default_if_none:'-'}}</td>
                                 <td>{{prr.tobacco|default_if_none:'-'}}</td>
-                                <td>{{prr.dm_st|default_if_none:'-'}}</td>
-                                <td>{{prr.pdm_st|default_if_none:'-'}}</td>
+                                <!-- <td>{{prr.dm_st|default_if_none:'-'}}</td>
+                                <td>{{prr.pdm_st|default_if_none:'-'}}</td> -->
                                 <td>{{prr.dm_db|default_if_none:'-'}}</td>
                                 <td>{{prr.pdm_db|default_if_none:'-'}}</td>
                                 <td>{{prr.dm_my|default_if_none:'-'}}</td>
                                 <td>{{prr.pdm_my|default_if_none:'-'}}</td>
-                                <td>{{prr.ht_st|default_if_none:'-'}}</td>
-                                <td>{{prr.pht_st|default_if_none:'-'}}</td>
+                                <!-- <td>{{prr.ht_st|default_if_none:'-'}}</td>
+                                <td>{{prr.pht_st|default_if_none:'-'}}</td> -->
                                 <td>{{prr.ht_db|default_if_none:'-'}}</td>
                                 <td>{{prr.pht_db|default_if_none:'-'}}</td>
                                 <td>{{prr.ht_my|default_if_none:'-'}}</td>
                                 <td>{{prr.pht_my|default_if_none:'-'}}</td>
                                 <td>{{prr.trmt_status|default_if_none:'-'}}</td>
                                 <td>{{prr.v_date|date:"d/m/Y"|default_if_none:'-'}}</td>
+                                <td>{{prr.source_treatment|default_if_none:'-'}}</td>
+
                                 <td>{{prr.height|default_if_none:'-'}}</td>
                                 <td>{{prr.weight|default_if_none:'-'}}</td>
                                 <td>{{prr.sbp|default_if_none:'-'}}</td>
