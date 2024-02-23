@@ -30,10 +30,10 @@ class PatientsAdmin(ImportExportModelAdmin, ImportExportFormat):
 @admin.register(Treatments)
 class TreatmentsAdmin(ImportExportModelAdmin, ImportExportFormat):
     list_display = ['uuid', 'user_uuid', 'patient_uuid', 'visit_date', 'bp_sys1', 'bp_non_sys1', 'bp_sys2', 'bp_non_sys2',
-     'bp_sys3', 'bp_non_sys3', 'fbs', 'pp', 'random', 'weight', 
+     'bp_sys3', 'bp_non_sys3', 'fbs', 'pp', 'random', 'weight', 'dm_source_treatment', 'ht_source_treatment',
      'bmi', 'symptoms', 'remarks', 'is_controlled', 'server_created_on', 'server_modified_on', 'status']
     fields = ['uuid', 'user_uuid', 'patient_uuid', 'visit_date', 'bp_sys1', 'bp_non_sys1', 'bp_sys2', 'bp_non_sys2',
-     'bp_sys3', 'bp_non_sys3', 'fbs', 'pp', 'random', 'weight', 
+     'bp_sys3', 'bp_non_sys3', 'fbs', 'pp', 'random', 'weight', 'dm_source_treatment', 'ht_source_treatment',
      'bmi', 'symptoms', 'remarks', 'is_controlled', 'status']
     search_fields = ['uuid', 'user_uuid', 'patient_uuid']
     list_filter = ['status' ]
@@ -45,18 +45,16 @@ class HealthAdmin(ImportExportModelAdmin, ImportExportFormat):
     list_display = ['uuid', 'user_uuid', 'patient_uuid',
         'hyper_diabetic', 'co_morbid_ids', 'co_morbid_names',
         'is_alcoholic', 'is_tobacco', 'is_smoker',
-        'dm_check', 'ht_check', 'dm_status', 'ht_status', 'dm_source_treatment',
-        'ht_source_treatment', 'dm_years', 'ht_years', 'dm_detected_by', 'ht_detected_by',
-        'pdm_year','dm_year','pht_year', 'ht_year', 'pdm_source_treatment',
-        'pht_source_treatment', 'pdm_detected_by', 'pht_detected_by',
+        'dm_check', 'ht_check', 'dm_status', 'ht_status', 'dm_years', 'ht_years', 'dm_detected_by', 'ht_detected_by',
+        'pdm_year','dm_year','pht_year', 'ht_year',  'pdm_detected_by', 'pht_detected_by',
         'server_created_on', 'server_modified_on', 'status']
     fields = ['uuid', 'user_uuid', 'patient_uuid',
         'hyper_diabetic',  'co_morbid_ids', 'co_morbid_names',
         'is_alcoholic', 'is_tobacco', 'is_smoker',
-        'dm_check', 'ht_check', 'dm_status', 'ht_status', 'dm_source_treatment',
-        'ht_source_treatment', 'dm_years', 'ht_years', 'dm_detected_by', 'ht_detected_by',
-        'pdm_year','dm_year','pht_year', 'ht_year', 'pdm_source_treatment',
-        'pht_source_treatment', 'pdm_detected_by', 'pht_detected_by',
+        'dm_check', 'ht_check', 'dm_status', 'ht_status', 
+        'dm_years', 'ht_years', 'dm_detected_by', 'ht_detected_by',
+        'pdm_year','dm_year','pht_year', 'ht_year',
+        'pdm_detected_by', 'pht_detected_by',
         'status']
     list_filter = ['status' ]
     search_fields = ['uuid', 'user_uuid', 'patient_uuid']

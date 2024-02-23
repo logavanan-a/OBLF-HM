@@ -112,7 +112,8 @@ class Treatments(BaseContent):
     bmi = models.CharField(max_length=150, null=True, blank=True)
     symptoms = models.CharField(max_length=150, null=True, blank=True)
     remarks = models.CharField(max_length=500, null=True, blank=True)
-    source_treatment = models.IntegerField(choices = SOURCE_TREATEMENT_CHOICE, null=True, blank=True)
+    dm_source_treatment = models.IntegerField(choices = SOURCE_TREATEMENT_CHOICE, null=True, blank=True)
+    ht_source_treatment = models.IntegerField(choices = SOURCE_TREATEMENT_CHOICE, null=True, blank=True)
     is_controlled = models.IntegerField(choices = SMOKER_CONTROLLED, null=True, blank=True)
     sync_status = models.IntegerField(default=2)
 

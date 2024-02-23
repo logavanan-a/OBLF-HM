@@ -31,7 +31,8 @@
                                 <th>Age(today)</th>
                                 <th>Gender</th>
                                 <th>Visit date</th>
-                                <th>Source of Treatment</th>
+                                <th>DM Source Treatment</th>
+                                <th>HT Source Treatment</th>
                                 <th>Height</th>
                                 <th>Weight</th>
                                 <th>Controlled</th>
@@ -57,7 +58,8 @@
                                 <td>{{prr.age|default_if_none:'-'}}</td>
                                 <td>{{prr.gender|default_if_none:'-'}}</td>
                                 <td>{{prr.visit_date|date:"d/m/Y"|default_if_none:'-'}}</td>
-                                <td>{{prr.source_treatment|default_if_none:'-'}}</td>
+                                <td>{{prr.dm_source_treatment|default_if_none:'-'}}</td>
+                                <td>{{prr.ht_source_treatment|default_if_none:'-'}}</td>
                                 <td>{{prr.height|default_if_none:'-'}}</td>
                                 <td>{{prr.weight|default_if_none:'-'}}</td>
                                 <td>{{prr.controlled|default_if_none:'-'}}</td>

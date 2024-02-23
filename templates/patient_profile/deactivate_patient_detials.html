@@ -36,7 +36,8 @@
                                 <th>PHT Year</th>
                                 <th>Treatment</th>
                                 <th>Last visit date</th>
-                                <th>Source of Treatment</th>
+                                <th>DM Source Treatment</th>
+                                <th>HT Source Treatment</th>
                                 <th>Height</th>
                                 <th>Weight</th>
                                 <th>SBP</th>
@@ -80,7 +81,8 @@
                                 <td>{{prr.pht_my|default_if_none:'-'}}</td>
                                 <td>{{prr.trmt_status|default_if_none:'-'}}</td>
                                 <td>{{prr.v_date|date:"d/m/Y"|default_if_none:'-'}}</td>
-                                <td>{{prr.source_treatment|default_if_none:'-'}}</td>
+                                <td>{{prr.dm_source_treatment|default_if_none:'-'}}</td>
+                                <td>{{prr.ht_source_treatment|default_if_none:'-'}}</td>
                                 <td>{{prr.height|default_if_none:'-'}}</td>
                                 <td>{{prr.weight|default_if_none:'-'}}</td>
                                 <td>{{prr.sbp|default_if_none:'-'}}</td>
