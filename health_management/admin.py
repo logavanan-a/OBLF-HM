@@ -77,7 +77,7 @@ class FeePayementAdmin(ImportExportModelAdmin, ImportExportFormat):
 
 @admin.register(Prescription)
 class PrescriptionAdmin(ImportExportModelAdmin, ImportExportFormat):
-    list_display = ['medicines', 'uuid', 'user_uuid', 'patient_uuid', 'treatment_uuid',
+    list_display = ['id','medicines', 'uuid', 'user_uuid', 'patient_uuid', 'treatment_uuid',
     'dosage', 'no_of_days', 'medicine_type', 'qty', 'server_created_on', 'server_modified_on', 'status']
     fields = ['medicines', 'user_uuid', 'uuid', 'patient_uuid', 'treatment_uuid',
     'dosage', 'no_of_days', 'medicine_type', 'qty', 'status']
@@ -87,7 +87,7 @@ class PrescriptionAdmin(ImportExportModelAdmin, ImportExportFormat):
 
 @admin.register(Diagnosis)
 class DiagnosisAdmin(ImportExportModelAdmin, ImportExportFormat):
-    list_display = ['ndc', 'uuid', 'user_uuid', 'patient_uuid', 'detected_by', 'source_treatment',
+    list_display = ['id','ndc', 'uuid', 'user_uuid', 'patient_uuid', 'detected_by', 'source_treatment',
     'detected_years', 'server_created_on', 'server_modified_on', 'status']
     fields = ['ndc', 'uuid', 'user_uuid', 'patient_uuid', 'detected_by', 'source_treatment',
     'detected_years', 'status']
@@ -192,7 +192,7 @@ class DrugDispensationAdmin(ImportExportModelAdmin, ImportExportFormat):
 
 @admin.register(VillageProfile)
 class VillageProfileAdmin(ImportExportModelAdmin, ImportExportFormat):
-    list_display = ['name', 'door_no', 'seq_no', 'patient_id', 'village', 'dob', 'age', 'gender',
+    list_display = ['id','name', 'door_no', 'seq_no', 'patient_id', 'village', 'dob', 'age', 'gender',
      'phone_number', 'image', 'subcenter_id', 'server_created_on', 'server_modified_on', 'data_migration', 'status']
     fields = ['name', 'patient_id', 'village', 'dob', 'age', 'gender',
      'phone_number', 'image', 'subcenter_id', 'door_no', 'seq_no', 'data_migration', 'status']
