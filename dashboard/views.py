@@ -195,8 +195,8 @@ def dashboard(request):
     union all select 'TOTAL NUMBER OF NCD CASES' as name, f.count from f 
     union all select 'TOTAL NUMBER OF HOME VISITS MADE BY FLHWs' as home_name, d.home_count from d"""
     
-    percentage_sql= """with a as (select coalesce(sum(case when (hlt.ht_year is not null or hlt.dm_year is not null) and (dm_source_treatment > 0 or ht_source_treatment > 0 or pdm_source_treatment > 0 or pht_source_treatment > 0) then 1 else 0 end),0) as all_data, 
-    coalesce(sum(case when (hlt.ht_year is not null or hlt.dm_year is not null) and (hlt.dm_source_treatment=1 or hlt.dm_source_treatment=3 or hlt.pdm_source_treatment=1 or hlt.pdm_source_treatment=3 or hlt.ht_source_treatment=1 or hlt.ht_source_treatment=3 or hlt.pht_source_treatment=1 or hlt.pht_source_treatment=3) then 1 else 0 end),0) as not_outside_data 
+    percentage_sql= """with a as (select coalesce(sum(case when (hlt.ht_year is not null or hlt.dm_year is not null) and (trmt.dm_source_treatment > 0 or trmt.ht_source_treatment > 0) then 1 else 0 end),0) as all_data, 
+    coalesce(sum(case when (hlt.ht_year is not null or hlt.dm_year is not null) and (trmt.dm_source_treatment=1 or trmt.dm_source_treatment=3 or trmt.dm_source_treatment=1 or trmt.dm_source_treatment=3) then 1 else 0 end),0) as not_outside_data 
     from health_management_prescription psp inner join health_management_treatments trmt on psp.treatment_uuid=trmt.uuid inner join health_management_health hlt on trmt.patient_uuid=hlt.patient_uuid inner join health_management_patients pt on hlt.patient_uuid=pt.uuid where 1=1 and pt.status=2 and pt.patient_visit_type_id=12 and psp.status = 2 """+village_name+psp_date_filter+"""), 
     b as (select count(*) as all_data, coalesce(sum(case when ms.medicine_id=2 then 1 else 0 end),0) as generation_2, 
     coalesce(sum(case when ms.medicine_id=1 then 1 else 0 end),0) as generation_1 from health_management_prescription psp 
