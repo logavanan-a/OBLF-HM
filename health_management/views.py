@@ -1760,13 +1760,13 @@ def patient_registration_report(request):
     case when (trmt.visit_date at time zone 'Asia/Kolkata')::date is not null then 'YES' else 'NO' end as trmt_status,
     pt.status as status_id
     from health_management_patients pt 
-    left join application_masters_village vlg on pt.village_id = vlg.id 
-    left join application_masters_subcenter sbc on vlg.subcenter_id = sbc.id 
-    left join application_masters_phc phc on sbc.phc_id = phc.id 
-    left join health_management_treatments trmt on pt.uuid=trmt.patient_uuid 
+    inner join application_masters_village vlg on pt.village_id = vlg.id 
+    inner join application_masters_subcenter sbc on vlg.subcenter_id = sbc.id 
+    inner join application_masters_phc phc on sbc.phc_id = phc.id 
+    inner join health_management_treatments trmt on pt.uuid=trmt.patient_uuid 
     left join health_management_health hlt on pt.uuid=hlt.patient_uuid 
     left join b on trmt.uuid=b.ptn
-    where trmt.visit_date is not null and pt.status=2 and pt.patient_visit_type_id=12 '''+phc_id+sbc_ids+village_id+between_date+pnt_name+pnt_code+'''
+    where pt.status=2 and pt.patient_visit_type_id=12 '''+phc_id+sbc_ids+village_id+between_date+pnt_name+pnt_code+'''
     order by pt.patient_id, (trmt.visit_date at time zone 'Asia/Kolkata')::date desc) select * from c order by v_date desc'''
     patient_data = SqlHeader(sql2)
     export_flag = True if request.POST.get('export') and request.POST.get( 'export').lower() == 'true' else False
