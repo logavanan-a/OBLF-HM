@@ -1381,14 +1381,15 @@ def home_visit_report(request):
     if health_worker_ids:
         get_health_worker_name = User.objects.get(id=health_worker_ids)
         hwk_id = '''and upf.user_id='''+health_worker
-    cursor = connection.cursor()
-    cursor.execute('''select phc.name as phc_name, sbc.name as sbc_name, vlg.name as village_name, pt.name as patient_name, pt.patient_id as patient_code, 
-    count(pt.patient_id) as no_of_visits, to_char(max(hv.response_datetime) at time zone 'Asia/Kolkata', 'DD-MM-YYYY HH12:MI:SS AM') as last_date_of_visit, hwn.first_name as health_worker_name from health_management_homevisit hv 
+    sql='''select phc.name as phc_name, sbc.name as sbc_name, vlg.name as village_name, pt.name as patient_name, pt.patient_id as patient_code, 
+    count(pt.patient_id) as no_of_visits, lalu.image_location as loc, to_char(max(hv.response_datetime) at time zone 'Asia/Kolkata', 'DD-MM-YYYY HH12:MI:SS AM') as last_date_of_visit, hwn.first_name as health_worker_name from health_management_homevisit hv 
     inner join health_management_patients pt on hv.patient_uuid = pt.uuid and pt.status=2 and pt.patient_visit_type_id=12 inner join application_masters_village vlg on pt.village_id=vlg.id 
     inner join application_masters_subcenter sbc on vlg.subcenter_id = sbc.id inner join application_masters_phc phc on sbc.phc_id = phc.id 
     inner join health_management_userprofile upf on hv.user_uuid=upf.uuid inner join auth_user hwn on upf.user_id = hwn.id
-    where 1=1 and hv.status=2  '''+phc_id+sbc_ids+village_id+hwk_id+between_date+''' group by phc_name, sbc_name, village_name, patient_name, patient_code, health_worker_name order by phc.name, sbc.name, vlg.name''')
-    home_visit_data = cursor.fetchall()
+    left outer join (select distinct on (patient_uuid) patient_uuid, response_datetime, image_location from health_management_homevisit hv
+    inner join health_management_patients pt on hv.patient_uuid = pt.uuid and pt.status=2 and pt.patient_visit_type_id=12 order by patient_uuid,response_datetime desc) as lalu on pt.uuid=lalu.patient_uuid
+    where 1=1 and hv.status=2  '''+phc_id+sbc_ids+village_id+hwk_id+between_date+''' group by phc_name, sbc_name, village_name, patient_name, patient_code, health_worker_name, loc order by phc.name, sbc.name, vlg.name'''
+    home_visit_data = SqlHeader(sql)
     
     export_flag = True if request.POST.get('export') and request.POST.get( 'export').lower() == 'true' else False
     if export_flag:
@@ -1402,20 +1403,22 @@ def home_visit_report(request):
             'Village', 
             'Patient Name',
             'Patient Code',
+            'Latitude & Longitude',
             'Number of visit',
             'Last date of visit',
             'Health Worker'
             ])
         for data in home_visit_data:
             writer.writerow([
-                data[0],
-                data[1],
-                data[2],
-                data[3],
-                data[4],
-                data[5],
-                data[6],
-                data[7]
+                data['phc_name'],
+                data['sbc_name'],
+                data['village_name'],
+                data['patient_name'],
+                data['patient_code'],
+                data['loc'],
+                data['no_of_visits'],
+                data['last_date_of_visit'],
+                data['health_worker_name']
             ])
         return response
     data = pagination_function(request, home_visit_data)

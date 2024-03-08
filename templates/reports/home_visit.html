@@ -27,6 +27,7 @@
                                 <th>Village</th>                                   
                                 <th>Patient Name</th>
                                 <th>Patient Code</th>
+                                <th>Latitude & Longitude</th>
                                 <th>Number of visit</th>
                                 <th>Last date of visit</th>
                                 <th>Health Worker</th>
@@ -35,14 +36,15 @@
                         <tbody>
                             {% for m in data %}
                             <tr>
-                                <td>{{m.0}}</td>
-                                <td>{{m.1}}</td>
-                                <td>{{m.2}}</td>
-                                <td>{{m.3}}</td>
-                                <td>{{m.4}}</td>
-                                <td>{{m.5}}</td>
-                                <td>{{m.6}}</td>
-                                <td>{{m.7}}</td>
+                                <td>{{m.phc_name}}</td>
+                                <td>{{m.sbc_name}}</td>
+                                <td>{{m.village_name}}</td>
+                                <td>{{m.patient_name}}</td>
+                                <td>{{m.patient_code}}</td>
+                                <td>{{m.loc}}</td>
+                                <td>{{m.no_of_visits}}</td>
+                                <td>{{m.last_date_of_visit}}</td>
+                                <td>{{m.health_worker_name}}</td>
                             </tr>
                             {% endfor %}
                         </tbody>
