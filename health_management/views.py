@@ -528,11 +528,11 @@ def treatment_details_list(request):
     case when trmt.ht_source_treatment=1 then 'CLINIC' when trmt.ht_source_treatment=2 then 'OUTSIDE' when trmt.ht_source_treatment=3 then 'C & O' when trmt.ht_source_treatment=4 then 'NOT' else '-' end as ht_source_treatment,
     trmt.fbs as fbs, trmt.pp as pp, trmt.bmi, trmt.weight, pt.height,  trmt.random as random, trmt.symptoms, trmt.remarks, case when pt.status=2 then 'Active' when pt.status=1 then 'Inactive' end as status 
     from health_management_treatments trmt  
-    inner join health_management_patients pt on trmt.patient_uuid=pt.uuid and pt.status=2 and pt.patient_visit_type_id=12
+    inner join health_management_patients pt on trmt.patient_uuid=pt.uuid 
     inner join application_masters_village vlg on pt.village_id = vlg.id
     inner join application_masters_subcenter sbc on vlg.subcenter_id = sbc.id 
     inner join application_masters_phc phc on sbc.phc_id = phc.id 
-    where 1=1 and trmt.status=2 '''+phc_id+sbc_ids+village_id+between_date+pnt_name+pnt_code+'''
+    where 1=1 and trmt.status=2 and pt.status=2 and pt.patient_visit_type_id=12 '''+phc_id+sbc_ids+village_id+between_date+pnt_name+pnt_code+'''
     order by trmt.uuid, trmt.visit_date desc'''
     treatment_data = SqlHeader(sql)
     export_flag = True if request.POST.get('export') and request.POST.get( 'export').lower() == 'true' else False
