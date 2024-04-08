@@ -734,11 +734,11 @@ def diagnosis_ncd_count_report(request):
     from dateutil.relativedelta import relativedelta
     now = datetime.now()
     current_year = now.strftime("%Y")
-    years = request.GET.get('years', current_year)
-    sql_year='''select to_char(detected_years, 'YYYY') as year from health_management_diagnosis dgs left join application_masters_masterlookup ndc on dgs.ndc_id=ndc.id where 1=1 and detected_years is not null group by year order by year'''
+    sql_year='''with a as (select case when to_char(dm_years, 'YYYY') is not null then to_char(dm_years, 'YYYY') when to_char(ht_years, 'YYYY') is not null then to_char(ht_years, 'YYYY') else '' end as year from health_management_health where 1=1 group by year order by year) select * from a where year is not null and year!='' '''
     cursor = connection.cursor()
     cursor.execute(sql_year)
     filter_year = cursor.fetchall()
+    years = request.GET.get('years', filter_year[-1][0])
 
     
     if years:
