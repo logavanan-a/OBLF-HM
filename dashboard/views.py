@@ -175,7 +175,7 @@ def dashboard(request):
         village_name =  '''and pt.village_id='''+village
     count_sql = """with 
     -- TOTAL NUMBER OF CLINICS CONDUCTED
-    a as (select distinct on (trmt.visit_date) trmt.visit_date as vst_date, pt.village_id as vlg_id from health_management_treatments trmt 
+    a as (select distinct on (trmt.visit_date,pt.village_id) trmt.visit_date as vst_date, pt.village_id as vlg_id from health_management_treatments trmt 
     inner join health_management_patients pt on trmt.patient_uuid=pt.uuid  
     where 1=1 and pt.status=2 and pt.patient_visit_type_id=12 and trmt.status = 2 """+village_name+date_filter+""" order by trmt.visit_date desc), 
 
@@ -221,7 +221,7 @@ def dashboard(request):
     union all select 'TOTAL NUMBER OF NCD CASES FOR DM' as name, ncd_status_count.dm as count,8 as odr from ncd_status_count 
     union all select 'TOTAL NUMBER OF NCD CASES FOR HT' as name, ncd_status_count.ht as count,9 as odr from ncd_status_count 
     union all select 'TOTAL NUMBER OF HOME VISITS MADE BY FLHWs' as home_name, d.home_count as count,4 as odr from d) as data_mis order by odr """
-    
+    print(count_sql)
     percentage_sql= """with 
     -- TREATMENT WITH OBLF
     a as (select coalesce(sum(case when (hlt.ht_year is not null or hlt.dm_year is not null) and (trmt.dm_source_treatment > 0 or trmt.ht_source_treatment > 0) then 1 else 0 end),0) as all_data, 
