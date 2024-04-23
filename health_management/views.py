@@ -28,6 +28,7 @@ import sys, traceback
 from datetime import datetime, timedelta
 
 batch_rec = settings.BATCH_RECORDS
+big_batch_rec = settings.BIG_BATCH_RECORDS
 
 logger = logging.getLogger(__name__)
 
@@ -521,6 +522,17 @@ def treatment_details_list(request):
     sql = '''select  trmt.uuid, phc.name as phc_name, sbc.name as sbc_name, vlg.name as village_name, pt.name as patient_name, pt.patient_id as patient_code, pt.registered_date, date_part('year',age(pt.dob))::int as age, 
     case when pt.gender=1 then 'Male' when pt.gender=2 then 'Female' end as gender, 
     trmt.visit_date, 
+    case when hlt.is_alcoholic=0 then 'NO' when hlt.is_alcoholic=1 then 'Yes' end as alcoholic,
+    case when hlt.is_tobacco=0 then 'NO' when hlt.is_tobacco=1 then 'Yes' end as tobacco,
+    case when hlt.is_smoker=0 then 'NO' when hlt.is_smoker=1 then 'Yes' end as smoker,
+    to_char(hlt.pdm_year, 'MM/YYYY') as pdm_my, 
+    to_char(hlt.dm_year, 'MM/YYYY') as dm_my, 
+    to_char(hlt.pht_year, 'MM/YYYY') as pht_my,
+    to_char(hlt.ht_year, 'MM/YYYY') as ht_my,
+    case when hlt.ht_detected_by=1 then 'CLINIC' when hlt.ht_detected_by=2 then 'OUTSIDE' end as ht_db,
+    case when hlt.pht_detected_by=1 then 'CLINIC' when hlt.pht_detected_by=2 then 'OUTSIDE' end as pht_db,
+    case when hlt.dm_detected_by=1 then 'CLINIC' when hlt.dm_detected_by=2 then 'OUTSIDE' end as dm_db,
+    case when hlt.pdm_detected_by=1 then 'CLINIC' when hlt.pdm_detected_by=2 then 'OUTSIDE' end as pdm_db,
     case when trmt.is_controlled=1 then 'YES' when trmt.is_controlled=0 then 'NO' end as controlled, 
     case when trmt.bp_sys3!='' then trmt.bp_sys3 when trmt.bp_sys2!='' then trmt.bp_sys2 when trmt.bp_sys1!='' then trmt.bp_sys1 else '-' end as sbp, 
     case when trmt.bp_non_sys3!='' then trmt.bp_non_sys3 when trmt.bp_non_sys2!='' then trmt.bp_non_sys2 when trmt.bp_non_sys1!='' then trmt.bp_non_sys1 else '-' end as dbp, 
@@ -532,6 +544,7 @@ def treatment_details_list(request):
     inner join application_masters_village vlg on pt.village_id = vlg.id
     inner join application_masters_subcenter sbc on vlg.subcenter_id = sbc.id 
     inner join application_masters_phc phc on sbc.phc_id = phc.id 
+    left join health_management_health hlt on pt.uuid=hlt.patient_uuid
     where 1=1 and trmt.status=2 and pt.status=2 and pt.patient_visit_type_id=12 '''+phc_id+sbc_ids+village_id+between_date+pnt_name+pnt_code+'''
     order by trmt.uuid, trmt.visit_date desc'''
     treatment_data = SqlHeader(sql)
@@ -551,8 +564,19 @@ def treatment_details_list(request):
             'Age(today)',
             'Gender',
             'Visit Date',
+            'Drinking',
+            'Tobacco',
+            'Smoker',
             'DM Source Treatment',
+            'DM Detected by',
+            'PDM Detected by',
+            'DM Year',
+            'PDM Year',
             'HT Source Treatment',
+            'HT Detected by',
+            'PHT Detected by',
+            'HT Year',
+            'PHT Year',
             'Height',
             'Weight',
             'Controlled',
@@ -576,8 +600,19 @@ def treatment_details_list(request):
                 treatment['age'],
                 treatment['gender'],
                 treatment['visit_date'],
+                treatment['alcoholic'],
+                treatment['tobacco'],
+                treatment['smoker'],
                 treatment['dm_source_treatment'],
+                treatment['dm_db'],
+                treatment['pdm_db'],
+                treatment['dm_my'],
+                treatment['pdm_my'],
                 treatment['ht_source_treatment'],
+                treatment['ht_db'],
+                treatment['pht_db'],
+                treatment['ht_my'],
+                treatment['pht_my'],
                 treatment['height'],
                 treatment['weight'],
                 treatment['controlled'],
@@ -1249,10 +1284,7 @@ def health_list(request):
         case when hlt.pht_detected_by=1 then 'CLINIC' when hlt.pht_detected_by=2 then 'OUTSIDE' end as pht_db,
         case when hlt.dm_detected_by=1 then 'CLINIC' when hlt.dm_detected_by=2 then 'OUTSIDE' end as dm_db,
         case when hlt.pdm_detected_by=1 then 'CLINIC' when hlt.pdm_detected_by=2 then 'OUTSIDE' end as pdm_db,
-        case when hlt.ht_source_treatment=1 then 'CLINIC' when hlt.ht_source_treatment=2 then 'OUTSIDE' when hlt.ht_source_treatment=2 then 'C & O' end as ht_st,
-        case when hlt.pht_source_treatment=1 then 'CLINIC' when hlt.pht_source_treatment=2 then 'OUTSIDE' when hlt.pht_source_treatment=2 then 'C & O' end as pht_st,
-        case when hlt.dm_source_treatment=1 then 'CLINIC' when hlt.dm_source_treatment=2 then 'OUTSIDE' when hlt.dm_source_treatment=2 then 'C & O' end as dm_st,
-        case when hlt.pdm_source_treatment=1 then 'CLINIC' when hlt.pdm_source_treatment=2 then 'OUTSIDE' when hlt.pdm_source_treatment=2 then 'C & O' end as pdm_st,
+
         (hlt.server_created_on at time zone 'Asia/Kolkata')::date as created_on,
         (hlt.server_modified_on at time zone 'Asia/Kolkata')::date  as modified_on
         from health_management_health hlt 
@@ -1281,14 +1313,10 @@ def health_list(request):
             'Drinking',
             'Tobacco',
             'Smoker',
-            'DM Source Treatment',
-            'PDM Source Treatment',
             'DM Detected by',
             'PDM Detected by',
             'DM Year',
             'PDM Year',
-            'HT Source Treatment',
-            'PHT Source Treatment',
             'HT Detected by',
             'PHT Detected by',
             'HT Year',
@@ -1311,14 +1339,10 @@ def health_list(request):
                 data['alcoholic'],
                 data['tobacco'],
                 data['smoker'],
-                data['dm_st'],
-                data['pdm_st'],
                 data['dm_db'],
                 data['pdm_db'],
                 data['dm_my'],
                 data['pdm_my'],
-                data['ht_st'],
-                data['pht_st'],
                 data['ht_db'],
                 data['pht_db'],
                 data['ht_my'],
@@ -2662,7 +2686,7 @@ class Phc_pull(APIView):
             prescription_smo_date = Prescription.objects.filter(status=2, treatment_uuid__in=patient_treatment_uuids).order_by('server_modified_on')
             if data.get('prescription_smo_date'):
                 prescription_smo_date = prescription_smo_date.filter(server_modified_on__gt = datetime.strptime(data.get('prescription_smo_date'), '%Y-%m-%dT%H:%M:%S.%f%z'))
-            prescriptionserializers = PrescriptionSerializers(prescription_smo_date[:batch_rec],many=True)
+            prescriptionserializers = PrescriptionSerializers(prescription_smo_date[:big_batch_rec],many=True)
 
             #diagnosis
             ndcs=MasterLookup.objects.filter(parent__id=4)
@@ -2749,8 +2773,6 @@ class Phc_push(APIView):
         try:
             data = request.build_absolute_uri()
             data = request.data
-            # import ipdbget
-            # ipdb.set_trace()
             patient_response = {'data':[]}
             diagnosis_response = {'data':[]}
             prescription_response = {'data':[]}

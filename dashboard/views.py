@@ -155,21 +155,21 @@ def dashboard(request):
     psp_date_filter=""
     hlt_date_filter=""
     if start_date != "":
-            date_filter = """and (trmt.visit_date at time zone 'Asia/Kolkata')::date >= '"""+start_date + \
-            """' and (trmt.visit_date at time zone 'Asia/Kolkata')::date <= '""" + \
-            end_date+"""' """
-            home_date_filter = """and (hv.response_datetime at time zone 'Asia/Kolkata')::date >= '"""+start_date + \
-            """' and (hv.response_datetime at time zone 'Asia/Kolkata')::date <= '""" + \
-            end_date+"""' """
-            patient_date_filter = """and (pt.server_created_on at time zone 'Asia/Kolkata')::date >= '"""+start_date + \
-            """' and (pt.server_created_on at time zone 'Asia/Kolkata')::date <= '""" + \
-            end_date+"""' """
-            psp_date_filter = """and (psp.server_created_on at time zone 'Asia/Kolkata')::date >= '"""+start_date + \
-            """' and (psp.server_created_on at time zone 'Asia/Kolkata')::date <= '""" + \
-            end_date+"""' """
-            hlt_date_filter = """and (hlt.server_created_on at time zone 'Asia/Kolkata')::date >= '"""+start_date + \
-            """' and (hlt.server_created_on at time zone 'Asia/Kolkata')::date <= '""" + \
-            end_date+"""' """
+        date_filter = """and (trmt.visit_date at time zone 'Asia/Kolkata')::date >= '"""+start_date + \
+        """' and (trmt.visit_date at time zone 'Asia/Kolkata')::date <= '""" + \
+        end_date+"""' """
+        home_date_filter = """and (hv.response_datetime at time zone 'Asia/Kolkata')::date >= '"""+start_date + \
+        """' and (hv.response_datetime at time zone 'Asia/Kolkata')::date <= '""" + \
+        end_date+"""' """
+        patient_date_filter = """and (pt.server_created_on at time zone 'Asia/Kolkata')::date >= '"""+start_date + \
+        """' and (pt.server_created_on at time zone 'Asia/Kolkata')::date <= '""" + \
+        end_date+"""' """
+        psp_date_filter = """and (psp.server_created_on at time zone 'Asia/Kolkata')::date >= '"""+start_date + \
+        """' and (psp.server_created_on at time zone 'Asia/Kolkata')::date <= '""" + \
+        end_date+"""' """
+        hlt_date_filter = """and (hlt.server_created_on at time zone 'Asia/Kolkata')::date >= '"""+start_date + \
+        """' and (hlt.server_created_on at time zone 'Asia/Kolkata')::date <= '""" + \
+        end_date+"""' """
     village_name=""
     if village:
         village_name =  '''and pt.village_id='''+village
@@ -196,32 +196,33 @@ def dashboard(request):
     f as (select coalesce(sum(case when hlt.ht_year is not null or hlt.dm_year is not null then 1 end),0) as count from health_management_health hlt 
     inner join health_management_patients pt on hlt.patient_uuid=pt.uuid where 1=1 and hlt.status = 2 and pt.status=2 and pt.patient_visit_type_id=12 """+village_name+hlt_date_filter+"""), 
 
-    -- NUMBER OF NCD CONSULTATION
-    g as (select coalesce(sum(case when (trmt.pp != '' and trmt.pp is not null) or (trmt.fbs != '' and trmt.fbs is not null) or (trmt.random != '' and trmt.random is not null) or (trmt.bp_sys1 != '' and trmt.bp_sys1 is not null) or (trmt.bp_sys2 != '' and trmt.bp_sys2 is not null) or (trmt.bp_sys3 != '' and trmt.bp_sys3 is not null) or (trmt.bp_non_sys1 != '' and trmt.bp_non_sys1 is not null) or (trmt.bp_non_sys2 != '' and trmt.bp_non_sys2 is not null) or (trmt.bp_non_sys3 != '' and trmt.bp_non_sys3 is not null) then 1 else 0 end),0) as count 
-    from health_management_treatments trmt 
-    inner join health_management_patients pt on trmt.patient_uuid=pt.uuid where 1=1 and pt.status=2 and pt.patient_visit_type_id=12 and trmt.status = 2 """+village_name+date_filter+"""),
+    -- NUMBER OF NCD CONSULTATION & NON-NCD CONSULTATION
+    g as (select coalesce(sum(case when hlt.ht_year is not null or hlt.pht_year is not null or hlt.dm_year is not null or hlt.pdm_year is not null then 1 else 0 end),0) as count_1, 
+    coalesce(sum(case when hlt.ht_year is not null or hlt.pht_year is not null or hlt.dm_year is not null or hlt.pdm_year is not null then 0 else 1 end),0) as count_2
+    from health_management_treatments trmt inner join health_management_patients pt on trmt.patient_uuid=pt.uuid
+    left join health_management_health hlt on pt.uuid=hlt.patient_uuid
+    where 1=1 and pt.status=2 and pt.patient_visit_type_id=12 and trmt.status = 2 """+village_name+date_filter+"""),
 
-    -- NUMBER OF NON-NCD CONSULTATION
+    -- Not required this Query
     h as (select coalesce(sum(case when (trmt.pp = '' or trmt.pp is null) and (trmt.fbs = '' or trmt.fbs is null) and (trmt.random = '' or trmt.random is null) and (trmt.bp_sys1 = '' or trmt.bp_sys1 is null) and (trmt.bp_sys2 = '' or trmt.bp_sys2 is null) and (trmt.bp_sys3 = '' or trmt.bp_sys3 is null) and (trmt.bp_non_sys1 = '' or trmt.bp_non_sys1 is null) and (trmt.bp_non_sys2 = '' or trmt.bp_non_sys2 is null) and (trmt.bp_non_sys3 = '' or trmt.bp_non_sys3 is null) then 1 else 0 end),0) as count 
     from health_management_treatments trmt 
     inner join health_management_patients pt on trmt.patient_uuid=pt.uuid where 1=1 and pt.status=2 and pt.patient_visit_type_id=12 and trmt.status = 2),
     
-    
+    -- TOTAL NUMBER OF NCD CASES FOR DM & HT
     ncd_status_count as (select coalesce(sum(case when hlt.dm_year is not null or hlt.pdm_year is not null then 1 else 0 end),0) as dm, coalesce(sum(case when hlt.ht_year is not null or hlt.pht_year is not null then 1 else 0 end),0) as ht from health_management_health hlt
-    inner join health_management_patients pt on hlt.patient_uuid=pt.uuid where 1=1 and pt.status=2 and pt.patient_visit_type_id=12 and hlt.status = 2),
+    inner join health_management_patients pt on hlt.patient_uuid=pt.uuid where 1=1 and pt.status=2 and pt.patient_visit_type_id=12 and hlt.status = 2 """+village_name+date_filter+"""),
 
     total_pat as(select count(pt.uuid) as t_puuid from health_management_patients pt where 1=1 and pt.status=2 and pt.patient_visit_type_id=12 """+village_name+patient_date_filter+""")
 
     select name, count, odr from (select 'TOTAL NUMBER OF CLINICS CONDUCTED' as name, count(vst_date) as count,1 as odr from a 
     union all select 'NUMBER OF CONSULTATIONS' as name, e.count as count,2 as odr from e 
-    union all select 'NUMBER OF NCD CONSULTATION' as name, g.count as count,5 as odr from g 
-    union all select 'NUMBER OF NON-NCD CONSULTATION' as name, h.count as count,6 as odr from h 
+    union all select 'NUMBER OF NCD CONSULTATION' as name, g.count_1 as count,5 as odr from g 
+    union all select 'NUMBER OF NON-NCD CONSULTATION' as name, g.count_2 as count,6 as odr from g 
     union all select 'NUMBER OF PEOPLE TREATED', c.vst_date as count,3 as odr from c 
     union all select 'TOTAL NUMBER OF NCD CASES' as name, f.count as count,7 as odr from f 
     union all select 'TOTAL NUMBER OF NCD CASES FOR DM' as name, ncd_status_count.dm as count,8 as odr from ncd_status_count 
     union all select 'TOTAL NUMBER OF NCD CASES FOR HT' as name, ncd_status_count.ht as count,9 as odr from ncd_status_count 
     union all select 'TOTAL NUMBER OF HOME VISITS MADE BY FLHWs' as home_name, d.home_count as count,4 as odr from d) as data_mis order by odr """
-    print(count_sql)
     percentage_sql= """with 
     -- TREATMENT WITH OBLF
     a as (select coalesce(sum(case when (hlt.ht_year is not null or hlt.dm_year is not null) and (trmt.dm_source_treatment > 0 or trmt.ht_source_treatment > 0) then 1 else 0 end),0) as all_data, 
