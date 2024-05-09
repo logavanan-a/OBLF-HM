@@ -521,6 +521,7 @@ def treatment_details_list(request):
         pnt_code = '''or pt.patient_id ilike '''+format_name
     sql = '''select  trmt.uuid, phc.name as phc_name, sbc.name as sbc_name, vlg.name as village_name, pt.name as patient_name, pt.patient_id as patient_code, pt.registered_date, date_part('year',age(pt.dob))::int as age, 
     case when pt.gender=1 then 'Male' when pt.gender=2 then 'Female' end as gender, 
+<<<<<<< Updated upstream
     trmt.visit_date, 
     case when hlt.is_alcoholic=0 then 'NO' when hlt.is_alcoholic=1 then 'Yes' end as alcoholic,
     case when hlt.is_tobacco=0 then 'NO' when hlt.is_tobacco=1 then 'Yes' end as tobacco,
@@ -533,6 +534,9 @@ def treatment_details_list(request):
     case when hlt.pht_detected_by=1 then 'CLINIC' when hlt.pht_detected_by=2 then 'OUTSIDE' end as pht_db,
     case when hlt.dm_detected_by=1 then 'CLINIC' when hlt.dm_detected_by=2 then 'OUTSIDE' end as dm_db,
     case when hlt.pdm_detected_by=1 then 'CLINIC' when hlt.pdm_detected_by=2 then 'OUTSIDE' end as pdm_db,
+=======
+    (trmt.visit_date at time zone 'Asia/Kolkata')::date, 
+>>>>>>> Stashed changes
     case when trmt.is_controlled=1 then 'YES' when trmt.is_controlled=0 then 'NO' end as controlled, 
     case when trmt.bp_sys3!='' then trmt.bp_sys3 when trmt.bp_sys2!='' then trmt.bp_sys2 when trmt.bp_sys1!='' then trmt.bp_sys1 else '-' end as sbp, 
     case when trmt.bp_non_sys3!='' then trmt.bp_non_sys3 when trmt.bp_non_sys2!='' then trmt.bp_non_sys2 when trmt.bp_non_sys1!='' then trmt.bp_non_sys1 else '-' end as dbp, 
@@ -546,7 +550,7 @@ def treatment_details_list(request):
     inner join application_masters_phc phc on sbc.phc_id = phc.id 
     left join health_management_health hlt on pt.uuid=hlt.patient_uuid
     where 1=1 and trmt.status=2 and pt.status=2 and pt.patient_visit_type_id=12 '''+phc_id+sbc_ids+village_id+between_date+pnt_name+pnt_code+'''
-    order by trmt.uuid, trmt.visit_date desc'''
+    order by trmt.uuid, (trmt.visit_date at time zone 'Asia/Kolkata')::date desc'''
     treatment_data = SqlHeader(sql)
     export_flag = True if request.POST.get('export') and request.POST.get( 'export').lower() == 'true' else False
     if export_flag:
@@ -1946,7 +1950,7 @@ def patient_adherence_list(request):
     cursor = connection.cursor()
     sql_query2 = """with a as (select phc.name as phc_name, sbc.name as sbc_name, vlg.name as village_name, pt.name as patient_name, pt.patient_id as patient_code, (pt.registered_date at time zone 'Asia/Kolkata')::date as reg_date, vlg_ct.vst_date as clinic_total_vst_date, count(trmt.uuid) as no_of_time_clinics_held 
     from health_management_treatments trmt inner join health_management_patients pt on trmt.patient_uuid = pt.uuid and pt.status=2 and pt.patient_visit_type_id=12 inner join application_masters_village vlg on pt.village_id=vlg.id inner join application_masters_subcenter sbc on vlg.subcenter_id = sbc.id 
-    inner join application_masters_phc phc on sbc.phc_id = phc.id left outer join (select vlgs.name as village_name, count(distinct(trmt.visit_date)) as vst_date 
+    inner join application_masters_phc phc on sbc.phc_id = phc.id left outer join (select vlgs.name as village_name, count(distinct((trmt.visit_date at time zone 'Asia/Kolkata')::date)) as vst_date 
     from health_management_treatments trmt inner join health_management_patients pt on trmt.patient_uuid = pt.uuid and pt.status=2 and pt.patient_visit_type_id=12
     inner join application_masters_village vlgs on pt.village_id=vlgs.id where 1=1  """+between_date+""" group by village_name) as vlg_ct on vlg.name=vlg_ct.village_name where 1=1 and pt.status=2 and pt.patient_visit_type_id=12 """+phc_id+sbc_ids+village_id+between_date+""" group by phc_name, sbc_name, vlg.name, patient_name, patient_code, pt.uuid, vlg_ct.vst_date, reg_date order by phc.name, sbc.name, vlg.name) 
     select phc_name, sbc_name, village_name, patient_name, patient_code, clinic_total_vst_date, coalesce(sum(case when reg_date<=vst_base.vst_date then 1 else 0 end),0) as vlg_patient_count, no_of_time_clinics_held, 

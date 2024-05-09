@@ -175,9 +175,13 @@ def dashboard(request):
         village_name =  '''and pt.village_id='''+village
     count_sql = """with 
     -- TOTAL NUMBER OF CLINICS CONDUCTED
+<<<<<<< Updated upstream
     a as (select distinct on (trmt.visit_date,pt.village_id) trmt.visit_date as vst_date, pt.village_id as vlg_id from health_management_treatments trmt 
+=======
+    a as (select distinct on ((trmt.visit_date at time zone 'Asia/Kolkata')::date) (trmt.visit_date at time zone 'Asia/Kolkata')::date as vst_date, pt.village_id as vlg_id from health_management_treatments trmt 
+>>>>>>> Stashed changes
     inner join health_management_patients pt on trmt.patient_uuid=pt.uuid  
-    where 1=1 and pt.status=2 and pt.patient_visit_type_id=12 and trmt.status = 2 """+village_name+date_filter+""" order by trmt.visit_date desc), 
+    where 1=1 and pt.status=2 and pt.patient_visit_type_id=12 and trmt.status = 2 """+village_name+date_filter+""" order by (trmt.visit_date at time zone 'Asia/Kolkata')::date desc), 
 
     -- NUMBER OF PEOPLE TREATED
     c as (select count(distinct(trmt.uuid)) as vst_date
