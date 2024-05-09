@@ -521,7 +521,7 @@ def treatment_details_list(request):
         pnt_code = '''or pt.patient_id ilike '''+format_name
     sql = '''select  trmt.uuid, phc.name as phc_name, sbc.name as sbc_name, vlg.name as village_name, pt.name as patient_name, pt.patient_id as patient_code, pt.registered_date, date_part('year',age(pt.dob))::int as age, 
     case when pt.gender=1 then 'Male' when pt.gender=2 then 'Female' end as gender, 
-    (trmt.visit_date at time zone 'Asia/Kolkata')::date, 
+    (trmt.visit_date at time zone 'Asia/Kolkata')::date as visit_date, 
     case when hlt.is_alcoholic=0 then 'NO' when hlt.is_alcoholic=1 then 'Yes' end as alcoholic,
     case when hlt.is_tobacco=0 then 'NO' when hlt.is_tobacco=1 then 'Yes' end as tobacco,
     case when hlt.is_smoker=0 then 'NO' when hlt.is_smoker=1 then 'Yes' end as smoker,
@@ -546,7 +546,7 @@ def treatment_details_list(request):
     inner join application_masters_phc phc on sbc.phc_id = phc.id 
     left join health_management_health hlt on pt.uuid=hlt.patient_uuid
     where 1=1 and trmt.status=2 and pt.status=2 and pt.patient_visit_type_id=12 '''+phc_id+sbc_ids+village_id+between_date+pnt_name+pnt_code+'''
-    order by trmt.uuid, (trmt.visit_date at time zone 'Asia/Kolkata')::date desc'''
+    order by trmt.uuid, visit_date desc'''
     treatment_data = SqlHeader(sql)
     export_flag = True if request.POST.get('export') and request.POST.get( 'export').lower() == 'true' else False
     if export_flag:
@@ -590,6 +590,7 @@ def treatment_details_list(request):
             'Remarks',
             ])
         for treatment in treatment_data:
+            print(treatment)
             writer.writerow([
                 treatment['phc_name'],
                 treatment['sbc_name'],
