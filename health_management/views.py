@@ -521,8 +521,7 @@ def treatment_details_list(request):
         pnt_code = '''or pt.patient_id ilike '''+format_name
     sql = '''select  trmt.uuid, phc.name as phc_name, sbc.name as sbc_name, vlg.name as village_name, pt.name as patient_name, pt.patient_id as patient_code, pt.registered_date, date_part('year',age(pt.dob))::int as age, 
     case when pt.gender=1 then 'Male' when pt.gender=2 then 'Female' end as gender, 
-<<<<<<< Updated upstream
-    trmt.visit_date, 
+    (trmt.visit_date at time zone 'Asia/Kolkata')::date, 
     case when hlt.is_alcoholic=0 then 'NO' when hlt.is_alcoholic=1 then 'Yes' end as alcoholic,
     case when hlt.is_tobacco=0 then 'NO' when hlt.is_tobacco=1 then 'Yes' end as tobacco,
     case when hlt.is_smoker=0 then 'NO' when hlt.is_smoker=1 then 'Yes' end as smoker,
@@ -534,9 +533,6 @@ def treatment_details_list(request):
     case when hlt.pht_detected_by=1 then 'CLINIC' when hlt.pht_detected_by=2 then 'OUTSIDE' end as pht_db,
     case when hlt.dm_detected_by=1 then 'CLINIC' when hlt.dm_detected_by=2 then 'OUTSIDE' end as dm_db,
     case when hlt.pdm_detected_by=1 then 'CLINIC' when hlt.pdm_detected_by=2 then 'OUTSIDE' end as pdm_db,
-=======
-    (trmt.visit_date at time zone 'Asia/Kolkata')::date, 
->>>>>>> Stashed changes
     case when trmt.is_controlled=1 then 'YES' when trmt.is_controlled=0 then 'NO' end as controlled, 
     case when trmt.bp_sys3!='' then trmt.bp_sys3 when trmt.bp_sys2!='' then trmt.bp_sys2 when trmt.bp_sys1!='' then trmt.bp_sys1 else '-' end as sbp, 
     case when trmt.bp_non_sys3!='' then trmt.bp_non_sys3 when trmt.bp_non_sys2!='' then trmt.bp_non_sys2 when trmt.bp_non_sys1!='' then trmt.bp_non_sys1 else '-' end as dbp, 
