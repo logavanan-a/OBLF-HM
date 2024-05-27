@@ -350,7 +350,7 @@ def patient_profile_list(request):
     case when hlt.ht_detected_by=1 then 'CLINIC' when hlt.ht_detected_by=2 then 'OUTSIDE' when hlt.ht_detected_by=3 then 'ACTIVE SCREENING' end as ht_db,
     case when hlt.pht_detected_by=1 then 'CLINIC' when hlt.pht_detected_by=2 then 'OUTSIDE' when hlt.pht_detected_by=3 then 'ACTIVE SCREENING' end as pht_db,
     case when hlt.dm_detected_by=1 then 'CLINIC' when hlt.dm_detected_by=2 then 'OUTSIDE' when hlt.dm_detected_by=3 then 'ACTIVE SCREENING' end as dm_db,
-    case when hlt.pdm_detected_by=1 then 'CLINIC' when hlt.pdm_detected_by=2 then 'OUTSIDE' when hlt.pdm_detected_by=3 then 'ACTIVE SCREENING' as pdm_db,
+    case when hlt.pdm_detected_by=1 then 'CLINIC' when hlt.pdm_detected_by=2 then 'OUTSIDE' when hlt.pdm_detected_by=3 then 'ACTIVE SCREENING' end as  pdm_db,
     case when trmt.is_controlled=1 then 'YES' when trmt.is_controlled=0 then 'NO' end as controlled, 
     case when trmt.bp_sys3!='' then trmt.bp_sys3 when trmt.bp_sys2!='' then trmt.bp_sys2 when trmt.bp_sys1!='' then trmt.bp_sys1 else '-' end as sbp, 
     case when trmt.bp_non_sys3!='' then trmt.bp_non_sys3 when trmt.bp_non_sys2!='' then trmt.bp_non_sys2 when trmt.bp_non_sys1!='' then trmt.bp_non_sys1 else '-' end as dbp, 
