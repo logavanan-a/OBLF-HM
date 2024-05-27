@@ -165,10 +165,10 @@ def deactivate_patient_profile_detail(request):
     to_char(hlt.dm_year, 'MM/YYYY') as dm_my, 
     to_char(hlt.pht_year, 'MM/YYYY') as pht_my,
     to_char(hlt.ht_year, 'MM/YYYY') as ht_my,
-    case when hlt.ht_detected_by=1 then 'CLINIC' when hlt.ht_detected_by=2 then 'OUTSIDE' end as ht_db,
-    case when hlt.pht_detected_by=1 then 'CLINIC' when hlt.pht_detected_by=2 then 'OUTSIDE' end as pht_db,
-    case when hlt.dm_detected_by=1 then 'CLINIC' when hlt.dm_detected_by=2 then 'OUTSIDE' end as dm_db,
-    case when hlt.pdm_detected_by=1 then 'CLINIC' when hlt.pdm_detected_by=2 then 'OUTSIDE' end as pdm_db,
+    case when hlt.ht_detected_by=1 then 'CLINIC' when hlt.ht_detected_by=2 then 'OUTSIDE' when hlt.ht_detected_by=3 then 'ACTIVE SCREENING' end as ht_db,
+    case when hlt.pht_detected_by=1 then 'CLINIC' when hlt.pht_detected_by=2 then 'OUTSIDE' when hlt.pht_detected_by=3 then 'ACTIVE SCREENING' end as pht_db,
+    case when hlt.dm_detected_by=1 then 'CLINIC' when hlt.dm_detected_by=2 then 'OUTSIDE' when hlt.dm_detected_by=3 then 'ACTIVE SCREENING' end as dm_db,
+    case when hlt.pdm_detected_by=1 then 'CLINIC' when hlt.pdm_detected_by=2 then 'OUTSIDE' when hlt.pdm_detected_by=3 then 'ACTIVE SCREENING' end as pdm_db,
     case when trmt.is_controlled=1 then 'YES' when trmt.is_controlled=0 then 'NO' end as controlled, 
     case when trmt.bp_sys3!='' then trmt.bp_sys3 when trmt.bp_sys2!='' then trmt.bp_sys2 when trmt.bp_sys1!='' then trmt.bp_sys1 else '-' end as sbp, 
     case when trmt.bp_non_sys3!='' then trmt.bp_non_sys3 when trmt.bp_non_sys2!='' then trmt.bp_non_sys2 when trmt.bp_non_sys1!='' then trmt.bp_non_sys1 else '-' end as dbp,
@@ -237,10 +237,10 @@ def patient_profile_detail(request, patient_id):
     to_char(hlt.dm_year, 'MM/YYYY') as dm_my, 
     to_char(hlt.pht_year, 'MM/YYYY') as pht_my,
     to_char(hlt.ht_year, 'MM/YYYY') as ht_my,
-    case when hlt.ht_detected_by=1 then 'CLINIC' when hlt.ht_detected_by=2 then 'OUTSIDE' end as ht_db,
-    case when hlt.pht_detected_by=1 then 'CLINIC' when hlt.pht_detected_by=2 then 'OUTSIDE' end as pht_db,
-    case when hlt.dm_detected_by=1 then 'CLINIC' when hlt.dm_detected_by=2 then 'OUTSIDE' end as dm_db,
-    case when hlt.pdm_detected_by=1 then 'CLINIC' when hlt.pdm_detected_by=2 then 'OUTSIDE' end as pdm_db,
+    case when hlt.ht_detected_by=1 then 'CLINIC' when hlt.ht_detected_by=2 then 'OUTSIDE' when hlt.ht_detected_by=3 then 'ACTIVE SCREENING' end as ht_db,
+    case when hlt.pht_detected_by=1 then 'CLINIC' when hlt.pht_detected_by=2 then 'OUTSIDE' when hlt.pht_detected_by=3 then 'ACTIVE SCREENING' end as pht_db,
+    case when hlt.dm_detected_by=1 then 'CLINIC' when hlt.dm_detected_by=2 then 'OUTSIDE' when hlt.dm_detected_by=3 then 'ACTIVE SCREENING' end as dm_db,
+    case when hlt.pdm_detected_by=1 then 'CLINIC' when hlt.pdm_detected_by=2 then 'OUTSIDE' when hlt.pdm_detected_by=3 then 'ACTIVE SCREENING' end as pdm_db,
     case when trmt.is_controlled=1 then 'YES' when trmt.is_controlled=0 then 'NO' end as controlled, 
     case when trmt.bp_sys3!='' then trmt.bp_sys3 when trmt.bp_sys2!='' then trmt.bp_sys2 when trmt.bp_sys1!='' then trmt.bp_sys1 else '-' end as sbp, 
     case when trmt.bp_non_sys3!='' then trmt.bp_non_sys3 when trmt.bp_non_sys2!='' then trmt.bp_non_sys2 when trmt.bp_non_sys1!='' then trmt.bp_non_sys1 else '-' end as dbp, 
@@ -347,10 +347,10 @@ def patient_profile_list(request):
     to_char(hlt.dm_year, 'MM/YYYY') as dm_my, 
     to_char(hlt.pht_year, 'MM/YYYY') as pht_my,
     to_char(hlt.ht_year, 'MM/YYYY') as ht_my,
-    case when hlt.ht_detected_by=1 then 'CLINIC' when hlt.ht_detected_by=2 then 'OUTSIDE' end as ht_db,
-    case when hlt.pht_detected_by=1 then 'CLINIC' when hlt.pht_detected_by=2 then 'OUTSIDE' end as pht_db,
-    case when hlt.dm_detected_by=1 then 'CLINIC' when hlt.dm_detected_by=2 then 'OUTSIDE' end as dm_db,
-    case when hlt.pdm_detected_by=1 then 'CLINIC' when hlt.pdm_detected_by=2 then 'OUTSIDE' end as pdm_db,
+    case when hlt.ht_detected_by=1 then 'CLINIC' when hlt.ht_detected_by=2 then 'OUTSIDE' when hlt.ht_detected_by=3 then 'ACTIVE SCREENING' end as ht_db,
+    case when hlt.pht_detected_by=1 then 'CLINIC' when hlt.pht_detected_by=2 then 'OUTSIDE' when hlt.pht_detected_by=3 then 'ACTIVE SCREENING' end as pht_db,
+    case when hlt.dm_detected_by=1 then 'CLINIC' when hlt.dm_detected_by=2 then 'OUTSIDE' when hlt.dm_detected_by=3 then 'ACTIVE SCREENING' end as dm_db,
+    case when hlt.pdm_detected_by=1 then 'CLINIC' when hlt.pdm_detected_by=2 then 'OUTSIDE' when hlt.pdm_detected_by=3 then 'ACTIVE SCREENING' as pdm_db,
     case when trmt.is_controlled=1 then 'YES' when trmt.is_controlled=0 then 'NO' end as controlled, 
     case when trmt.bp_sys3!='' then trmt.bp_sys3 when trmt.bp_sys2!='' then trmt.bp_sys2 when trmt.bp_sys1!='' then trmt.bp_sys1 else '-' end as sbp, 
     case when trmt.bp_non_sys3!='' then trmt.bp_non_sys3 when trmt.bp_non_sys2!='' then trmt.bp_non_sys2 when trmt.bp_non_sys1!='' then trmt.bp_non_sys1 else '-' end as dbp, 
@@ -529,10 +529,10 @@ def treatment_details_list(request):
     to_char(hlt.dm_year, 'MM/YYYY') as dm_my, 
     to_char(hlt.pht_year, 'MM/YYYY') as pht_my,
     to_char(hlt.ht_year, 'MM/YYYY') as ht_my,
-    case when hlt.ht_detected_by=1 then 'CLINIC' when hlt.ht_detected_by=2 then 'OUTSIDE' end as ht_db,
-    case when hlt.pht_detected_by=1 then 'CLINIC' when hlt.pht_detected_by=2 then 'OUTSIDE' end as pht_db,
-    case when hlt.dm_detected_by=1 then 'CLINIC' when hlt.dm_detected_by=2 then 'OUTSIDE' end as dm_db,
-    case when hlt.pdm_detected_by=1 then 'CLINIC' when hlt.pdm_detected_by=2 then 'OUTSIDE' end as pdm_db,
+    case when hlt.ht_detected_by=1 then 'CLINIC' when hlt.ht_detected_by=2 then 'OUTSIDE' when hlt.ht_detected_by=3 then 'ACTIVE SCREENING' end as ht_db,
+    case when hlt.pht_detected_by=1 then 'CLINIC' when hlt.pht_detected_by=2 then 'OUTSIDE' when hlt.pht_detected_by=3 then 'ACTIVE SCREENING' end as pht_db,
+    case when hlt.dm_detected_by=1 then 'CLINIC' when hlt.dm_detected_by=2 then 'OUTSIDE' when hlt.dm_detected_by=3 then 'ACTIVE SCREENING' end as dm_db,
+    case when hlt.pdm_detected_by=1 then 'CLINIC' when hlt.pdm_detected_by=2 then 'OUTSIDE' when hlt.pdm_detected_by=3 then 'ACTIVE SCREENING' end as pdm_db,
     case when trmt.is_controlled=1 then 'YES' when trmt.is_controlled=0 then 'NO' end as controlled, 
     case when trmt.bp_sys3!='' then trmt.bp_sys3 when trmt.bp_sys2!='' then trmt.bp_sys2 when trmt.bp_sys1!='' then trmt.bp_sys1 else '-' end as sbp, 
     case when trmt.bp_non_sys3!='' then trmt.bp_non_sys3 when trmt.bp_non_sys2!='' then trmt.bp_non_sys2 when trmt.bp_non_sys1!='' then trmt.bp_non_sys1 else '-' end as dbp, 
@@ -1281,10 +1281,10 @@ def health_list(request):
         to_char(hlt.dm_year, 'MM/YYYY') as dm_my, 
         to_char(hlt.pht_year, 'MM/YYYY') as pht_my,
         to_char(hlt.ht_year, 'MM/YYYY') as ht_my,
-        case when hlt.ht_detected_by=1 then 'CLINIC' when hlt.ht_detected_by=2 then 'OUTSIDE' end as ht_db,
-        case when hlt.pht_detected_by=1 then 'CLINIC' when hlt.pht_detected_by=2 then 'OUTSIDE' end as pht_db,
-        case when hlt.dm_detected_by=1 then 'CLINIC' when hlt.dm_detected_by=2 then 'OUTSIDE' end as dm_db,
-        case when hlt.pdm_detected_by=1 then 'CLINIC' when hlt.pdm_detected_by=2 then 'OUTSIDE' end as pdm_db,
+        case when hlt.ht_detected_by=1 then 'CLINIC' when hlt.ht_detected_by=2 then 'OUTSIDE' when hlt.ht_detected_by=3 then 'ACTIVE SCREENING' end as ht_db,
+        case when hlt.pht_detected_by=1 then 'CLINIC' when hlt.pht_detected_by=2 then 'OUTSIDE' when hlt.pht_detected_by=3 then 'ACTIVE SCREENING' end as pht_db,
+        case when hlt.dm_detected_by=1 then 'CLINIC' when hlt.dm_detected_by=2 then 'OUTSIDE' when hlt.dm_detected_by=3 then 'ACTIVE SCREENING' end as dm_db,
+        case when hlt.pdm_detected_by=1 then 'CLINIC' when hlt.pdm_detected_by=2 then 'OUTSIDE' when hlt.pdm_detected_by=3 then 'ACTIVE SCREENING' end as pdm_db,
 
         (hlt.server_created_on at time zone 'Asia/Kolkata')::date as created_on,
         (hlt.server_modified_on at time zone 'Asia/Kolkata')::date  as modified_on
@@ -1741,7 +1741,6 @@ def patient_registration_report(request):
     case when trmt.bp_non_sys3!='' then trmt.bp_non_sys3 when trmt.bp_non_sys2!='' then trmt.bp_non_sys2 when trmt.bp_non_sys1!='' then trmt.bp_non_sys1 else '-' end as dbp,
     case when trmt.source_treatment=1 then 'CLINIC' when trmt.source_treatment=2 then 'OUTSIDE' when trmt.source_treatment=3 then 'C & O' when trmt.source_treatment=4 then 'NOT' else '-' end as source_treatment,
     trmt.fbs as fbs, trmt.pp as pp, trmt.bmi, trmt.weight, pt.height, trmt.random as random, trmt.symptoms, trmt.remarks, ndc.name as diagnosis, 
-
     case when dgs.source_treatment=1 then 'CLINIC' when dgs.source_treatment=2 then 'OUTSIDE' when dgs.source_treatment=3 then 'C&O' end as source_of_tretement, md.name 
     from health_management_patients pt inner join application_masters_village vlg on pt.village_id = vlg.id 
     inner join application_masters_subcenter sbc on vlg.subcenter_id = sbc.id 
@@ -1764,6 +1763,7 @@ def patient_registration_report(request):
     (pst.server_created_on at time zone 'Asia/Kolkata')::date order by pst.treatment_uuid, (pst.server_created_on at time zone 'Asia/Kolkata')::date desc), c as 
     (select distinct on (pt.patient_id) pt.patient_id, phc.name as phc_name, sbc.name as sbc_name, 
     vlg.name as village_name, pt.name as patient_name, pt.registered_date as r_date, date_part('year',age(pt.dob))::int as age, 
+    case when pt.patient_visit_type_id=12 then 'Regular Patient' when pt.patient_visit_type_id=13 then 'Walk in Patient' else '' end patient_type,
     case when pt.gender=1 then 'Male' when pt.gender=2 then 'Female' end as gender, (trmt.visit_date at time zone 'Asia/Kolkata')::date as v_date, case when hlt.is_alcoholic=1 then 'YES' when hlt.is_alcoholic=0 then 'NO' end as drinking, 
     case when hlt.is_smoker=1 then 'YES' when hlt.is_smoker=0 then 'NO' end as smoking, case when hlt.is_tobacco=1 then 'YES' when hlt.is_tobacco=0 then 'NO' end as tobacco, 
     case when hlt.hyper_diabetic=1 then 'YES' when hlt.hyper_diabetic=0 then 'NO' end as diabetes, 
@@ -1772,10 +1772,10 @@ def patient_registration_report(request):
     to_char(hlt.dm_year, 'MM/YYYY') as dm_my, 
     to_char(hlt.pht_year, 'MM/YYYY') as pht_my,
     to_char(hlt.ht_year, 'MM/YYYY') as ht_my,
-    case when hlt.ht_detected_by=1 then 'CLINIC' when hlt.ht_detected_by=2 then 'OUTSIDE' end as ht_db,
-    case when hlt.pht_detected_by=1 then 'CLINIC' when hlt.pht_detected_by=2 then 'OUTSIDE' end as pht_db,
-    case when hlt.dm_detected_by=1 then 'CLINIC' when hlt.dm_detected_by=2 then 'OUTSIDE' end as dm_db,
-    case when hlt.pdm_detected_by=1 then 'CLINIC' when hlt.pdm_detected_by=2 then 'OUTSIDE' end as pdm_db,
+    case when hlt.ht_detected_by=1 then 'CLINIC' when hlt.ht_detected_by=2 then 'OUTSIDE' when hlt.ht_detected_by=3 then 'ACTIVE SCREENING' end as ht_db,
+    case when hlt.pht_detected_by=1 then 'CLINIC' when hlt.pht_detected_by=2 then 'OUTSIDE' when hlt.pht_detected_by=3 then 'ACTIVE SCREENING' end as pht_db,
+    case when hlt.dm_detected_by=1 then 'CLINIC' when hlt.dm_detected_by=2 then 'OUTSIDE' when hlt.dm_detected_by=3 then 'ACTIVE SCREENING' end as dm_db,
+    case when hlt.pdm_detected_by=1 then 'CLINIC' when hlt.pdm_detected_by=2 then 'OUTSIDE' when hlt.pdm_detected_by=3 then 'ACTIVE SCREENING' end as pdm_db,
     case when trmt.is_controlled=1 then 'YES' when trmt.is_controlled=0 then 'NO' end as controlled, 
     case when trmt.bp_sys3!='' then trmt.bp_sys3 when trmt.bp_sys2!='' then trmt.bp_sys2 when trmt.bp_sys1!='' then trmt.bp_sys1 else '-' end as sbp, 
     case when trmt.bp_non_sys3!='' then trmt.bp_non_sys3 when trmt.bp_non_sys2!='' then trmt.bp_non_sys2 when trmt.bp_non_sys1!='' then trmt.bp_non_sys1 else '-' end as dbp, 
@@ -1794,7 +1794,7 @@ def patient_registration_report(request):
     inner join health_management_treatments trmt on pt.uuid=trmt.patient_uuid 
     left join health_management_health hlt on pt.uuid=hlt.patient_uuid 
     left join b on trmt.uuid=b.ptn
-    where pt.status=2 and pt.patient_visit_type_id=12 '''+phc_id+sbc_ids+village_id+between_date+pnt_name+pnt_code+'''
+    where pt.status=2 '''+phc_id+sbc_ids+village_id+between_date+pnt_name+pnt_code+'''
     order by pt.patient_id, (trmt.visit_date at time zone 'Asia/Kolkata')::date desc) select * from c order by v_date desc'''
     patient_data = SqlHeader(sql2)
     export_flag = True if request.POST.get('export') and request.POST.get( 'export').lower() == 'true' else False
@@ -1809,6 +1809,7 @@ def patient_registration_report(request):
             'Village',                                   
             'Patient Name',
             'Patient Code',
+            'Patient Type',
             'Registered Date',
             'Age(today)',
             'Gender',
@@ -1852,6 +1853,7 @@ def patient_registration_report(request):
                 patient['village_name'],
                 patient['patient_name'],
                 patient['patient_id'],
+                patient['patient_type'],
                 patient['r_date'],
                 patient['age'],
                 patient['gender'],

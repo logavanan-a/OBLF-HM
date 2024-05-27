@@ -457,7 +457,7 @@ for hd in heath_data:
     Health.objects.filter(id=hd.id).update(pdm_year=None,pdm_source_treatment=0,pdm_detected_by=0,dm_year=None,dm_source_treatment=0,dm_detected_by=0, pht_year=None,pht_source_treatment=0,pht_detected_by=0,ht_year=None,ht_source_treatment=0,ht_detected_by=0)
 
 from health_management.models import *
-hp_list = HealthProfile.objects.filter()
+hp_list = HealthProfile.objects.filter(code__icontains='BUATINDVCU')
 hel = []
 for hp in hp_list:
     pts = Patients.objects.filter(patient_id=hp.code).first()
@@ -483,6 +483,8 @@ for hp in hp_list:
         hel.append(hp.code)
 len(hel)  
 hel   
+pts = Patients.objects.filter(patient_id__icontains='BUATINDVCU').values_list('uuid',flat=True)
+Health.objects.filter(patient_uuid__in=pts).update(ht_year=None,ht_detected_by=None,pht_year=None,pht_detected_by=None, pdm_year=None,pdm_detected_by=None,dm_year=None,dm_detected_by=None,is_tobacco=None,hyper_diabetic=None,is_smoker=None,is_alcoholic=None)
     
 
 

@@ -27,6 +27,7 @@
                                 <th>Village</th>                                   
                                 <th>Patient Name</th>
                                 <th>Patient Code</th>
+                                <th>Patient Type</th>
                                 <th>Registered Date</th>
                                 <th>Age(today)</th>
                                 <th>Gender</th>
@@ -68,6 +69,7 @@
                                 <td>{{prr.village_name|default_if_none:'-'}}</td>
                                 <td>{{prr.patient_name|default_if_none:'-'}}</td>
                                 <td>{{prr.patient_id}}</td>
+                                <td>{{prr.patient_type}}</td>
                                 <td>{{prr.r_date|date:"d/m/Y"|default_if_none:'-'}}</td>
                                 <td>{{prr.age|default_if_none:'-'}}</td>
                                 <td>{{prr.gender|default_if_none:'-'}}</td>
