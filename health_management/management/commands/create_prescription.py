@@ -28,19 +28,25 @@ class Command(BaseCommand):
                                 user_uuid=trmt_vlu[0].user_uuid,
                                 uuid=uuid_id,
                                 medicines_id=mds[0].id,
-                                dosage_id=prp.dosage or None,
+                                dosBUATINDCCH01505age_id=prp.dosage or None,
                                 medicine_type=mds[0].medicines_type or None,
                                 qty=prp.qty or None,
                             )
                         prp_obj.save()
                         prp_obj.server_created_on = prp.date
                         prp_obj.save()
+                        prp.status=2
                 elif len(trmt_vlu)>1:
                     print('Duplicate Treatment code in system: ', patient_code,':',prp.date)
+                    prp.status=1
                 else:
+                    prp.status=1
                     print('Treatments ID missing: ',patient_code,':',prp.date)
             elif len(patients_ids)>1:
-                print('Duplicate PAteint code in system: ', patient_code)
+                prp.status=1
+                print('Duplicate Pateint code in system: ', patient_code)
             else:
+                prp.status=1
                 print('Patient ID missing: ',patient_code)
+            prp.save()
 

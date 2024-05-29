@@ -490,7 +490,12 @@ Health.objects.filter(patient_uuid__in=pts).update(ht_year=None,ht_detected_by=N
 
 
 
-
-
-
+from health_management.models import *
+hlt = HealthProfile.objects.filter(code__icontains='BUATINDVCU')
+for i in hlt:
+    if i.detected_by_ht == 1:
+        i.detected_by_ht = 2
+    if i.detected_by_ht == 2:
+        i.detected_by_ht = 1
+    i.save()
 
