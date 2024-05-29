@@ -28,7 +28,7 @@ class Command(BaseCommand):
                                 user_uuid=trmt_vlu[0].user_uuid,
                                 uuid=uuid_id,
                                 medicines_id=mds[0].id,
-                                dosBUATINDCCH01505age_id=prp.dosage or None,
+                                dosage_id=prp.dosage or None,
                                 medicine_type=mds[0].medicines_type or None,
                                 qty=prp.qty or None,
                             )
