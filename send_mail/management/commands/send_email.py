@@ -21,8 +21,7 @@ def sendmail():
             mail_to = x.mail_to.split(";")
             cc      = x.mail_cc.split(";")
             bcc     = x.mail_bcc.split(";")
-            #If test mode, check if mail_to id in TEST_MAIL_LIST
-            # if mail_to in list, send the email otherwise don't send email and set status to ignored
+
             x.mail_status = 2
             if settings.APP_EMAIL_SETTINGS['MODE'] == 'TEST':
                 test_mail_list = set(settings.APP_EMAIL_SETTINGS['TEST_MAIL_LIST'])
@@ -32,7 +31,6 @@ def sendmail():
                 if len(mail_to) == 0 and len(cc)== 0 and len(bcc) == 0:
                     x.mail_status = 5
                     x.error_details = 'Ignored because MODE is TEST and email ID not in TEST_MAIL_LIST'  
-            #if not test mode and 
             if x.mail_status == 2:
                 mail_subject = x.subject + ' ('+DATABASE_HOST.split('//')[1]+')'
                 mail_content = x.content
@@ -53,9 +51,8 @@ def sendmail():
             exc_type, exc_value, exc_traceback = sys.exc_info()
             error_stack = repr(traceback.format_exception(exc_type, exc_value, exc_traceback))
             x.error_details = str(error_stack)
-        x.save()                
+        x.save()
 
-    
 class Command(BaseCommand):
     def handle(self, *args, **kwargs):
         try:
