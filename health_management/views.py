@@ -1781,7 +1781,7 @@ def patient_registration_report(request):
     case when trmt.bp_non_sys3!='' then trmt.bp_non_sys3 when trmt.bp_non_sys2!='' then trmt.bp_non_sys2 when trmt.bp_non_sys1!='' then trmt.bp_non_sys1 else '-' end as dbp, 
     case when trmt.dm_source_treatment=1 then 'CLINIC' when trmt.dm_source_treatment=2 then 'OUTSIDE' when trmt.dm_source_treatment=3 then 'C & O' when trmt.dm_source_treatment=4 then 'NOT' else '-' end as dm_source_treatment,
     case when trmt.ht_source_treatment=1 then 'CLINIC' when trmt.ht_source_treatment=2 then 'OUTSIDE' when trmt.ht_source_treatment=3 then 'C & O' when trmt.ht_source_treatment=4 then 'NOT' else '-' end as ht_source_treatment,
-    trmt.fbs as fbs, trmt.pp as pp, trmt.random as random, trmt.symptoms, trmt.remarks,b.md_name, pt.id, 
+    trmt.fbs as fbs, trmt.pp as pp,trmt.bmi, trmt.weight, pt.height, trmt.random as random, trmt.symptoms, trmt.remarks,b.md_name, pt.id, 
     case when pt.status=2 then 'Active' when pt.status=1 then 'Inactive' end as status,
     case when b.md_name!='' then 'YES' else 'NO' end as m_status,
     case when (hlt.server_created_on at time zone 'Asia/Kolkata')::date is not null then 'YES' else 'NO' end as h_status,
