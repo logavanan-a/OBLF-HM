@@ -32,6 +32,7 @@
                         <div class="row">
                             <p class="col-3 pb-3"><b>Patient Name :</b></p><p class="col-3 pb-3">{{pd.patient_name|default_if_none:'-'}}</p>
                             <p class="col-3 pb-3"><b>Patient Code :</b></p><p class="col-3 pb-3">{{pd.patient_id|default_if_none:'-'}}</p>
+                            <p class="col-3 pb-3"><b>Patient Type :</b></p><p class="col-3 pb-3">{{pd.patient_type|default_if_none:'-'}}</p>
                             <p class="col-3 pb-3"><b>Registered Date :</b></p><p class="col-3 pb-3">{{pd.r_date|date:"d-m-Y"|default_if_none:'-'}}</p>
                             <p class="col-3 pb-3"><b>Age (today) :</b></p><p class="col-3 pb-3">{{pd.age|default_if_none:'-'}}</p>
                             <p class="col-3 pb-3"><b>Gender :</b></p><p class="col-3 pb-3">{{pd.gender|default_if_none:'-'}}</p>
