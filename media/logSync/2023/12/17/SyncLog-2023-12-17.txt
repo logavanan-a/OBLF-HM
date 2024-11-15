@@ -1,0 +1,34 @@
+
+
+
+==================================================
+
+
+Log Date & Time : 12/17/2023, 22:51:53hrs"https://oblfhmdev.mahiti.org/phc/pull/74be0401-9af1-4324-8abe-d05d104d4099/"
+
+
+==================================================
+
+
+Log Date & Time : 12/17/2023, 22:51:53hrs{
+    "cat_date": "",
+    "com_b_date": "",
+    "diagnosis_smo_date": "",
+    "dist_date": "",
+    "dose_date": "",
+    "fee_smo_date": "",
+    "health_smo_date": "",
+    "home_visit_smo_date": "",
+    "medi_date": "",
+    "ndcs_date": "",
+    "patient_smo_date": "",
+    "phc_date": "",
+    "prescription_smo_date": "",
+    "scanned_report_smo_date": "",
+    "state_date": "",
+    "sub_c_date": "",
+    "tal_date": "",
+    "treatment_smo_date": "",
+    "vill_date": "",
+    "vn": "1.0.49"
+}

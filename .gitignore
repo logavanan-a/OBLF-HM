@@ -1,17 +1,17 @@
-*~
-*#*
-*.pyc
-*.swp
-__pycache__
-media/
+# *~
+# *#*
+# *.pyc
+# *.swp
+# __pycache__
+# media/
 *.settings.py
 /OBLH_HM/settings.py
 /home/sb-010/Desktop/Django projects/OBLF-HM/oblf-hm/OBLH_HM/settings.py
-*/__pycache__/*
-*/*/*/__pycache__/
-*/*/__pycache__/
-*/__pycache__/
-/media/*
-*.log
-*.log.*
-!.gitignore
+# */__pycache__/*
+# */*/*/__pycache__/
+# */*/__pycache__/
+# */__pycache__/
+# /media/*
+# *.log
+# *.log.*
+# !.gitignore

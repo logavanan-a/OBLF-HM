@@ -1,0 +1,26 @@
+
+
+
+==================================================
+
+
+Log Date & Time : 04/11/2023, 13:59:44hrs"https://oblfhmdev.mahiti.org/phc/pull/49d65c3a-0833-4808-9a28-2762460c9db3/"
+
+
+==================================================
+
+
+Log Date & Time : 04/11/2023, 13:59:44hrs{
+    "category_smo_date": "",
+    "diagnosis_smo_date": "2022-12-20T14:55:10.356176+05:30",
+    "medicine_smo_date": "",
+    "mhu_smo_date": "",
+    "mhu_site_smo_date": "",
+    "patient_smo_date": "2023-01-16T14:42:47.386172+05:30",
+    "medicine_dis_smo_date": "2023-01-11T13:06:49.442322+05:30",
+    "scanned_report_smo_date": "2022-12-22T17:10:37.871674+05:30",
+    "state_smo_date": "",
+    "patient_visit_smo_date": "",
+    "user_smo_date": "",
+    "userid": 5
+}

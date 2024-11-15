@@ -1,0 +1,334 @@
+
+
+
+==================================================
+
+
+Log Date & Time : 04/10/2023, 09:51:37hrs[]
+
+
+==================================================
+
+
+Log Date & Time : 04/10/2023, 09:51:37hrs[]
+
+
+==================================================
+
+
+Log Date & Time : 04/10/2023, 09:51:37hrs[]
+
+
+==================================================
+
+
+Log Date & Time : 04/10/2023, 09:51:37hrs[]
+
+
+==================================================
+
+
+Log Date & Time : 04/10/2023, 09:51:37hrs[]
+
+
+==================================================
+
+
+Log Date & Time : 04/10/2023, 09:51:37hrs[]
+
+
+==================================================
+
+
+Log Date & Time : 04/10/2023, 09:51:37hrs"https://oblfhmdev.mahiti.org/phc/pull/74be0401-9af1-4324-8abe-d05d104d4099/"
+
+
+==================================================
+
+
+Log Date & Time : 04/10/2023, 09:51:37hrs{
+    "category_smo_date": "",
+    "diagnosis_smo_date": "",
+    "medicine_smo_date": "",
+    "mhu_smo_date": "",
+    "mhu_site_smo_date": "",
+    "patient_smo_date": "",
+    "medicine_dis_smo_date": "",
+    "scanned_report_smo_date": "",
+    "state_smo_date": "",
+    "patient_visit_smo_date": "",
+    "user_smo_date": "",
+    "userid": 4
+}
+
+
+==================================================
+
+
+Log Date & Time : 04/10/2023, 09:51:40hrs"https://oblfhmdev.mahiti.org/phc/pull/74be0401-9af1-4324-8abe-d05d104d4099/"
+
+
+==================================================
+
+
+Log Date & Time : 04/10/2023, 09:51:40hrs{
+    "category_smo_date": "",
+    "diagnosis_smo_date": "2023-03-20T13:26:45.144459+05:30",
+    "medicine_smo_date": "",
+    "mhu_smo_date": "",
+    "mhu_site_smo_date": "",
+    "patient_smo_date": "2023-03-20T23:14:13.031760+05:30",
+    "medicine_dis_smo_date": "2023-03-27T12:48:20.173676+05:30",
+    "scanned_report_smo_date": "",
+    "state_smo_date": "",
+    "patient_visit_smo_date": "",
+    "user_smo_date": "",
+    "userid": 4
+}
+
+
+==================================================
+
+
+Log Date & Time : 04/10/2023, 09:51:40hrs[]
+
+
+==================================================
+
+
+Log Date & Time : 04/10/2023, 09:51:40hrs[]
+
+
+==================================================
+
+
+Log Date & Time : 04/10/2023, 09:51:40hrs[]
+
+
+==================================================
+
+
+Log Date & Time : 04/10/2023, 09:51:40hrs[]
+
+
+==================================================
+
+
+Log Date & Time : 04/10/2023, 09:51:40hrs[]
+
+
+==================================================
+
+
+Log Date & Time : 04/10/2023, 09:51:40hrs[]
+
+
+==================================================
+
+
+Log Date & Time : 04/10/2023, 09:51:53hrs"https://oblfhmdev.mahiti.org/phc/pull/74be0401-9af1-4324-8abe-d05d104d4099/"
+
+
+==================================================
+
+
+Log Date & Time : 04/10/2023, 09:51:53hrs{
+    "category_smo_date": "",
+    "diagnosis_smo_date": "2023-03-20T13:26:45.144459+05:30",
+    "medicine_smo_date": "",
+    "mhu_smo_date": "",
+    "mhu_site_smo_date": "",
+    "patient_smo_date": "2023-03-20T23:14:13.031760+05:30",
+    "medicine_dis_smo_date": "2023-03-27T12:48:20.173676+05:30",
+    "scanned_report_smo_date": "",
+    "state_smo_date": "",
+    "patient_visit_smo_date": "",
+    "user_smo_date": "",
+    "userid": 4
+}
+
+
+==================================================
+
+
+Log Date & Time : 04/10/2023, 09:51:53hrs[]
+
+
+==================================================
+
+
+Log Date & Time : 04/10/2023, 09:51:53hrs[]
+
+
+==================================================
+
+
+Log Date & Time : 04/10/2023, 09:51:53hrs[]
+
+
+==================================================
+
+
+Log Date & Time : 04/10/2023, 09:51:53hrs[]
+
+
+==================================================
+
+
+Log Date & Time : 04/10/2023, 09:51:53hrs[]
+
+
+==================================================
+
+
+Log Date & Time : 04/10/2023, 09:51:53hrs[]
+
+
+==================================================
+
+
+Log Date & Time : 04/10/2023, 15:02:27hrs"https://oblfhmdev.mahiti.org/phc/pull/49d65c3a-0833-4808-9a28-2762460c9db3/"
+
+
+==================================================
+
+
+Log Date & Time : 04/10/2023, 15:02:27hrs{
+    "category_smo_date": "",
+    "diagnosis_smo_date": "2022-12-20T14:55:10.356176+05:30",
+    "medicine_smo_date": "",
+    "mhu_smo_date": "",
+    "mhu_site_smo_date": "",
+    "patient_smo_date": "2023-01-11T12:19:21.932819+05:30",
+    "medicine_dis_smo_date": "2023-01-11T13:06:49.442322+05:30",
+    "scanned_report_smo_date": "2022-12-22T17:10:37.871674+05:30",
+    "state_smo_date": "",
+    "patient_visit_smo_date": "",
+    "user_smo_date": "",
+    "userid": 5
+}
+
+
+==================================================
+
+
+Log Date & Time : 04/10/2023, 15:03:18hrs"https://oblfhmdev.mahiti.org/phc/pull/49d65c3a-0833-4808-9a28-2762460c9db3/"
+
+
+==================================================
+
+
+Log Date & Time : 04/10/2023, 15:03:18hrs{
+    "category_smo_date": "",
+    "diagnosis_smo_date": "2022-12-20T14:55:10.356176+05:30",
+    "medicine_smo_date": "",
+    "mhu_smo_date": "",
+    "mhu_site_smo_date": "",
+    "patient_smo_date": "2023-01-11T12:19:21.932819+05:30",
+    "medicine_dis_smo_date": "2023-01-11T13:06:49.442322+05:30",
+    "scanned_report_smo_date": "2022-12-22T17:10:37.871674+05:30",
+    "state_smo_date": "",
+    "patient_visit_smo_date": "",
+    "user_smo_date": "",
+    "userid": 5
+}
+
+
+==================================================
+
+
+Log Date & Time : 04/10/2023, 15:03:29hrs"https://oblfhmdev.mahiti.org/phc/pull/49d65c3a-0833-4808-9a28-2762460c9db3/"
+
+
+==================================================
+
+
+Log Date & Time : 04/10/2023, 15:03:29hrs{
+    "category_smo_date": "",
+    "diagnosis_smo_date": "2022-12-20T14:55:10.356176+05:30",
+    "medicine_smo_date": "",
+    "mhu_smo_date": "",
+    "mhu_site_smo_date": "",
+    "patient_smo_date": "2023-01-11T12:19:21.932819+05:30",
+    "medicine_dis_smo_date": "2023-01-11T13:06:49.442322+05:30",
+    "scanned_report_smo_date": "2022-12-22T17:10:37.871674+05:30",
+    "state_smo_date": "",
+    "patient_visit_smo_date": "",
+    "user_smo_date": "",
+    "userid": 5
+}
+
+
+==================================================
+
+
+Log Date & Time : 04/10/2023, 15:03:42hrs"https://oblfhmdev.mahiti.org/phc/pull/49d65c3a-0833-4808-9a28-2762460c9db3/"
+
+
+==================================================
+
+
+Log Date & Time : 04/10/2023, 15:03:42hrs{
+    "category_smo_date": "",
+    "diagnosis_smo_date": "2022-12-20T14:55:10.356176+05:30",
+    "medicine_smo_date": "",
+    "mhu_smo_date": "",
+    "mhu_site_smo_date": "",
+    "patient_smo_date": "2023-01-11T12:19:21.932819+05:30",
+    "medicine_dis_smo_date": "2023-01-11T13:06:49.442322+05:30",
+    "scanned_report_smo_date": "2022-12-22T17:10:37.871674+05:30",
+    "state_smo_date": "",
+    "patient_visit_smo_date": "",
+    "user_smo_date": "",
+    "userid": 5
+}
+
+
+==================================================
+
+
+Log Date & Time : 04/10/2023, 17:01:29hrs"https://oblfhmdev.mahiti.org/phc/pull/49d65c3a-0833-4808-9a28-2762460c9db3/"
+
+
+==================================================
+
+
+Log Date & Time : 04/10/2023, 17:01:29hrs{
+    "category_smo_date": "",
+    "diagnosis_smo_date": "2022-12-20T14:55:10.356176+05:30",
+    "medicine_smo_date": "",
+    "mhu_smo_date": "",
+    "mhu_site_smo_date": "",
+    "patient_smo_date": "2023-01-16T14:42:47.386172+05:30",
+    "medicine_dis_smo_date": "2023-01-11T13:06:49.442322+05:30",
+    "scanned_report_smo_date": "2022-12-22T17:10:37.871674+05:30",
+    "state_smo_date": "",
+    "patient_visit_smo_date": "",
+    "user_smo_date": "",
+    "userid": 5
+}
+
+
+==================================================
+
+
+Log Date & Time : 04/10/2023, 20:03:02hrs"https://oblfhmdev.mahiti.org/phc/pull/49d65c3a-0833-4808-9a28-2762460c9db3/"
+
+
+==================================================
+
+
+Log Date & Time : 04/10/2023, 20:03:02hrs{
+    "category_smo_date": "",
+    "diagnosis_smo_date": "2022-12-20T14:55:10.356176+05:30",
+    "medicine_smo_date": "",
+    "mhu_smo_date": "",
+    "mhu_site_smo_date": "",
+    "patient_smo_date": "2023-01-16T14:42:47.386172+05:30",
+    "medicine_dis_smo_date": "2023-01-11T13:06:49.442322+05:30",
+    "scanned_report_smo_date": "2022-12-22T17:10:37.871674+05:30",
+    "state_smo_date": "",
+    "patient_visit_smo_date": "",
+    "user_smo_date": "",
+    "userid": 5
+}

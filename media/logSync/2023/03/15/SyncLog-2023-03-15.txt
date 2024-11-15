@@ -1,0 +1,72 @@
+
+
+
+==================================================
+
+
+Log Date & Time : 03/15/2023, 17:36:59hrs"https://oblfhmdev.mahiti.org/phc/pull/0343b00e-9dc2-4a53-9d05-e98eb8497ab9/"
+
+
+==================================================
+
+
+Log Date & Time : 03/15/2023, 17:36:59hrs{
+    "patient_smo_date": "",
+    "treatment_smo_date": "",
+    "prescription_smo_date": "",
+    "diagnosis_smo_date": "",
+    "scanned_report_smo_date": "",
+    "home_visit_smo_date": ""
+}
+
+
+==================================================
+
+
+Log Date & Time : 03/15/2023, 17:38:01hrs"https://oblfhmdev.mahiti.org/phc/pull/74be0401-9af1-4324-8abe-d05d104d4099/"
+
+
+==================================================
+
+
+Log Date & Time : 03/15/2023, 17:38:01hrs{
+    "userid": 4
+}
+
+
+==================================================
+
+
+Log Date & Time : 03/15/2023, 17:39:53hrs"https://oblfhmdev.mahiti.org/phc/pull/74be0401-9af1-4324-8abe-d05d104d4099/"
+
+
+==================================================
+
+
+Log Date & Time : 03/15/2023, 17:39:53hrs{
+    "patient_smo_date": "",
+    "treatment_smo_date": "",
+    "prescription_smo_date": "",
+    "diagnosis_smo_date": "",
+    "scanned_report_smo_date": "",
+    "home_visit_smo_date": ""
+}
+
+
+==================================================
+
+
+Log Date & Time : 03/15/2023, 17:39:57hrs"https://oblfhmdev.mahiti.org/phc/pull/74be0401-9af1-4324-8abe-d05d104d4099/"
+
+
+==================================================
+
+
+Log Date & Time : 03/15/2023, 17:39:57hrs{
+    "patient_smo_date": "",
+    "treatment_smo_date": "",
+    "prescription_smo_date": "",
+    "diagnosis_smo_date": "",
+    "scanned_report_smo_date": "",
+    "home_visit_smo_date": ""
+}
